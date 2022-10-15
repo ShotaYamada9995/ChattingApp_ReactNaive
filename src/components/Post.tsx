@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import Video from 'react-native-video';
 import convertToProxyURL from 'react-native-video-cache';
+import RNFS from 'react-native-fs';
 import {Icon} from '@rneui/themed';
 
 import {VideoModel} from '../videosData';
@@ -26,6 +27,7 @@ export default function Post({
     data;
 
   const [video, setVideo] = useState({
+    url: '',
     isBuffering: false,
     isPaused: true,
     isLiked: false,
@@ -51,7 +53,63 @@ export default function Post({
     setIsFollowing(!isFollowing);
   };
 
+  const getVideoUrl = (url: string, filename: string) => {
+    return new Promise((resolve, reject) => {
+      RNFS.readDir(RNFS.DocumentDirectoryPath)
+        .then(result => {
+          result.forEach(element => {
+            if (element.name == filename.replace(/%20/g, '_')) {
+              resolve(element.path);
+            }
+          });
+        })
+        .catch(err => {
+          reject(url);
+        });
+    });
+  };
+
+  const setVideoUrl = () => {
+    const filename: string = uri.substring(
+      uri.lastIndexOf('/') + 1,
+      uri.length,
+    );
+    const path_name = RNFS.DocumentDirectoryPath + '/' + filename;
+
+    // download video
+    RNFS.exists(path_name).then(exists => {
+      if (exists) {
+        getVideoUrl(uri, filename)
+          .then(res => {
+            setVideo(video => ({...video, url: res}));
+          })
+          .catch(url => {
+            setVideo(video => ({...video, url: url}));
+          });
+      } else {
+        RNFS.downloadFile({
+          fromUrl: uri,
+          toFile: path_name.replace(/%20/g, '_'),
+          background: true,
+        })
+          .promise.then(res => {
+            getVideoUrl(uri, filename)
+              .then(res => {
+                setVideo(video => ({...video, url: res}));
+              })
+              .catch(url => {
+                setVideo(video => ({...video, url: url}));
+              });
+          })
+          .catch(err => {
+            setVideo(video => ({...video, url: uri}));
+          });
+      }
+    });
+  };
+
   useEffect(() => {
+    setVideoUrl();
     if (isActive) {
       setVideo(video => ({...video, isPaused: false}));
     } else {
@@ -61,14 +119,20 @@ export default function Post({
   return (
     <View
       style={[styles.container, {height: WINDOW_HEIGHT - bottomTabHeight * 2}]}>
-      <Video
-        source={{uri: convertToProxyURL(uri)}}
-        style={styles.video}
-        resizeMode="cover"
-        paused={video.isPaused}
-        onBuffer={data => setIsBuffering(data.isBuffering)}
-        repeat
-      />
+      {video.url ? (
+        <Video
+          source={{uri: video.url}}
+          style={styles.video}
+          resizeMode="cover"
+          paused={video.isPaused}
+          onBuffer={data => setIsBuffering(data.isBuffering)}
+          repeat
+        />
+      ) : (
+        <View style={styles.loadingIndicatorContainer}>
+          <ActivityIndicator style={{marginTop: 5, marginLeft: 5}} />
+        </View>
+      )}
 
       {video.isBuffering && (
         <ActivityIndicator style={{position: 'absolute', top: 5, left: 5}} />
@@ -145,6 +209,11 @@ export default function Post({
 const styles = StyleSheet.create({
   container: {
     width: WINDOW_WIDTH,
+  },
+  loadingIndicatorContainer: {
+    flex: 1,
+    backgroundColor: 'black',
+    alignItems: 'flex-start',
   },
   video: {
     position: 'absolute',
