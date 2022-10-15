@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import {View, FlatList, StyleSheet} from 'react-native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 
-import Header from '../components/Header';
 import Post from '../components/Post';
 import videosData from '../videosData';
 import {WINDOW_HEIGHT} from '../utils';
@@ -14,7 +13,6 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Header height={bottomTabHeight} />
       <FlatList
         data={videosData}
         pagingEnabled

@@ -117,8 +117,7 @@ export default function Post({
     }
   }, [isActive]);
   return (
-    <View
-      style={[styles.container, {height: WINDOW_HEIGHT - bottomTabHeight * 2}]}>
+    <View style={[styles.container, {height: WINDOW_HEIGHT - bottomTabHeight}]}>
       {video.url ? (
         <Video
           source={{uri: video.url}}
