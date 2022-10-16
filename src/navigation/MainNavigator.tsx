@@ -1,33 +1,31 @@
 import React from 'react';
-import { Image, StyleSheet} from 'react-native';
+import {Image, StyleSheet} from 'react-native';
 
-import {
-  createBottomTabNavigator
-} from '@react-navigation/bottom-tabs';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
-import HomeScreen from './screens/HomeScreen';
-import ExploreScreen from './screens/ExploreScreen';
-import PostScreen from './screens/Post';
-import AudioRoomScreen from './screens/AudioRoomScreen';
-import ChatScreen from './screens/Chats';
+import HomeScreen from '../screens/HomeScreen';
+import ExploreScreen from '../screens/ExploreScreen';
+import PostScreen from '../screens/Post';
+import AudioRoomScreen from '../screens/AudioRoomScreen';
+import ChatScreen from '../screens/Chats';
 
-const BottomTab = createBottomTabNavigator();
+const MainTab = createBottomTabNavigator();
 
-export default () => {
+const Main = () => {
   return (
-    <BottomTab.Navigator
+    <MainTab.Navigator
       screenOptions={{
         tabBarStyle: {backgroundColor: 'black'},
         headerShown: false,
         tabBarActiveTintColor: 'white',
       }}>
-      <BottomTab.Screen
+      <MainTab.Screen
         name="Home"
         component={HomeScreen}
         options={{
           tabBarIcon: ({focused}) => (
             <Image
-              source={require('./assets/images/home.png')}
+              source={require('../assets/images/home.png')}
               style={[
                 styles.bottomTabIcon,
                 focused && styles.bottomTabIconFocused,
@@ -36,13 +34,13 @@ export default () => {
           ),
         }}
       />
-      <BottomTab.Screen
+      <MainTab.Screen
         name="Explore"
         component={ExploreScreen}
         options={{
           tabBarIcon: ({focused}) => (
             <Image
-              source={require('./assets/images/search.png')}
+              source={require('../assets/images/search.png')}
               style={[
                 styles.bottomTabIcon,
                 focused && styles.bottomTabIconFocused,
@@ -51,14 +49,14 @@ export default () => {
           ),
         }}
       />
-      <BottomTab.Screen
+      <MainTab.Screen
         name="Post"
         component={PostScreen}
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({focused}) => (
             <Image
-              source={require('./assets/images/new-video.png')}
+              source={require('../assets/images/new-video.png')}
               style={[
                 styles.newVideoButton,
                 focused && styles.bottomTabIconFocused,
@@ -67,13 +65,13 @@ export default () => {
           ),
         }}
       />
-      <BottomTab.Screen
+      <MainTab.Screen
         name="Audio Room"
         component={AudioRoomScreen}
         options={{
           tabBarIcon: ({focused}) => (
             <Image
-              source={require('./assets/images/message.png')}
+              source={require('../assets/images/message.png')}
               style={[
                 styles.bottomTabIcon,
                 focused && styles.bottomTabIconFocused,
@@ -82,13 +80,13 @@ export default () => {
           ),
         }}
       />
-      <BottomTab.Screen
+      <MainTab.Screen
         name="Chats"
         component={ChatScreen}
         options={{
           tabBarIcon: ({focused}) => (
             <Image
-              source={require('./assets/images/user.png')}
+              source={require('../assets/images/user.png')}
               style={[
                 styles.bottomTabIcon,
                 focused && styles.bottomTabIconFocused,
@@ -97,9 +95,11 @@ export default () => {
           ),
         }}
       />
-    </BottomTab.Navigator>
+    </MainTab.Navigator>
   );
 };
+
+export default Main;
 
 const styles = StyleSheet.create({
   bottomTabIcon: {

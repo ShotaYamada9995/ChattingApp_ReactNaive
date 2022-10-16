@@ -15,6 +15,7 @@ import {Icon} from '@rneui/themed';
 
 import {VideoModel} from '../videosData';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../utils';
+import {useNavigation} from '@react-navigation/native';
 
 export default function Post({
   data,
@@ -23,6 +24,7 @@ export default function Post({
   data: VideoModel;
   isActive: boolean;
 }) {
+  const navigation = useNavigation();
   const {uri, caption, channelName, musicName, likes, comments, avatarUri} =
     data;
 
@@ -173,6 +175,7 @@ export default function Post({
             type="ionicon"
             color="white"
             style={styles.verticalBarIcon}
+            onPress={() => navigation.goBack()}
           />
           <Icon
             name="heart"
