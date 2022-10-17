@@ -2,11 +2,11 @@ import React, {useState} from 'react';
 import {View, FlatList, StyleSheet} from 'react-native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 
-import Post from '../components/Post';
-import videosData from '../videosData';
-import {WINDOW_HEIGHT} from '../utils';
+import Post from '../../components/Post';
+import videosData from '../../videosData';
+import {WINDOW_HEIGHT} from '../../utils';
 
-const HomeScreen = () => {
+const Home = () => {
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
 
   const bottomTabHeight = useBottomTabBarHeight();
@@ -37,4 +37,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default Home;

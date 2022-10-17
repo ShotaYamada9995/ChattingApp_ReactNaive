@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Video from 'react-native-video';
-import convertToProxyURL from 'react-native-video-cache';
 import RNFS from 'react-native-fs';
 import {Icon} from '@rneui/themed';
 

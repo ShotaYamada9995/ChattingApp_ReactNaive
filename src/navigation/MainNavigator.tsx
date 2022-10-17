@@ -3,7 +3,7 @@ import {Image, StyleSheet} from 'react-native';
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
-import HomeScreen from '../screens/HomeScreen';
+import Home from '../screens/Home';
 import ExploreScreen from '../screens/ExploreScreen';
 import PostScreen from '../screens/Post';
 import AudioRoomScreen from '../screens/AudioRoomScreen';
@@ -21,7 +21,7 @@ const Main = () => {
       }}>
       <MainTab.Screen
         name="Home"
-        component={HomeScreen}
+        component={Home}
         options={{
           tabBarIcon: ({focused}) => (
             <Image

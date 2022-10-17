@@ -9,7 +9,7 @@ import {
   PURGE,
   REGISTER,
 } from 'redux-persist';
-import logger from 'redux-logger';
+// import logger from 'redux-logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import UserReducer from './reducers/UserReducer';
@@ -32,7 +32,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(logger),
+    }), // '.concat(logger) to add logger
 });
 
 export const persistor = persistStore(store);
