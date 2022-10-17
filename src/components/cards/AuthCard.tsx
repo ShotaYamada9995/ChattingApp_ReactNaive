@@ -1,19 +1,20 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import {TouchableOpacity, StyleSheet} from 'react-native';
 import {Icon, Text} from '@rneui/themed';
 
 interface AuthCardProps {
   icon: any;
   title: string;
+  onPress?: any;
 }
 
-export default ({icon, title}: AuthCardProps) => {
+export default ({icon, title, onPress}: AuthCardProps) => {
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={onPress}>
       <Icon name={icon} type="ionicon" size={20} />
 
       <Text style={styles.title}>{title}</Text>
-    </View>
+    </TouchableOpacity>
   );
 };
 

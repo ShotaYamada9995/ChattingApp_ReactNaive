@@ -1,17 +1,31 @@
 import React, {useEffect} from 'react';
-import {View, ScrollView, StyleSheet} from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 
 import AuthHeader from '../../components/headers/AuthHeader';
 import AuthCard from '../../components/cards/AuthCard';
 import AuthFooter from '../../components/footers/AuthFooter';
 
-const Register = () => {
+const LoginOptions = () => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       <AuthHeader title="Login" />
 
       <ScrollView contentContainerStyle={styles.authCardContainer}>
-        <AuthCard icon="person" title="Use Email or Phone" />
+        <AuthCard
+          icon="person"
+          title="Use Email or Phone"
+          onPress={() => navigation.navigate('LoginForm')}
+        />
+
         <AuthCard icon="logo-google" title="Continue with Google" />
         <AuthCard icon="logo-apple" title="Continue with Apple" />
         <AuthCard icon="logo-facebook" title="Continue with Facebook" />
@@ -34,4 +48,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Register;
+export default LoginOptions;

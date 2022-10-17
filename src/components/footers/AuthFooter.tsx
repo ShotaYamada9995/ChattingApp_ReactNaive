@@ -2,6 +2,7 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Text} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
+import globalStyles from '../../styles/globalStyles';
 
 interface AuthFooterProps {
   action: string;
@@ -28,8 +29,8 @@ const AuthFooter = ({action}: AuthFooterProps) => {
           <Text style={styles.footerBottomText}>
             Already have an account?{' '}
             <Text
-              style={styles.link}
-              onPress={() => navigation.navigate('Login')}>
+              style={globalStyles.link}
+              onPress={() => navigation.navigate('LoginOptions')}>
               {action}
             </Text>
           </Text>
@@ -38,7 +39,7 @@ const AuthFooter = ({action}: AuthFooterProps) => {
             Don't have an account?{' '}
             <Text
               style={styles.link}
-              onPress={() => navigation.navigate('Register')}>
+              onPress={() => navigation.navigate('RegisterOptions')}>
               {action}
             </Text>
           </Text>

@@ -1,18 +1,40 @@
 import React, {useEffect} from 'react';
 import {View, ScrollView, StyleSheet} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {useSelector, useDispatch} from 'react-redux';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
 
 import AuthHeader from '../../components/headers/AuthHeader';
 import AuthCard from '../../components/cards/AuthCard';
 import AuthFooter from '../../components/footers/AuthFooter';
+import {update} from '../../store/reducers/UserReducer';
 
-const Register = () => {
+const RegisterOptions = () => {
+  const navigation = useNavigation();
+  const user = useSelector(state => state.user);
+  const dispatch = useDispatch();
+
   return (
     <View style={styles.container}>
       <AuthHeader title="Sign Up" />
 
       <ScrollView contentContainerStyle={styles.authCardContainer}>
-        <AuthCard icon="person" title="Use Email or Phone" />
-        <AuthCard icon="logo-google" title="Continue with Google" />
+        <AuthCard
+          icon="person"
+          title="Use Email or Phone"
+          onPress={() => {
+            navigation.navigate('RegisterEmail');
+            dispatch(update());
+          }}
+        />
+        <AuthCard
+          icon="logo-google"
+          title="Continue with Google"
+          onPress={() => console.log(user)}
+        />
         <AuthCard icon="logo-apple" title="Continue with Apple" />
         <AuthCard icon="logo-facebook" title="Continue with Facebook" />
         <AuthCard icon="logo-twitter" title="Continue with Twitter" />
@@ -34,4 +56,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Register;
+export default RegisterOptions;

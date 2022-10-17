@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 10,
+    padding: 10,
   },
   logoIcon: {
     width: 30,
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   },
   caption: {
     fontSize: 15,
-    color: 'black',
+    color: '#aaa',
     textAlign: 'center',
   },
 });
