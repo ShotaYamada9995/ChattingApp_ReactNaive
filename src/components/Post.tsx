@@ -32,6 +32,7 @@ export default function Post({
     isBuffering: false,
     isPaused: true,
     isLiked: false,
+    isBookmarked: false,
   });
 
   const [isFollowing, setIsFollowing] = useState(false);
@@ -44,6 +45,9 @@ export default function Post({
 
   const toggleLike = () => {
     setVideo(video => ({...video, isLiked: !video.isLiked}));
+  };
+  const toggleBookmark = () => {
+    setVideo(video => ({...video, isBookmarked: !video.isBookmarked}));
   };
 
   const setIsBuffering = (isBuffering: boolean) => {
@@ -170,11 +174,11 @@ export default function Post({
 
         <View style={styles.bottomRightSection}>
           <Icon
-            name="bookmark"
+            name={video.isBookmarked ? 'bookmark' : 'bookmark-outline'}
             type="ionicon"
             color="white"
             style={styles.verticalBarIcon}
-            onPress={() => navigation.goBack()}
+            onPress={toggleBookmark}
           />
           <Icon
             name="heart"
@@ -189,11 +193,9 @@ export default function Post({
             color="white"
             style={styles.verticalBarIcon}
           />
-          <Icon
-            name="arrow-forward"
-            type="ionicon"
-            color="white"
-            style={styles.verticalBarIcon}
+          <Image
+            source={require('../assets/icons/arrow-forward.png')}
+            style={{...styles.icon, marginBottom: 10}}
           />
           <Icon
             name="ellipsis-horizontal"
@@ -238,6 +240,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
     alignItems: 'flex-end',
+    marginRight: 5,
+  },
+  icon: {
+    width: 20,
+    height: 20,
   },
   channelName: {
     color: 'white',

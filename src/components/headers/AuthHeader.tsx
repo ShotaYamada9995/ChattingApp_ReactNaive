@@ -21,7 +21,7 @@ export default ({title, caption}: AuthHeaderProps) => {
         />
 
         <Image
-          source={require('../../assets/icons/logoIcon.png')}
+          source={require('../../assets/icons/logo.png')}
           style={styles.logoIcon}
         />
       </View>

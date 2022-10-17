@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View, Image} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {Icon, Badge} from '@rneui/themed';
 
@@ -38,7 +38,10 @@ const HomeTabNavigator = () => {
       </HomeTab.Navigator>
 
       <View style={{position: 'absolute', top: 20, left: 10}}>
-        <Icon name="star" color="white" type="ionicon" />
+        <Image
+          source={require('../../assets/icons/audio.png')}
+          style={{width: 20, height: 20}}
+        />
         <Badge
           status="error"
           containerStyle={{position: 'absolute', top: 0, left: 20}}
@@ -46,7 +49,7 @@ const HomeTabNavigator = () => {
       </View>
 
       <View style={{position: 'absolute', top: 20, right: 10}}>
-        <Icon name="star" color="white" type="ionicon" />
+        <Icon name="chatbox-ellipses" color="white" type="ionicon" />
         <Badge
           status="error"
           containerStyle={{position: 'absolute', top: 0, left: 20}}

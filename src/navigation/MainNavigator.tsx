@@ -1,7 +1,8 @@
 import React from 'react';
-import {Image, StyleSheet} from 'react-native';
-
+import {Image, StyleSheet, View} from 'react-native';
+import {Icon} from '@rneui/themed';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import LinearGradient from 'react-native-linear-gradient';
 
 import Home from '../screens/Home';
 import ExploreScreen from '../screens/ExploreScreen';
@@ -15,7 +16,7 @@ const Main = () => {
   return (
     <MainTab.Navigator
       screenOptions={{
-        tabBarStyle: {backgroundColor: 'black'},
+        tabBarStyle: {backgroundColor: '#001433', borderTopWidth: 0},
         headerShown: false,
         tabBarActiveTintColor: 'white',
       }}>
@@ -25,7 +26,7 @@ const Main = () => {
         options={{
           tabBarIcon: ({focused}) => (
             <Image
-              source={require('../assets/images/home.png')}
+              source={require('../assets/icons/home.png')}
               style={[
                 styles.bottomTabIcon,
                 focused && styles.bottomTabIconFocused,
@@ -40,7 +41,7 @@ const Main = () => {
         options={{
           tabBarIcon: ({focused}) => (
             <Image
-              source={require('../assets/images/search.png')}
+              source={require('../assets/icons/explore.png')}
               style={[
                 styles.bottomTabIcon,
                 focused && styles.bottomTabIconFocused,
@@ -55,43 +56,30 @@ const Main = () => {
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({focused}) => (
-            <Image
-              source={require('../assets/images/new-video.png')}
-              style={[
-                styles.newVideoButton,
-                focused && styles.bottomTabIconFocused,
-              ]}
-            />
+            <LinearGradient
+              colors={['#FDD819', '#E80505']}
+              start={{x: 0.5, y: 0}}
+              style={styles.postIcon}>
+              <Icon name="add" color="white" size={30} />
+            </LinearGradient>
           ),
         }}
       />
       <MainTab.Screen
-        name="Audio Room"
+        name="Notification"
         component={AudioRoomScreen}
         options={{
           tabBarIcon: ({focused}) => (
-            <Image
-              source={require('../assets/images/message.png')}
-              style={[
-                styles.bottomTabIcon,
-                focused && styles.bottomTabIconFocused,
-              ]}
-            />
+            <Icon name="notifications" color={focused ? 'white' : 'grey'} />
           ),
         }}
       />
       <MainTab.Screen
-        name="Chats"
+        name="Profile"
         component={ChatScreen}
         options={{
           tabBarIcon: ({focused}) => (
-            <Image
-              source={require('../assets/images/user.png')}
-              style={[
-                styles.bottomTabIcon,
-                focused && styles.bottomTabIconFocused,
-              ]}
-            />
+            <Icon name="person" color={focused ? 'white' : 'grey'} />
           ),
         }}
       />
@@ -110,8 +98,12 @@ const styles = StyleSheet.create({
   bottomTabIconFocused: {
     tintColor: 'white',
   },
-  newVideoButton: {
-    width: 48,
-    height: 24,
+  postIcon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginTop: -50,
   },
 });
