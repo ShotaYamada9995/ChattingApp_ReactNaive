@@ -1,5 +1,5 @@
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, memo} from 'react';
 import {
   Image,
   Pressable,
@@ -16,13 +16,12 @@ import {VideoModel} from '../videosData';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../utils';
 import {useNavigation} from '@react-navigation/native';
 
-export default function Post({
-  data,
-  isActive,
-}: {
+interface PostProps {
   data: VideoModel;
   isActive: boolean;
-}) {
+}
+
+const Post = ({data, isActive}: PostProps) => {
   const navigation = useNavigation();
   const {uri, caption, channelName, musicName, likes, comments, avatarUri} =
     data;
@@ -207,7 +206,9 @@ export default function Post({
       </View>
     </View>
   );
-}
+};
+
+export default memo(Post);
 
 const styles = StyleSheet.create({
   container: {

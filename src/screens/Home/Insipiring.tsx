@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback} from 'react';
 import {View, FlatList, StyleSheet} from 'react-native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 
@@ -11,21 +11,40 @@ const Home = () => {
 
   const bottomTabHeight = useBottomTabBarHeight();
 
+  const keyExtractor = useCallback(video => video.id, []);
+
+  const getItemLayout = useCallback(
+    (data, index) => ({
+      length: WINDOW_HEIGHT - bottomTabHeight,
+      offset: (WINDOW_HEIGHT - bottomTabHeight) * index,
+      index,
+    }),
+    [],
+  );
+
+  const renderPost = ({item, index}) => (
+    <Post data={item} isActive={activeVideoIndex === index} />
+  );
+
+  const handleOnScroll = e => {
+    const index = Math.round(
+      e.nativeEvent.contentOffset.y / (WINDOW_HEIGHT - bottomTabHeight),
+    );
+    setActiveVideoIndex(index);
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
         data={videosData}
+        keyExtractor={keyExtractor}
         pagingEnabled
-        renderItem={({item, index}) => (
-          <Post data={item} isActive={activeVideoIndex === index} />
-        )}
-        onScroll={e => {
-          const index = Math.round(
-            e.nativeEvent.contentOffset.y / (WINDOW_HEIGHT - bottomTabHeight),
-          );
-          setActiveVideoIndex(index);
-        }}
+        renderItem={renderPost}
+        onScroll={handleOnScroll}
         showsVerticalScrollIndicator={false}
+        windowSize={3}
+        maxToRenderPerBatch={3}
+        getItemLayout={getItemLayout}
       />
     </View>
   );
