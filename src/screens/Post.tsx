@@ -16,7 +16,11 @@ import {Icon} from '@rneui/themed';
 const PostScreen = () => {
   const [isCameraPermitted, setIsCameraPermitted] = useState(false);
   const [isMicrophonePermitted, setIsMicrophonePermitted] = useState(false);
-  const [recordStatus, setRecordStatus] = useState('STOP'); // START, PAUSE, STOP
+  const [video, setVideo] = useState({
+    isRecording: false,
+    isPaused: false,
+    useFlash: false,
+  });
 
   const devices = useCameraDevices('wide-angle-camera');
   const device: any = devices.back;
@@ -24,14 +28,26 @@ const PostScreen = () => {
 
   const camera = useRef<Camera>(null);
 
-  const requestPermissions = async () => {
-    /* Check permissions */
+  const togglePause = () => {
+    setVideo(video => ({...video, isPaused: !video.isPaused}));
+  };
+
+  const toggleFlash = () => {
+    setVideo(video => ({...video, useFlash: !video.useFlash}));
+  };
+
+  const recordVideo = async () => {
+    camera.current.startRecording({
+      flash: video.useFlash ? 'on' : 'off',
+      onRecordingFinished: video => console.log(video),
+      onRecordingError: error => console.error(error),
+    });
+  };
+
+  const requestCameraPermission = async () => {
+    // check permission
     const cameraPermission = await Camera.getCameraPermissionStatus();
-    const microphonePermission = await Camera.getMicrophonePermissionStatus();
 
-    /* Request permissions */
-
-    // Camera
     if (cameraPermission === 'restricted') {
       Alert.alert('Cannot use camera');
     } else if (
@@ -44,8 +60,12 @@ const PostScreen = () => {
     } else {
       setIsCameraPermitted(true);
     }
+  };
 
-    // Microphone
+  const requestMicrophonePermission = async () => {
+    // check permission
+    const microphonePermission = await Camera.getMicrophonePermissionStatus();
+
     if (microphonePermission === 'restricted') {
       Alert.alert('Cannot use microphone');
     } else if (
@@ -62,8 +82,12 @@ const PostScreen = () => {
   };
 
   useEffect(() => {
-    requestPermissions();
+    (async () => {
+      await requestCameraPermission();
+      await requestMicrophonePermission();
+    })();
   }, []);
+
   if (!isCameraPermitted)
     return (
       <View style={styles.defaultContainer}>
@@ -89,47 +113,79 @@ const PostScreen = () => {
         audio
       />
 
-      <View style={styles.bottomBarContainer}>
-        <View style={{flex: 1}} />
+      <View style={styles.sidebar}>
+        <Icon
+          name="repeat"
+          type="ionicon"
+          color="white"
+          size={35}
+          style={styles.sidebarIcon}
+        />
+        <Icon
+          name={video.useFlash ? 'flash' : 'flash-off'}
+          type="ionicon"
+          color="white"
+          size={35}
+          onPress={toggleFlash}
+          style={styles.sidebarIcon}
+        />
+      </View>
 
-        <View style={styles.recordBtnContainer}>
-          {/* <TouchableOpacity style={styles.recordBtn} /> */}
-          <TouchableOpacity>
-            <CountdownCircleTimer
-              isPlaying={true}
-              duration={15}
-              colors="#d9d9d9"
-              trailColor="#ff4040"
-              strokeWidth={5}
-              size={100}>
-              {({remainingTime}) => (
-                <Icon
-                  name="stop"
-                  type="ionicon"
-                  color="#ff4040"
-                  size={50}
-                  style={{marginLeft: 3}}
-                />
-              )}
-            </CountdownCircleTimer>
-          </TouchableOpacity>
+      <View style={styles.bottomBarContainer}>
+        <View style={{flex: 1}}>
+          {video.isRecording && video.isPaused && (
+            <Icon
+              name="close-circle"
+              type="ionicon"
+              color="white"
+              size={40}
+              style={{marginLeft: 20}}
+              onPress={() => setVideo({isRecording: false, isPaused: false})}
+            />
+          )}
         </View>
 
-        <View
-          style={{
-            flex: 1,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}>
-          <TouchableOpacity style={styles.galleryBtn} />
-          {/* <Icon name="close-circle" type="ionicon" color="white" size={35} />
-          <Icon
-            name="checkmark-circle"
-            type="ionicon"
-            color="#ff4040"
-            size={35}
-            style={{marginLeft: 20}}
-          /> */}
+        <View style={styles.recordBtnContainer}>
+          {video.isRecording ? (
+            <TouchableOpacity onPress={togglePause}>
+              <CountdownCircleTimer
+                isPlaying={!video.isPaused}
+                duration={15}
+                colors="#d9d9d9"
+                trailColor="#ff4040"
+                strokeWidth={5}
+                size={100}>
+                {({remainingTime}) => (
+                  <Icon
+                    name="stop"
+                    type="ionicon"
+                    color="#ff4040"
+                    size={50}
+                    style={{marginLeft: 3}}
+                  />
+                )}
+              </CountdownCircleTimer>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.recordBtn}
+              onPress={() => setVideo(video => ({...video, isRecording: true}))}
+            />
+          )}
+        </View>
+
+        <View style={{flex: 1}}>
+          {video.isRecording ? (
+            <Icon
+              name="checkmark-circle"
+              type="ionicon"
+              color="#ff4040"
+              size={40}
+              style={{marginRight: 20}}
+            />
+          ) : (
+            <TouchableOpacity style={styles.galleryBtn} />
+          )}
         </View>
       </View>
     </View>
@@ -147,6 +203,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
   },
+  sidebar: {position: 'absolute', top: 20, right: 10},
+  sidebarIcon: {marginBottom: 10},
   bottomBarContainer: {
     position: 'absolute',
     bottom: 40,
@@ -162,8 +220,8 @@ const styles = StyleSheet.create({
     borderColor: '#ff404087',
     backgroundColor: '#ff4040',
     borderRadius: 100,
-    height: 80,
-    width: 80,
+    height: 100,
+    width: 100,
   },
   galleryBtn: {
     borderWidth: 2,
@@ -172,6 +230,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: 40,
     height: 40,
+    marginLeft: 10,
   },
 });
 

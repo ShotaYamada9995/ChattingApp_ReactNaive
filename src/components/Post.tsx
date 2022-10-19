@@ -192,9 +192,11 @@ const Post = ({data, isActive}: PostProps) => {
             color="white"
             style={styles.verticalBarIcon}
           />
-          <Image
-            source={require('../assets/icons/arrow-forward.png')}
-            style={{...styles.icon, marginBottom: 10}}
+          <Icon
+            name="arrow-redo"
+            type="ionicon"
+            color="white"
+            style={styles.verticalBarIcon}
           />
           <Icon
             name="ellipsis-horizontal"
