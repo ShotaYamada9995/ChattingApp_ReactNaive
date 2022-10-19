@@ -1,6 +1,6 @@
 import {useIsFocused} from '@react-navigation/native';
 import {Button} from '@rneui/base';
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, useMemo} from 'react';
 import {
   View,
   Text,
@@ -9,39 +9,78 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
-import {Camera, useCameraDevices} from 'react-native-vision-camera';
+import {Camera, useCameraDevices, VideoFile} from 'react-native-vision-camera';
 import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
 import {Icon} from '@rneui/themed';
+
+import {useIsForeground} from '../hooks/useIsForeground';
 
 const PostScreen = () => {
   const [isCameraPermitted, setIsCameraPermitted] = useState(false);
   const [isMicrophonePermitted, setIsMicrophonePermitted] = useState(false);
+  const [cameraPosition, setCameraPosition] = useState<'front' | 'back'>(
+    'back',
+  );
   const [video, setVideo] = useState({
     isRecording: false,
     isPaused: false,
-    useFlash: false,
+    flash: 'off',
   });
 
+  const isRecordingCancelled = useRef<true | false>(false);
+
   const devices = useCameraDevices('wide-angle-camera');
-  const device: any = devices.back;
+  const device: any = devices[cameraPosition];
+
+  const isForeGround = useIsForeground();
   const isFocused = useIsFocused();
+  const isActive = isForeGround && isFocused;
 
   const camera = useRef<Camera>(null);
 
-  const togglePause = () => {
-    setVideo(video => ({...video, isPaused: !video.isPaused}));
+  const togglePause = async () => {
+    if (video.isPaused) {
+      await camera.current?.resumeRecording();
+      setVideo(video => ({...video, isPaused: false}));
+    } else {
+      await camera.current?.pauseRecording();
+      setVideo(video => ({...video, isPaused: true}));
+    }
+  };
+
+  const toggleCameraPosition = () => {
+    setCameraPosition(p => (p === 'back' ? 'front' : 'back'));
   };
 
   const toggleFlash = () => {
-    setVideo(video => ({...video, useFlash: !video.useFlash}));
+    setVideo(video => ({...video, flash: video.flash === 'on' ? 'off' : 'on'}));
   };
 
-  const recordVideo = async () => {
-    camera.current.startRecording({
-      flash: video.useFlash ? 'on' : 'off',
-      onRecordingFinished: video => console.log(video),
-      onRecordingError: error => console.error(error),
+  const onRecordingFinished = (video: VideoFile) => {
+    if (!isRecordingCancelled.current) {
+      console.log('Video => ', video);
+    } else {
+      isRecordingCancelled.current = false;
+    }
+  };
+
+  const startRecording = async () => {
+    camera.current?.startRecording({
+      flash: video.flash,
+      onRecordingFinished,
+      onRecordingError: error => console.error('Error => ', error),
     });
+    setVideo(video => ({...video, isRecording: true}));
+  };
+
+  const stopRecording = async () => {
+    await camera.current?.stopRecording();
+    setVideo(video => ({...video, isRecording: false, isPaused: false}));
+  };
+
+  const cancelRecording = () => {
+    isRecordingCancelled.current = true;
+    stopRecording();
   };
 
   const requestCameraPermission = async () => {
@@ -81,6 +120,12 @@ const PostScreen = () => {
     }
   };
 
+  const supportsCameraFlipping = useMemo(
+    () => devices.back != null && devices.front != null,
+    [devices.back, devices.front],
+  );
+  const supportsFlash = device?.hasFlash ?? false;
+
   useEffect(() => {
     (async () => {
       await requestCameraPermission();
@@ -108,27 +153,35 @@ const PostScreen = () => {
         ref={camera}
         style={StyleSheet.absoluteFill}
         device={device}
-        isActive={isFocused}
+        isActive={isActive}
         video
         audio
       />
 
       <View style={styles.sidebar}>
-        <Icon
-          name="repeat"
-          type="ionicon"
-          color="white"
-          size={35}
-          style={styles.sidebarIcon}
-        />
-        <Icon
-          name={video.useFlash ? 'flash' : 'flash-off'}
-          type="ionicon"
-          color="white"
-          size={35}
-          onPress={toggleFlash}
-          style={styles.sidebarIcon}
-        />
+        {supportsCameraFlipping && (
+          <TouchableOpacity onPress={toggleCameraPosition}>
+            <Icon
+              name="repeat"
+              type="ionicon"
+              color="white"
+              size={35}
+              style={styles.sidebarIcon}
+            />
+          </TouchableOpacity>
+        )}
+
+        {supportsFlash && (
+          <TouchableOpacity onPress={toggleFlash}>
+            <Icon
+              name={video.flash === 'on' ? 'flash' : 'flash-off'}
+              type="ionicon"
+              color="white"
+              size={35}
+              style={styles.sidebarIcon}
+            />
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.bottomBarContainer}>
@@ -140,7 +193,7 @@ const PostScreen = () => {
               color="white"
               size={40}
               style={{marginLeft: 20}}
-              onPress={() => setVideo({isRecording: false, isPaused: false})}
+              onPress={cancelRecording}
             />
           )}
         </View>
@@ -150,7 +203,7 @@ const PostScreen = () => {
             <TouchableOpacity onPress={togglePause}>
               <CountdownCircleTimer
                 isPlaying={!video.isPaused}
-                duration={15}
+                duration={120}
                 colors="#d9d9d9"
                 trailColor="#ff4040"
                 strokeWidth={5}
@@ -169,7 +222,7 @@ const PostScreen = () => {
           ) : (
             <TouchableOpacity
               style={styles.recordBtn}
-              onPress={() => setVideo(video => ({...video, isRecording: true}))}
+              onPress={startRecording}
             />
           )}
         </View>
@@ -182,6 +235,7 @@ const PostScreen = () => {
               color="#ff4040"
               size={40}
               style={{marginRight: 20}}
+              onPress={stopRecording}
             />
           ) : (
             <TouchableOpacity style={styles.galleryBtn} />
