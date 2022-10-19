@@ -1,5 +1,5 @@
 import React from 'react';
-import {Image, StyleSheet, View} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {Icon} from '@rneui/themed';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
@@ -25,13 +25,7 @@ const Main = () => {
         component={Home}
         options={{
           tabBarIcon: ({focused}) => (
-            <Image
-              source={require('../assets/icons/home.png')}
-              style={[
-                styles.bottomTabIcon,
-                focused && styles.bottomTabIconFocused,
-              ]}
-            />
+            <Icon name="home" color={focused ? 'white' : 'grey'} />
           ),
         }}
       />
@@ -40,12 +34,10 @@ const Main = () => {
         component={ExploreScreen}
         options={{
           tabBarIcon: ({focused}) => (
-            <Image
-              source={require('../assets/icons/explore.png')}
-              style={[
-                styles.bottomTabIcon,
-                focused && styles.bottomTabIconFocused,
-              ]}
+            <Icon
+              name="compass"
+              type="ionicon"
+              color={focused ? 'white' : 'grey'}
             />
           ),
         }}
@@ -60,7 +52,7 @@ const Main = () => {
               colors={['#FDD819', '#E80505']}
               start={{x: 0.5, y: 0}}
               style={styles.postIcon}>
-              <Icon name="add" color="white" size={30} />
+              <Icon name="add" color="white" size={25} />
             </LinearGradient>
           ),
         }}
@@ -101,8 +93,8 @@ const styles = StyleSheet.create({
   postIcon: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 60,
-    height: 60,
+    width: 55,
+    height: 55,
     borderRadius: 30,
     marginTop: -50,
   },
