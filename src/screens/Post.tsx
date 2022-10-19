@@ -207,7 +207,8 @@ const PostScreen = () => {
                 colors="#d9d9d9"
                 trailColor="#ff4040"
                 strokeWidth={5}
-                size={100}>
+                size={100}
+                onComplete={stopRecording}>
                 {({remainingTime}) => (
                   <Icon
                     name="stop"
