@@ -12,6 +12,11 @@ import {
 import {Camera, useCameraDevices, VideoFile} from 'react-native-vision-camera';
 import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
 import {Icon} from '@rneui/themed';
+import {
+  VESDK,
+  VideoEditorModal,
+  Configuration,
+} from 'react-native-videoeditorsdk';
 
 import {useIsForeground} from '../hooks/useIsForeground';
 
@@ -58,7 +63,7 @@ const PostScreen = () => {
 
   const onRecordingFinished = (video: VideoFile) => {
     if (!isRecordingCancelled.current) {
-      console.log('Video => ', video);
+      VESDK.openEditor(video.path);
     } else {
       isRecordingCancelled.current = false;
     }

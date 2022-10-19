@@ -1,5 +1,43 @@
 apply plugin: "com.android.application"
+apply plugin: 'ly.img.android.sdk'
+apply plugin: 'kotlin-android'
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
+
+imglyConfig {
+    modules {
+        include 'ui:text'
+        include 'ui:focus'
+        include 'ui:frame'
+        include 'ui:brush'
+        include 'ui:filter'
+        include 'ui:sticker'
+        include 'ui:overlay'
+        include 'ui:transform'
+        include 'ui:adjustment'
+        include 'ui:text-design'
+        include 'ui:video-trim'
+        include 'ui:video-library'
+        include 'ui:video-composition'
+        include 'ui:audio-composition'
+        include 'ui:giphy-sticker'
+
+        // This module is big, remove the serializer if you don't need that feature.
+        include 'backend:serializer'
+
+        // Remove the asset packs you don't need, these are also big in size.
+        include 'assets:font-basic'
+        include 'assets:frame-basic'
+        include 'assets:filter-basic'
+        include 'assets:overlay-basic'
+        include 'assets:sticker-shapes'
+        include 'assets:sticker-emoticons'
+        include 'assets:sticker-animated'
+
+        include 'backend:sticker-animated'
+        include 'backend:sticker-smart'
+        include 'backend:background-removal'
+    }
+}
 
 import com.android.build.OutputFile
 import org.apache.tools.ant.taskdefs.condition.Os
