@@ -8,17 +8,19 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import {Camera, useCameraDevices, VideoFile} from 'react-native-vision-camera';
 import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
 import {Icon} from '@rneui/themed';
-import {
-  VESDK,
-  VideoEditorModal,
-  Configuration,
-} from 'react-native-videoeditorsdk';
 
 import {useIsForeground} from '../hooks/useIsForeground';
+import {trim, genFrames} from '../utils/videoEditor';
+
+interface Frame {
+  time: number;
+  image: string;
+}
 
 const PostScreen = () => {
   const [isCameraPermitted, setIsCameraPermitted] = useState(false);
@@ -31,6 +33,8 @@ const PostScreen = () => {
     isPaused: false,
     flash: 'off',
   });
+  const [trimmedVideo, setTrimmedVideo] = useState('');
+  const [videoFrames, setVideoFrames] = useState<Frame[]>([]);
 
   const isRecordingCancelled = useRef<true | false>(false);
 
@@ -61,9 +65,35 @@ const PostScreen = () => {
     setVideo(video => ({...video, flash: video.flash === 'on' ? 'off' : 'on'}));
   };
 
-  const onRecordingFinished = (video: VideoFile) => {
+  const onRecordingFinished = async (video: VideoFile) => {
     if (!isRecordingCancelled.current) {
-      VESDK.openEditor(video.path);
+      const source =
+        video.path.substring(0, video.path.lastIndexOf('.')) || video.path;
+
+      const status: 'success' | 'cancelled' | 'error' = await genFrames(source);
+
+      if (status === 'success') {
+        let frames: Frame[] = [];
+        let count = 1;
+
+        for (let time = 0.1; time <= video.duration; time += 0.1) {
+          let frameIndex = `${count}`.padStart(4, '0');
+          let frame = {
+            time,
+            image: `${source}_frame_${frameIndex}.png`,
+          };
+
+          frames.push(frame);
+
+          count++;
+        }
+
+        setVideoFrames(frames);
+
+        console.log('Video => ', video);
+
+        console.log(`Frames => (${frames.length})`, frames);
+      }
     } else {
       isRecordingCancelled.current = false;
     }
@@ -163,31 +193,33 @@ const PostScreen = () => {
         audio
       />
 
-      <View style={styles.sidebar}>
-        {supportsCameraFlipping && (
-          <TouchableOpacity onPress={toggleCameraPosition}>
-            <Icon
-              name="repeat"
-              type="ionicon"
-              color="white"
-              size={35}
-              style={styles.sidebarIcon}
-            />
-          </TouchableOpacity>
-        )}
+      {!video.isRecording && (
+        <View style={styles.sidebar}>
+          {supportsCameraFlipping && (
+            <TouchableOpacity onPress={toggleCameraPosition}>
+              <Icon
+                name="repeat"
+                type="ionicon"
+                color="white"
+                size={35}
+                style={styles.sidebarIcon}
+              />
+            </TouchableOpacity>
+          )}
 
-        {supportsFlash && (
-          <TouchableOpacity onPress={toggleFlash}>
-            <Icon
-              name={video.flash === 'on' ? 'flash' : 'flash-off'}
-              type="ionicon"
-              color="white"
-              size={35}
-              style={styles.sidebarIcon}
-            />
-          </TouchableOpacity>
-        )}
-      </View>
+          {supportsFlash && (
+            <TouchableOpacity onPress={toggleFlash}>
+              <Icon
+                name={video.flash === 'on' ? 'flash' : 'flash-off'}
+                type="ionicon"
+                color="white"
+                size={35}
+                style={styles.sidebarIcon}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
       <View style={styles.bottomBarContainer}>
         <View style={{flex: 1}}>
@@ -208,7 +240,7 @@ const PostScreen = () => {
             <TouchableOpacity onPress={togglePause}>
               <CountdownCircleTimer
                 isPlaying={!video.isPaused}
-                duration={120}
+                duration={2}
                 colors="#d9d9d9"
                 trailColor="#ff4040"
                 strokeWidth={5}

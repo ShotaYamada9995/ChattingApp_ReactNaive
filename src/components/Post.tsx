@@ -14,7 +14,8 @@ import {Icon} from '@rneui/themed';
 
 import {VideoModel} from '../videosData';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../utils';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useIsFocused} from '@react-navigation/native';
+import {useIsForeground} from '../hooks/useIsForeground';
 
 interface PostProps {
   data: VideoModel;
@@ -37,6 +38,10 @@ const Post = ({data, isActive}: PostProps) => {
   const [isFollowing, setIsFollowing] = useState(false);
 
   const bottomTabHeight = useBottomTabBarHeight();
+
+  const isForeGround = useIsForeground();
+  const isFocused = useIsFocused();
+  const isNotFocused = isForeGround && isFocused;
 
   const togglePause = () => {
     setVideo(video => ({...video, isPaused: !video.isPaused}));
@@ -127,7 +132,7 @@ const Post = ({data, isActive}: PostProps) => {
           source={{uri: video.url}}
           style={styles.video}
           resizeMode="cover"
-          paused={video.isPaused}
+          paused={video.isPaused || !isNotFocused}
           onBuffer={data => setIsBuffering(data.isBuffering)}
           repeat
         />

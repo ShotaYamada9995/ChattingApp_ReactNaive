@@ -3,11 +3,13 @@ import {View, ScrollView, StyleSheet} from 'react-native';
 import {Button, Text, CheckBox, Input} from '@rneui/themed';
 import {Formik} from 'formik';
 import * as yup from 'yup';
+import { useDispatch } from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
 
 import AuthHeader from '../../components/headers/AuthHeader';
 import AuthFooter from '../../components/footers/AuthFooter';
 import globalStyles from '../../styles/globalStyles';
-import {useNavigation} from '@react-navigation/native';
+import {update} from '../../store/reducers/UserReducer';
 
 const schema = yup.object().shape({
   password: yup
@@ -20,6 +22,7 @@ const schema = yup.object().shape({
 });
 
 const RegisterPassword = () => {
+  const dispatch = useDispatch()
   const navigation = useNavigation();
   const [code, setCode] = useState('');
   const [remember, setRemember] = useState(false);
@@ -46,7 +49,7 @@ const RegisterPassword = () => {
     password: string;
   };
   const handleSubmit = (values: Values) => {
-    navigation.navigate('Main');
+    dispatch(update());
   };
 
   return (
