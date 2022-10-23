@@ -13,6 +13,7 @@ import {Camera, useCameraDevices, VideoFile} from 'react-native-vision-camera';
 import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
 import {Icon} from '@rneui/themed';
 import {useDispatch} from 'react-redux';
+import VideoPicker from 'react-native-image-crop-picker';
 
 import {update} from '../../store/reducers/Video';
 import {useIsForeground} from '../../hooks/useIsForeground';
@@ -39,6 +40,12 @@ const VideoCapture = () => {
   const isForeGround = useIsForeground();
   const isFocused = useIsFocused();
   const isActive = isForeGround && isFocused;
+
+  const supportsCameraFlipping = useMemo(
+    () => devices.back != null && devices.front != null,
+    [devices.back, devices.front],
+  );
+  const supportsFlash = device?.hasFlash ?? false;
 
   const camera = useRef<Camera>(null);
 
@@ -88,6 +95,29 @@ const VideoCapture = () => {
     stopRecording();
   };
 
+  const selectVideoFromLib = () => {
+    VideoPicker.openPicker({
+      mediaType: 'video',
+    })
+      .then(video => {
+        if (video.mime === 'video/mp4') {
+          dispatch(
+            update({
+              duration: video.duration / 1000,
+              size: video.size / 1024,
+              path: video.path,
+            }),
+          );
+          navigation.navigate('VideoEditor');
+        } else {
+          Alert.alert('Invalid video format. Video must be an mp4 file');
+        }
+      })
+      .catch(err => {
+        return;
+      });
+  };
+
   const requestCameraPermission = async () => {
     // check permission
     const cameraPermission = await Camera.getCameraPermissionStatus();
@@ -124,12 +154,6 @@ const VideoCapture = () => {
       setIsMicrophonePermitted(true);
     }
   };
-
-  const supportsCameraFlipping = useMemo(
-    () => devices.back != null && devices.front != null,
-    [devices.back, devices.front],
-  );
-  const supportsFlash = device?.hasFlash ?? false;
 
   useEffect(() => {
     (async () => {
@@ -246,7 +270,10 @@ const VideoCapture = () => {
               onPress={stopRecording}
             />
           ) : (
-            <TouchableOpacity style={styles.galleryBtn} />
+            <TouchableOpacity
+              style={styles.galleryBtn}
+              onPress={selectVideoFromLib}
+            />
           )}
         </View>
       </View>

@@ -41,7 +41,7 @@ const Post = ({data, isActive}: PostProps) => {
 
   const isForeGround = useIsForeground();
   const isFocused = useIsFocused();
-  const isNotFocused = isForeGround && isFocused;
+  const canPlayVideo = isForeGround && isFocused;
 
   const togglePause = () => {
     setVideo(video => ({...video, isPaused: !video.isPaused}));
@@ -132,7 +132,7 @@ const Post = ({data, isActive}: PostProps) => {
           source={{uri: video.url}}
           style={styles.video}
           resizeMode="cover"
-          paused={video.isPaused || !isNotFocused}
+          paused={video.isPaused || !canPlayVideo}
           onBuffer={data => setIsBuffering(data.isBuffering)}
           repeat
         />

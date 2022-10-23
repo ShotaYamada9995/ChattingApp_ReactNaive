@@ -1,13 +1,18 @@
 import React, {useEffect, useState, useMemo} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Modal} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Video from 'react-native-video';
 import {Icon, Button} from '@rneui/themed';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useIsFocused} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
+
+import {useIsForeground} from '../../../hooks/useIsForeground';
 
 const VideoEditor = () => {
   const navigation = useNavigation();
   const video = useSelector(state => state.video);
+  const isForeGround = useIsForeground();
+  const isFocused = useIsFocused();
+  const canPlayVideo = isForeGround && isFocused;
 
   return (
     <View style={styles.container}>
@@ -15,6 +20,7 @@ const VideoEditor = () => {
         source={{uri: video.path}}
         style={styles.video}
         resizeMode="cover"
+        paused={!canPlayVideo}
         repeat
       />
 
@@ -26,7 +32,7 @@ const VideoEditor = () => {
 
       <View style={styles.sideBar}>
         <TouchableOpacity onPress={() => navigation.navigate('Trim')}>
-          <Icon name="flash" type="ionicon" color="white" />
+          <Icon name="cut" type="ionicon" color="white" />
         </TouchableOpacity>
       </View>
       <View style={styles.btnContainer}>
