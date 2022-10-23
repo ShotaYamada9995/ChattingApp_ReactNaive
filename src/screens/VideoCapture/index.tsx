@@ -1,4 +1,4 @@
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {Button} from '@rneui/base';
 import React, {useEffect, useState, useRef, useMemo} from 'react';
 import {
@@ -8,21 +8,18 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
-  Image,
 } from 'react-native';
 import {Camera, useCameraDevices, VideoFile} from 'react-native-vision-camera';
 import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
 import {Icon} from '@rneui/themed';
+import {useDispatch} from 'react-redux';
 
-import {useIsForeground} from '../hooks/useIsForeground';
-import {trim, genFrames} from '../utils/videoEditor';
+import {update} from '../../store/reducers/Video';
+import {useIsForeground} from '../../hooks/useIsForeground';
 
-interface Frame {
-  time: number;
-  image: string;
-}
-
-const PostScreen = () => {
+const VideoCapture = () => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
   const [isCameraPermitted, setIsCameraPermitted] = useState(false);
   const [isMicrophonePermitted, setIsMicrophonePermitted] = useState(false);
   const [cameraPosition, setCameraPosition] = useState<'front' | 'back'>(
@@ -33,8 +30,6 @@ const PostScreen = () => {
     isPaused: false,
     flash: 'off',
   });
-  const [trimmedVideo, setTrimmedVideo] = useState('');
-  const [videoFrames, setVideoFrames] = useState<Frame[]>([]);
 
   const isRecordingCancelled = useRef<true | false>(false);
 
@@ -67,33 +62,8 @@ const PostScreen = () => {
 
   const onRecordingFinished = async (video: VideoFile) => {
     if (!isRecordingCancelled.current) {
-      const source =
-        video.path.substring(0, video.path.lastIndexOf('.')) || video.path;
-
-      const status: 'success' | 'cancelled' | 'error' = await genFrames(source);
-
-      if (status === 'success') {
-        let frames: Frame[] = [];
-        let count = 1;
-
-        for (let time = 0.1; time <= video.duration; time += 0.1) {
-          let frameIndex = `${count}`.padStart(4, '0');
-          let frame = {
-            time,
-            image: `${source}_frame_${frameIndex}.png`,
-          };
-
-          frames.push(frame);
-
-          count++;
-        }
-
-        setVideoFrames(frames);
-
-        console.log('Video => ', video);
-
-        console.log(`Frames => (${frames.length})`, frames);
-      }
+      dispatch(update(video));
+      navigation.navigate('VideoEditor');
     } else {
       isRecordingCancelled.current = false;
     }
@@ -240,7 +210,7 @@ const PostScreen = () => {
             <TouchableOpacity onPress={togglePause}>
               <CountdownCircleTimer
                 isPlaying={!video.isPaused}
-                duration={2}
+                duration={120}
                 colors="#d9d9d9"
                 trailColor="#ff4040"
                 strokeWidth={5}
@@ -326,4 +296,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PostScreen;
+export default VideoCapture;

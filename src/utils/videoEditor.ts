@@ -1,10 +1,19 @@
 import {FFmpegKit, ReturnCode} from 'ffmpeg-kit-react-native';
+import {VideoFile} from 'react-native-vision-camera';
+
+interface Frame {
+  time: number;
+  image: string;
+}
 
 export const trim = async (
-  source: string,
+  video: VideoFile,
   startTime: string,
   endTime: string,
 ) => {
+  const source =
+    video.path.substring(0, video.path.lastIndexOf('.')) || video.path;
+
   const trimmedVideoPath = `${source}_trimmed_0.mp4`;
 
   const session = await FFmpegKit.execute(
@@ -26,7 +35,10 @@ export const trim = async (
   }
 };
 
-export const genFrames = async (source: string) => {
+export const genFrames = async (video: VideoFile) => {
+  const source =
+    video.path.substring(0, video.path.lastIndexOf('.')) || video.path;
+
   const framePath = `${source}_frame_%4d.png`;
 
   const session = await FFmpegKit.execute(
@@ -37,7 +49,22 @@ export const genFrames = async (source: string) => {
 
   if (ReturnCode.isSuccess(returnCode)) {
     // SUCCESS
-    return 'success';
+    let frames: Frame[] = [];
+    let count = 1;
+
+    for (let time = 0.1; time <= video.duration; time += 0.1) {
+      let frameIndex = `${count}`.padStart(4, '0');
+      let frame = {
+        time,
+        image: `${source}_frame_${frameIndex}.png`,
+      };
+
+      frames.push(frame);
+
+      count++;
+    }
+
+    return frames;
   } else if (ReturnCode.isCancel(returnCode)) {
     // CANCEL
     return 'cancelled';

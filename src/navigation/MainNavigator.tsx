@@ -6,9 +6,9 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import Home from '../screens/Home';
 import ExploreScreen from '../screens/ExploreScreen';
-import PostScreen from '../screens/Post';
 import AudioRoomScreen from '../screens/AudioRoomScreen';
 import ChatScreen from '../screens/Chats';
+import VideoCapture from '../screens/VideoCapture';
 
 const MainTab = createBottomTabNavigator();
 
@@ -43,8 +43,8 @@ const Main = () => {
         }}
       />
       <MainTab.Screen
-        name="Post"
-        component={PostScreen}
+        name="VideoCapture"
+        component={VideoCapture}
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({focused}) => (

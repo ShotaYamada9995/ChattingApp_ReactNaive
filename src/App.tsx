@@ -13,6 +13,8 @@ import VerifyEmail from './screens/Authentication/VerifyEmail';
 import LoginOptions from './screens/Authentication/LoginOptions';
 import LoginForm from './screens/Authentication/LoginForm';
 import Main from './navigation/MainNavigator';
+import VideoEditor from './screens/VideoCapture/VideoEditor';
+import Trim from './screens/VideoCapture/VideoEditor/Trim';
 
 type AppStackParamsList = {
   RegisterOptions: undefined;
@@ -22,6 +24,8 @@ type AppStackParamsList = {
   LoginOptions: undefined;
   LoginForm: undefined;
   Main: undefined;
+  VideoEditor: undefined;
+  Trim: undefined;
 };
 
 const AppStack = createNativeStackNavigator<AppStackParamsList>();
@@ -45,6 +49,16 @@ const MainScreenStack = () => {
     <AppStack.Navigator
       screenOptions={{headerShown: false, animation: 'slide_from_right'}}>
       <AppStack.Screen name="Main" component={Main} />
+      <AppStack.Screen
+        name="VideoEditor"
+        component={VideoEditor}
+        options={{animation: 'slide_from_bottom'}}
+      />
+      <AppStack.Screen
+        name="Trim"
+        component={Trim}
+        options={{animation: 'slide_from_bottom'}}
+      />
     </AppStack.Navigator>
   );
 };

@@ -12,7 +12,8 @@ import {
 // import logger from 'redux-logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import UserReducer from './reducers/UserReducer';
+import User from './reducers/User';
+import Video from './reducers/Video';
 
 const persistConfig = {
   key: 'root',
@@ -21,7 +22,8 @@ const persistConfig = {
 };
 
 const reducers = combineReducers({
-  user: UserReducer,
+  user: User,
+  video: Video,
 });
 const persistedReducer = persistReducer(persistConfig, reducers);
 
