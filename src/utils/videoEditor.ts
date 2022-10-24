@@ -1,10 +1,7 @@
 import {FFmpegKit, ReturnCode} from 'ffmpeg-kit-react-native';
 import {VideoFile} from 'react-native-vision-camera';
 
-interface Frame {
-  time: number;
-  image: string;
-}
+import {Frame} from '../screens/VideoCapture/VideoEditor/types';
 
 export const trim = async (
   video: VideoFile,
@@ -52,7 +49,7 @@ export const genFrames = async (video: VideoFile) => {
     let frames: Frame[] = [];
     let count = 1;
 
-    for (let time = 0.1; time <= video.duration; time += 0.1) {
+    for (let time = 0; time <= video.duration; time += 0.1) {
       let frameIndex = `${count}`.padStart(4, '0');
       let frame = {
         time,
@@ -65,11 +62,12 @@ export const genFrames = async (video: VideoFile) => {
     }
 
     return frames;
-  } else if (ReturnCode.isCancel(returnCode)) {
-    // CANCEL
-    return 'cancelled';
-  } else {
-    // ERROR
-    return 'error';
   }
+  //  else if (ReturnCode.isCancel(returnCode)) {
+  //   // CANCEL
+  //   return 'cancelled';
+  // } else {
+  //   // ERROR
+  //   return 'error';
+  // }
 };

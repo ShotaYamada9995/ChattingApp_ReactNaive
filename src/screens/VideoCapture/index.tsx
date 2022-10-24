@@ -100,15 +100,20 @@ const VideoCapture = () => {
       mediaType: 'video',
     })
       .then(video => {
+        const duration = video.duration / 1000;
         if (video.mime === 'video/mp4') {
-          dispatch(
-            update({
-              duration: video.duration / 1000,
-              size: video.size / 1024,
-              path: video.path,
-            }),
-          );
-          navigation.navigate('VideoEditor');
+          if (duration <= 120) {
+            dispatch(
+              update({
+                duration,
+                size: video.size / 1024,
+                path: video.path,
+              }),
+            );
+            navigation.navigate('VideoEditor');
+          } else {
+            Alert.alert('Video duration must be 2 minutes or less');
+          }
         } else {
           Alert.alert('Invalid video format. Video must be an mp4 file');
         }
