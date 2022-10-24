@@ -8,6 +8,7 @@ buildscript {
         minSdkVersion = 24
         compileSdkVersion = 31
         targetSdkVersion = 31
+        ffmpegKitPackage = "full-gpl"
 
         if (System.properties['os.arch'] == "aarch64") {
             // For M1 Users we need to use the NDK 24 which added support for aarch64

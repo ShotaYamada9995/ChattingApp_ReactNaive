@@ -14,7 +14,7 @@ export const trim = async (
   const trimmedVideoPath = `${source}_trimmed_0.mp4`;
 
   const session = await FFmpegKit.execute(
-    `-y -i ${source}.mp4 -ss ${startTime} -to ${endTime} -c:v copy -c:a copy ${trimmedVideoPath}`,
+    `-y -i ${source}.mp4 -ss ${startTime} -to ${endTime} -preset ultrafast -c:v copy -c:a copy ${trimmedVideoPath}`,
   );
 
   const returnCode = await session.getReturnCode();
@@ -39,7 +39,7 @@ export const genFrames = async (video: VideoFile) => {
   const framePath = `${source}_frame_%4d.png`;
 
   const session = await FFmpegKit.execute(
-    `-i ${source}.mp4 -vf fps=10 ${framePath}`,
+    `-i ${source}.mp4 -preset ultrafast -vf fps=1 ${framePath}`,
   );
 
   const returnCode = await session.getReturnCode();

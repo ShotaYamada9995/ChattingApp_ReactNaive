@@ -32,7 +32,8 @@ interface Trim {
 const Trim = () => {
   const navigation = useNavigation();
   const videoData = useSelector((state: any) => state.video);
-  const {current: video} = useRef(null);
+  const video = useRef(null);
+  const duration = useRef({startTime: 0, endTime: videoData.duration});
 
   const [isPaused, setIsPaused] = useState(true);
   const [trims, setTrims] = useState<Trim[]>([]);
@@ -63,13 +64,34 @@ const Trim = () => {
   }, []);
   const renderNotch = useCallback(() => <Notch />, []);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const frames = await genFrames(videoData);
+  const handleDurationChange = (low: number, high: number) => {
+    console.log(duration.current);
+    const startTime = Number(low.toFixed(1));
+    const endTime = Number(high.toFixed(1));
 
-  //     setFrames(frames);
-  //   })();
-  // }, []);
+    if (startTime !== duration.current.startTime) {
+      video.current?.seek(startTime);
+    }
+
+    if (endTime !== duration.current.endTime) {
+      video.current?.seek(endTime);
+    }
+
+    setIsPaused(true);
+
+    duration.current = {
+      startTime: startTime,
+      endTime: endTime,
+    };
+  };
+
+  useEffect(() => {
+    (async () => {
+      const frames = await genFrames(videoData);
+
+      console.log('Frames => ', frames);
+    })();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -87,7 +109,7 @@ const Trim = () => {
         ref={video}
         source={{uri: videoData.path}}
         style={styles.video}
-        paused={false}
+        paused={isPaused}
       />
 
       <View style={styles.videoControls}>
@@ -95,12 +117,12 @@ const Trim = () => {
           00:00/<Text style={styles.videoTimestamp}>00:00</Text>
         </Text>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => console.log('Toggle pause')}>
           <Icon
             name={isPaused ? 'play' : 'pause'}
             type="ionicon"
             color="white"
-            size={20}
+            size={25}
             style={{marginRight: 30}}
           />
         </TouchableOpacity>
@@ -111,23 +133,24 @@ const Trim = () => {
       </View>
 
       {/* {frames.length > 0 ? ( */}
-      <ScrollView
+      {/* <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.sliderContainer}>
-        <Slider
-          style={[styles.slider, {width: 800}]}
-          min={0}
-          max={videoData.duration}
-          step={0.1}
-          floatingLabel
-          renderThumb={renderThumb}
-          renderRail={renderRail}
-          renderRailSelected={renderRailSelected}
-          renderLabel={renderLabel}
-          renderNotch={renderNotch}
-        />
-      </ScrollView>
+        contentContainerStyle={styles.sliderContainer}> */}
+      <Slider
+        style={[styles.slider, {width: '80%'}]}
+        min={0}
+        max={videoData.duration}
+        step={0.1}
+        floatingLabel
+        renderThumb={renderThumb}
+        renderRail={renderRail}
+        renderRailSelected={renderRailSelected}
+        renderLabel={renderLabel}
+        renderNotch={renderNotch}
+        onValueChanged={handleDurationChange}
+      />
+      {/* </ScrollView> */}
       {/* ) : (
         <ActivityIndicator size="large" />
       )} */}
