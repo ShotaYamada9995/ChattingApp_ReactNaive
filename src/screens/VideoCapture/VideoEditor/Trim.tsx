@@ -51,7 +51,7 @@ const Trim = () => {
   });
   const [time, setTime] = useState(0);
 
-  const handleDurationChange = useCallback((low: number, high: number) => {
+  const handleDurationChange = (low: number, high: number) => {
     const startTime = Number(low.toFixed(1));
     const endTime = Number(high.toFixed(1));
 
@@ -63,7 +63,10 @@ const Trim = () => {
       video.current?.seek(endTime);
     }
 
-    setIsPaused(true);
+    if (!isPaused) {
+      console.log('Pause video');
+      setIsPaused(true);
+    }
 
     if (endTime - startTime >= 1) {
       duration.current = {
@@ -71,10 +74,13 @@ const Trim = () => {
         endTime: endTime,
       };
     }
-  }, []);
+  };
 
   const handleOnSlideTouchEnd = (low: number, high: number) => {
-    if (high - low < 1) {
+    const startTime = Number(low.toFixed(1));
+    const endTime = Number(high.toFixed(1));
+
+    if (endTime - startTime < 1) {
       Alert.alert('Clip must be 1 second or more');
     } else {
       setTrims(trims => [...trims, duration.current]);
@@ -149,28 +155,6 @@ const Trim = () => {
     return <Label text={mmssTimeFormat(seconds)} />;
   }, []);
   const renderNotch = useCallback(() => <Notch />, []);
-
-  const renderSlider = useCallback(
-    () => (
-      <Slider
-        style={styles.slider}
-        min={0}
-        max={videoData.duration}
-        low={slider.low}
-        high={slider.high}
-        step={0.1}
-        floatingLabel
-        renderThumb={renderThumb}
-        renderRail={renderRail}
-        renderRailSelected={renderRailSelected}
-        renderLabel={renderLabel}
-        renderNotch={renderNotch}
-        onValueChanged={handleDurationChange}
-        onSliderTouchEnd={handleOnSlideTouchEnd}
-      />
-    ),
-    [slider.low, slider.high, handleDurationChange, handleOnSlideTouchEnd],
-  );
 
   const save = async () => {
     if (trims.length > 1 && activeTrimIndex > 0) {
@@ -278,7 +262,23 @@ const Trim = () => {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.sliderContainer}> */}
-      {renderSlider()}
+
+      <Slider
+        style={styles.slider}
+        min={0}
+        max={videoData.duration}
+        low={slider.low}
+        high={slider.high}
+        step={0.1}
+        floatingLabel
+        renderThumb={renderThumb}
+        renderRail={renderRail}
+        renderRailSelected={renderRailSelected}
+        renderLabel={renderLabel}
+        renderNotch={renderNotch}
+        onValueChanged={handleDurationChange}
+        onSliderTouchEnd={handleOnSlideTouchEnd}
+      />
       {/* </ScrollView> */}
       {/* ) : (
         <ActivityIndicator size="large" />
