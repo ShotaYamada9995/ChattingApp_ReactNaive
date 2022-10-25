@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useRef, useEffect} from 'react';
+import React, {useState, useCallback, useRef, useEffect, useMemo} from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,17 @@ import {
   StyleSheet,
   ActivityIndicator,
   ScrollView,
+  Alert,
+  StatusBar,
 } from 'react-native';
 import Video from 'react-native-video';
 import {Icon} from '@rneui/themed';
-import {useSelector} from 'react-redux';
+import {useSelector, useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import Slider from 'rn-range-slider';
 
 import {trim, genFrames} from '../../../utils/videoEditor';
+import {mmssTimeFormat, hhmmssTimeFormat} from '../../../utils/helpers';
 import {Frame} from './types';
 
 import Label from '../../../components/slider/Label';
@@ -23,49 +26,32 @@ import Rail from '../../../components/slider/Rail';
 import RailSelected from '../../../components/slider/RailSelected';
 import Thumb from '../../../components/slider/Thumb';
 
+import {update} from '../../../store/reducers/Video';
+
 interface Trim {
-  path: string;
-  startTime: string;
-  endTime: string;
+  startTime: number;
+  endTime: number;
 }
 
 const Trim = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const videoData = useSelector((state: any) => state.video);
   const video = useRef(null);
   const duration = useRef({startTime: 0, endTime: videoData.duration});
 
   const [isPaused, setIsPaused] = useState(true);
+  const [isTrimming, setIsTrimming] = useState(false);
   const [trims, setTrims] = useState<Trim[]>([]);
-  const [activeFrame, setActiveFrame] = useState('');
+  const [activeTrimIndex, setActiveTrimIndex] = useState(0);
   const [frames, setFrames] = useState<Frame[]>([]);
+  const [slider, setSlider] = useState({
+    low: 0,
+    high: videoData.duration,
+  });
+  const [time, setTime] = useState(0);
 
-  const renderThumb = useCallback(() => <Thumb name="high" />, []);
-  const renderRail = useCallback(() => <Rail frames={frames} />, [frames]);
-  const renderRailSelected = useCallback(() => <RailSelected />, []);
-  const renderLabel = useCallback((value: number) => {
-    const duration = Number(value.toFixed(1));
-
-    let time;
-
-    if (duration < 60) {
-      time = `${duration}s`;
-    } else {
-      const minutes = Math.floor(duration / 60);
-      const seconds = Math.floor(duration - minutes * 60);
-
-      const _minutes = `${minutes}`.padStart(2, '0');
-      const _seconds = `${seconds}`.padStart(2, '0');
-
-      time = `${_minutes}:${_seconds}`;
-    }
-
-    return <Label text={time} />;
-  }, []);
-  const renderNotch = useCallback(() => <Notch />, []);
-
-  const handleDurationChange = (low: number, high: number) => {
-    console.log(duration.current);
+  const handleDurationChange = useCallback((low: number, high: number) => {
     const startTime = Number(low.toFixed(1));
     const endTime = Number(high.toFixed(1));
 
@@ -79,68 +65,99 @@ const Trim = () => {
 
     setIsPaused(true);
 
-    duration.current = {
-      startTime: startTime,
-      endTime: endTime,
-    };
-  };
-
-  useEffect(() => {
-    (async () => {
-      const frames = await genFrames(videoData);
-
-      console.log('Frames => ', frames);
-    })();
+    if (endTime - startTime >= 1) {
+      duration.current = {
+        startTime: startTime,
+        endTime: endTime,
+      };
+    }
   }, []);
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.navBar}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.navBarText}>Cancel</Text>
-        </TouchableOpacity>
+  const handleOnSlideTouchEnd = (low: number, high: number) => {
+    if (high - low < 1) {
+      Alert.alert('Clip must be 1 second or more');
+    } else {
+      setTrims(trims => [...trims, duration.current]);
+      setActiveTrimIndex(trims.length);
+      setSlider({
+        low: duration.current.startTime,
+        high: duration.current.endTime,
+      });
+    }
+  };
 
-        <TouchableOpacity>
-          <Text style={styles.navBarText}>Save</Text>
-        </TouchableOpacity>
-      </View>
+  const togglePlay = () => {
+    if (isPaused) {
+      video.current?.seek(duration.current.startTime);
+    }
+    setIsPaused(current => !current);
+  };
 
-      <Video
-        ref={video}
-        source={{uri: videoData.path}}
-        style={styles.video}
-        paused={isPaused}
-      />
+  const handleVideoProgress = (data: any) => {
+    setTime(data.currentTime);
+    if (data.currentTime >= duration.current.endTime) {
+      setIsPaused(true);
+    }
+  };
 
-      <View style={styles.videoControls}>
-        <Text>
-          00:00/<Text style={styles.videoTimestamp}>00:00</Text>
-        </Text>
+  const selectPrevTrim = () => {
+    if (activeTrimIndex !== 0) {
+      const trim = trims[activeTrimIndex - 1];
+      setActiveTrimIndex(activeTrimIndex - 1);
+      setSlider({
+        low: trim.startTime,
+        high: trim.endTime,
+      });
+      video.current?.seek(trim.startTime);
+      setIsPaused(true);
+      duration.current = trim;
+    }
+  };
 
-        <TouchableOpacity onPress={() => console.log('Toggle pause')}>
-          <Icon
-            name={isPaused ? 'play' : 'pause'}
-            type="ionicon"
-            color="white"
-            size={25}
-            style={{marginRight: 30}}
-          />
-        </TouchableOpacity>
+  const selectNextTrim = () => {
+    if (activeTrimIndex !== trims.length - 1) {
+      const trim = trims[activeTrimIndex + 1];
+      setActiveTrimIndex(activeTrimIndex + 1);
+      setSlider({
+        low: trim.startTime,
+        high: trim.endTime,
+      });
+      video.current?.seek(trim.startTime);
+      setIsPaused(true);
+      duration.current = trim;
+    }
+  };
 
-        <TouchableOpacity>
-          <Icon name="expand" type="ionicon" color="#888" size={20} />
-        </TouchableOpacity>
-      </View>
+  const renderDuration = () => {
+    if (trims.length === 0) return;
 
-      {/* {frames.length > 0 ? ( */}
-      {/* <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.sliderContainer}> */}
+    const trim = trims[activeTrimIndex];
+    const _time = mmssTimeFormat(time - trim.startTime);
+    const _duration = mmssTimeFormat(trim.endTime - trim.startTime);
+
+    return (
+      <Text>
+        {_time}/<Text style={styles.videoTimestamp}>{_duration}</Text>
+      </Text>
+    );
+  };
+
+  const renderThumb = useCallback(() => <Thumb name="high" />, []);
+  const renderRail = useCallback(() => <Rail frames={frames} />, [frames]);
+  const renderRailSelected = useCallback(() => <RailSelected />, []);
+  const renderLabel = useCallback((seconds: number) => {
+    return <Label text={mmssTimeFormat(seconds)} />;
+  }, []);
+  const renderNotch = useCallback(() => <Notch />, []);
+
+  const renderSlider = useCallback(
+    () => (
       <Slider
-        style={[styles.slider, {width: '80%'}]}
+        style={styles.slider}
         min={0}
         max={videoData.duration}
+        low={slider.low}
+        high={slider.high}
         step={0.1}
         floatingLabel
         renderThumb={renderThumb}
@@ -149,7 +166,119 @@ const Trim = () => {
         renderLabel={renderLabel}
         renderNotch={renderNotch}
         onValueChanged={handleDurationChange}
+        onSliderTouchEnd={handleOnSlideTouchEnd}
       />
+    ),
+    [slider.low, slider.high, handleDurationChange, handleOnSlideTouchEnd],
+  );
+
+  const save = async () => {
+    if (trims.length > 1 && activeTrimIndex > 0) {
+      try {
+        setIsTrimming(true);
+        const _trim = trims[activeTrimIndex];
+        const video = {
+          path: videoData.path,
+          startTime: hhmmssTimeFormat(_trim.startTime),
+          endTime: hhmmssTimeFormat(_trim.endTime),
+        };
+
+        const newPath = await trim(video);
+
+        dispatch(
+          update({
+            path: newPath,
+            duration: _trim.endTime - _trim.startTime,
+          }),
+        );
+
+        navigation.goBack();
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsTrimming(false);
+      }
+    } else {
+      Alert.alert('No trims yet');
+    }
+  };
+
+  useEffect(() => {
+    setTrims([{startTime: 0, endTime: Number(videoData.duration.toFixed(1))}]);
+  }, []);
+
+  return (
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="black" />
+      <View style={styles.navBar}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.navBarText}>Cancel</Text>
+        </TouchableOpacity>
+
+        {isTrimming ? (
+          <ActivityIndicator size="large" />
+        ) : (
+          <TouchableOpacity onPress={save}>
+            <Text
+              style={{
+                ...styles.navBarText,
+                color: activeTrimIndex > 0 ? 'white' : 'grey',
+              }}>
+              Save
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      <Video
+        ref={video}
+        source={{uri: videoData.path}}
+        style={styles.video}
+        paused={isPaused}
+        onEnd={() => setIsPaused(true)}
+        onProgress={handleVideoProgress}
+      />
+
+      <View style={styles.videoControls}>
+        {renderDuration()}
+
+        <TouchableOpacity onPress={togglePlay}>
+          <Icon
+            name={isPaused ? 'play' : 'pause'}
+            type="ionicon"
+            color="white"
+            size={25}
+            style={{marginRight: 30}}
+          />
+        </TouchableOpacity>
+        {trims.length > 1 ? (
+          <View style={styles.videoNavIconContainer}>
+            <TouchableOpacity onPress={selectPrevTrim}>
+              <Icon
+                name="arrow-back"
+                color={activeTrimIndex === 0 ? 'grey' : 'white'}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={selectNextTrim}>
+              <Icon
+                name="arrow-forward"
+                style={{marginLeft: 5}}
+                color={activeTrimIndex === trims.length - 1 ? 'grey' : 'white'}
+              />
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View />
+        )}
+      </View>
+
+      {/* {frames.length > 0 ? ( */}
+      {/* <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.sliderContainer}> */}
+      {renderSlider()}
       {/* </ScrollView> */}
       {/* ) : (
         <ActivityIndicator size="large" />
@@ -190,12 +319,17 @@ const styles = StyleSheet.create({
   videoTimestamp: {
     color: '#888',
   },
+  videoNavIconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   sliderContainer: {
     paddingHorizontal: 50,
   },
   slider: {
     alignSelf: 'center',
     marginTop: 30,
+    width: '80%',
   },
 });
 

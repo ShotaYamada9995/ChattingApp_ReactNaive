@@ -106,7 +106,6 @@ const VideoCapture = () => {
             dispatch(
               update({
                 duration,
-                size: video.size / 1024,
                 path: video.path,
               }),
             );

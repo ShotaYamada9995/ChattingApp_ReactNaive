@@ -3,32 +3,32 @@ import {VideoFile} from 'react-native-vision-camera';
 
 import {Frame} from '../screens/VideoCapture/VideoEditor/types';
 
-export const trim = async (
-  video: VideoFile,
-  startTime: string,
-  endTime: string,
-) => {
-  const source =
-    video.path.substring(0, video.path.lastIndexOf('.')) || video.path;
+interface Video {
+  path: string;
+  startTime: string;
+  endTime: string;
+}
 
-  const trimmedVideoPath = `${source}_trimmed_0.mp4`;
+export const trim = async (video: Video) => {
+  const _video = video.path.split('.');
+  const name = video.path.substring(0, video.path.lastIndexOf('.'));
+  const ext = _video.pop();
+
+  const trimmedVideoPath = `${name}_trimmed.${ext}`;
 
   const session = await FFmpegKit.execute(
-    `-y -i ${source}.mp4 -ss ${startTime} -to ${endTime} -preset ultrafast -c:v copy -c:a copy ${trimmedVideoPath}`,
+    `-y -i ${video.path} -ss ${video.startTime} -to ${video.endTime} -preset ultrafast -c:v copy -c:a copy ${trimmedVideoPath}`,
   );
 
   const returnCode = await session.getReturnCode();
 
   if (ReturnCode.isSuccess(returnCode)) {
     // SUCCESS
-    console.log('Success');
     return trimmedVideoPath;
   } else if (ReturnCode.isCancel(returnCode)) {
     // CANCEL
-    console.log('Cancelled');
   } else {
     // ERROR
-    console.log('Error');
   }
 };
 
