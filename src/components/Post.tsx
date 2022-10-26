@@ -16,6 +16,7 @@ import {VideoModel} from '../videosData';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../utils';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
 import {useIsForeground} from '../hooks/useIsForeground';
+import VideoLoadingIndicator from './shared/VideoLoadingIndicator';
 
 interface PostProps {
   data: VideoModel;
@@ -127,7 +128,7 @@ const Post = ({data, isActive}: PostProps) => {
   }, [isActive]);
   return (
     <View style={[styles.container, {height: WINDOW_HEIGHT - bottomTabHeight}]}>
-      {video.url ? (
+      {video.url && canPlayVideo ? (
         <Video
           source={{uri: video.url}}
           style={styles.video}
@@ -137,12 +138,7 @@ const Post = ({data, isActive}: PostProps) => {
           repeat
         />
       ) : (
-        <View style={styles.loadingIndicatorContainer}>
-          <ActivityIndicator
-            size="large"
-            style={{marginTop: 5, marginLeft: 5}}
-          />
-        </View>
+        <VideoLoadingIndicator />
       )}
 
       {video.isBuffering && (
@@ -223,12 +219,6 @@ export default memo(Post);
 const styles = StyleSheet.create({
   container: {
     width: WINDOW_WIDTH,
-  },
-  loadingIndicatorContainer: {
-    flex: 1,
-    backgroundColor: 'black',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   video: {
     position: 'absolute',

@@ -1,4 +1,11 @@
-import React, {useState, useCallback, useRef, useEffect, useMemo} from 'react';
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useMemo,
+  memo,
+} from 'react';
 import {
   View,
   Text,
@@ -16,7 +23,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import Slider from 'rn-range-slider';
 
-import {trim, genFrames} from '../../../utils/videoEditor';
+import {trim, genFrames} from '../../../utils/videoProcessor';
 import {mmssTimeFormat, hhmmssTimeFormat} from '../../../utils/helpers';
 import {Frame} from './types';
 
@@ -51,28 +58,27 @@ const Trim = () => {
   });
   const [time, setTime] = useState(0);
 
-  const handleDurationChange = (low: number, high: number) => {
-    const startTime = Number(low.toFixed(1));
-    const endTime = Number(high.toFixed(1));
+  const handleDurationChange = (low: number, high: number, byUser: boolean) => {
+    if (byUser) {
+      const startTime = Number(low.toFixed(1));
+      const endTime = Number(high.toFixed(1));
 
-    if (startTime !== duration.current.startTime) {
-      video.current?.seek(startTime);
-    }
+      if (startTime !== duration.current.startTime) {
+        video.current?.seek(startTime);
+      }
 
-    if (endTime !== duration.current.endTime) {
-      video.current?.seek(endTime);
-    }
+      if (endTime !== duration.current.endTime) {
+        video.current?.seek(endTime);
+      }
 
-    if (!isPaused) {
-      console.log('Pause video');
-      setIsPaused(true);
-    }
+      if (!isPaused) {
+        console.log('Pause video');
+        setIsPaused(true);
+      }
 
-    if (endTime - startTime >= 1) {
-      duration.current = {
-        startTime: startTime,
-        endTime: endTime,
-      };
+      if (endTime - startTime >= 1) {
+        duration.current = {startTime, endTime};
+      }
     }
   };
 
@@ -149,11 +155,12 @@ const Trim = () => {
   };
 
   const renderThumb = useCallback(() => <Thumb name="high" />, []);
-  const renderRail = useCallback(() => <Rail frames={frames} />, [frames]);
+  const renderRail = useCallback(() => <Rail />, []);
   const renderRailSelected = useCallback(() => <RailSelected />, []);
-  const renderLabel = useCallback((seconds: number) => {
-    return <Label text={mmssTimeFormat(seconds)} />;
-  }, []);
+  const renderLabel = useCallback(
+    (seconds: number) => <Label text={mmssTimeFormat(seconds)} />,
+    [],
+  );
   const renderNotch = useCallback(() => <Notch />, []);
 
   const save = async () => {
@@ -200,7 +207,7 @@ const Trim = () => {
         </TouchableOpacity>
 
         {isTrimming ? (
-          <ActivityIndicator size="large" />
+          <ActivityIndicator />
         ) : (
           <TouchableOpacity onPress={save}>
             <Text
@@ -219,8 +226,8 @@ const Trim = () => {
         source={{uri: videoData.path}}
         style={styles.video}
         paused={isPaused}
-        onEnd={() => setIsPaused(true)}
         onProgress={handleVideoProgress}
+        onEnd={() => setIsPaused(true)}
       />
 
       <View style={styles.videoControls}>

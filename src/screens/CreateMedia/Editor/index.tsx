@@ -6,6 +6,7 @@ import {useNavigation, useIsFocused} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 
 import {useIsForeground} from '../../../hooks/useIsForeground';
+import VideoLoadingIndicator from '../../../components/shared/VideoLoadingIndicator';
 
 const VideoEditor = () => {
   const navigation = useNavigation();
@@ -16,13 +17,17 @@ const VideoEditor = () => {
 
   return (
     <View style={styles.container}>
-      <Video
-        source={{uri: video.path}}
-        style={styles.video}
-        resizeMode="cover"
-        paused={!canPlayVideo}
-        repeat
-      />
+      {canPlayVideo ? (
+        <Video
+          source={{uri: video.path}}
+          style={styles.video}
+          resizeMode="cover"
+          paused={!canPlayVideo}
+          repeat
+        />
+      ) : (
+        <VideoLoadingIndicator />
+      )}
 
       <TouchableOpacity
         style={styles.navIcon}
