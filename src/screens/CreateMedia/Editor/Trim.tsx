@@ -72,7 +72,6 @@ const Trim = () => {
       }
 
       if (!isPaused) {
-        console.log('Pause video');
         setIsPaused(true);
       }
 
