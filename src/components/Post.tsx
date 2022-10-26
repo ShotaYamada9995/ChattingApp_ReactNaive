@@ -138,7 +138,10 @@ const Post = ({data, isActive}: PostProps) => {
         />
       ) : (
         <View style={styles.loadingIndicatorContainer}>
-          <ActivityIndicator style={{marginTop: 5, marginLeft: 5}} />
+          <ActivityIndicator
+            size="large"
+            style={{marginTop: 5, marginLeft: 5}}
+          />
         </View>
       )}
 
@@ -224,7 +227,8 @@ const styles = StyleSheet.create({
   loadingIndicatorContainer: {
     flex: 1,
     backgroundColor: 'black',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   video: {
     position: 'absolute',

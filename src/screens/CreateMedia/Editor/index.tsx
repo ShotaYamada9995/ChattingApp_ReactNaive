@@ -48,6 +48,7 @@ const VideoEditor = () => {
           containerStyle={styles.btn}
           buttonStyle={{paddingVertical: 10}}
           color="#001433"
+          onPress={() => navigation.navigate('PostMedia')}
         />
       </View>
     </View>

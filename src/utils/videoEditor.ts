@@ -1,7 +1,7 @@
 import {FFmpegKit, ReturnCode} from 'ffmpeg-kit-react-native';
 import {VideoFile} from 'react-native-vision-camera';
 
-import {Frame} from '../screens/VideoCapture/VideoEditor/types';
+import {Frame} from '../screens/CreateMedia/Editor/types';
 
 interface Video {
   path: string;

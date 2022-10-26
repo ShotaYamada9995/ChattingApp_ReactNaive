@@ -8,7 +8,7 @@ import Home from '../screens/Home';
 import ExploreScreen from '../screens/ExploreScreen';
 import AudioRoomScreen from '../screens/AudioRoomScreen';
 import ChatScreen from '../screens/Chats';
-import VideoCapture from '../screens/VideoCapture';
+import VideoCapture from '../screens/CreateMedia';
 
 const MainTab = createBottomTabNavigator();
 
