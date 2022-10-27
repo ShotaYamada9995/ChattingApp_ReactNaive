@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "785026767949",
+    "project_id": "whatido-365813",
+    "storage_bucket": "whatido-365813.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:785026767949:android:ed9cbf052c829c748bd004",
+        "android_client_info": {
+          "package_name": "com.whatido"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "785026767949-hqcg7u9b314dbbbs45lf8mainbfopd3h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.whatido",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "785026767949-34llf1shc57qoll1jcudcjv45u7gbqin.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAhmJUZ0IaK_okLLCMjZIRY7N44xOkiig8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "785026767949-34llf1shc57qoll1jcudcjv45u7gbqin.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
+  }
+}
