@@ -71,10 +71,6 @@ const Trim = () => {
         video.current?.seek(endTime);
       }
 
-      if (!isPaused) {
-        setIsPaused(true);
-      }
-
       if (endTime - startTime >= 1) {
         duration.current = {startTime, endTime};
       }
@@ -94,6 +90,9 @@ const Trim = () => {
         low: duration.current.startTime,
         high: duration.current.endTime,
       });
+      if (!isPaused) {
+        setIsPaused(true);
+      }
     }
   };
 

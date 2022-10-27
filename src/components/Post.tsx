@@ -142,7 +142,9 @@ const Post = ({data, isActive}: PostProps) => {
       )}
 
       {video.isBuffering && (
-        <ActivityIndicator style={{position: 'absolute', top: 5, left: 5}} />
+        <ActivityIndicator
+          style={{position: 'absolute', top: '50%', left: '50%'}}
+        />
       )}
 
       <View style={styles.bottomSection}>
