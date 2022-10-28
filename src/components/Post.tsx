@@ -128,7 +128,7 @@ const Post = ({data, isActive}: PostProps) => {
   }, [isActive]);
   return (
     <View style={[styles.container, {height: WINDOW_HEIGHT - bottomTabHeight}]}>
-      {video.url && canPlayVideo ? (
+      {video.url && isFocused ? (
         <Video
           source={{uri: video.url}}
           style={styles.video}

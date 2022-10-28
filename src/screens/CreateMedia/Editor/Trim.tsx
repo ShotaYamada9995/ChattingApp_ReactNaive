@@ -195,6 +195,10 @@ const Trim = () => {
 
   useEffect(() => {
     setTrims([{startTime: 0, endTime: Number(videoData.duration.toFixed(1))}]);
+    (async () => {
+      const frames = await genFrames(videoData.path);
+      console.log(frames);
+    })();
   }, []);
 
   return (

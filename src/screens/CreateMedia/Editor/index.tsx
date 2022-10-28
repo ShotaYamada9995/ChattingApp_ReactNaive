@@ -17,7 +17,7 @@ const VideoEditor = () => {
 
   return (
     <View style={styles.container}>
-      {canPlayVideo ? (
+      {isFocused ? (
         <Video
           source={{uri: video.path}}
           style={styles.video}
