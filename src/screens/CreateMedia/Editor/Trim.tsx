@@ -20,7 +20,7 @@ import {
 import Video from 'react-native-video';
 import {Icon} from '@rneui/themed';
 import {useSelector, useDispatch} from 'react-redux';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useIsFocused} from '@react-navigation/native';
 import Slider from 'rn-range-slider';
 
 import {trim, genFrames} from '../../../utils/videoProcessor';
@@ -42,6 +42,7 @@ interface Trim {
 
 const Trim = () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const dispatch = useDispatch();
   const videoData = useSelector((state: any) => state.video);
   const video = useRef(null);
@@ -219,14 +220,16 @@ const Trim = () => {
         )}
       </View>
 
-      <Video
-        ref={video}
-        source={{uri: videoData.path}}
-        style={styles.video}
-        paused={isPaused}
-        onProgress={handleVideoProgress}
-        onEnd={() => setIsPaused(true)}
-      />
+      {isFocused && (
+        <Video
+          ref={video}
+          source={{uri: videoData.path}}
+          style={styles.video}
+          paused={isPaused}
+          onProgress={handleVideoProgress}
+          onEnd={() => setIsPaused(true)}
+        />
+      )}
 
       <View style={styles.videoControls}>
         {renderDuration()}

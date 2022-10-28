@@ -14,6 +14,10 @@ import {Icon, Button, BottomSheet, CheckBox} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 
+import globalStyles from '../../../styles/globalStyles';
+
+import TagPeople from './TagPeople';
+
 const PostMedia = () => {
   const navigation = useNavigation();
   const [config, setConfig] = useState({
@@ -22,6 +26,7 @@ const PostMedia = () => {
     allowShare: true,
   });
   const [showViewers, setShowViewers] = useState(false);
+  const [showTagScreen, setShowTagScreen] = useState(false);
   const [viewer, setViewer] = useState<'Everyone' | 'Friends' | 'Only me'>(
     'Everyone',
   );
@@ -47,7 +52,7 @@ const PostMedia = () => {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.rowLayout, styles.header]}>
+      <View style={[globalStyles.rowLayout, styles.header]}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-back" />
         </TouchableOpacity>
@@ -80,7 +85,9 @@ const PostMedia = () => {
         style={{flex: 1}}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>
-        <TouchableOpacity style={[styles.configLayout, styles.rowLayout]}>
+        <TouchableOpacity
+          style={[styles.configLayout, globalStyles.rowLayout]}
+          onPress={() => setShowTagScreen(true)}>
           <View style={styles.configEdgeLayout}>
             <Icon name="person-outline" type="ionicon" />
             <Text style={styles.label}>Tag people</Text>
@@ -89,7 +96,13 @@ const PostMedia = () => {
           <Icon name="chevron-right" color="black" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.configLayout, styles.rowLayout]}>
+        <BottomSheet
+          onBackdropPress={() => setShowTagScreen(false)}
+          isVisible={showTagScreen}>
+          <TagPeople onCancel={() => setShowTagScreen(false)} />
+        </BottomSheet>
+
+        <TouchableOpacity style={[styles.configLayout, globalStyles.rowLayout]}>
           <View style={styles.configEdgeLayout}>
             <Icon name="location-outline" type="ionicon" />
             <Text style={styles.label}>Location</Text>
@@ -99,7 +112,7 @@ const PostMedia = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.configLayout, styles.rowLayout]}
+          style={[styles.configLayout, globalStyles.rowLayout]}
           onPress={() => setShowViewers(true)}>
           <View style={styles.configEdgeLayout}>
             <Icon name="location-outline" type="ionicon" />
@@ -116,7 +129,8 @@ const PostMedia = () => {
           onBackdropPress={() => setShowViewers(false)}
           isVisible={showViewers}>
           <View style={styles.bottomSheetView}>
-            <View style={[styles.bottomSheetViewHeader, styles.rowLayout]}>
+            <View
+              style={[styles.bottomSheetViewHeader, globalStyles.rowLayout]}>
               <View />
               <Text style={styles.bottomSheetViewTitle}>
                 Who can watch this video
@@ -128,21 +142,21 @@ const PostMedia = () => {
             </View>
 
             <TouchableOpacity
-              style={styles.rowLayout}
+              style={globalStyles.rowLayout}
               onPress={() => selectViewer('Everyone')}>
               <Text style={styles.label}>Everyone</Text>
               <CheckBox checked={viewer === 'Everyone'} />
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.rowLayout}
+              style={globalStyles.rowLayout}
               onPress={() => selectViewer('Friends')}>
               <Text style={styles.label}>Friends</Text>
               <CheckBox checked={viewer === 'Friends'} />
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.rowLayout}
+              style={globalStyles.rowLayout}
               onPress={() => selectViewer('Only me')}>
               <Text style={styles.label}>Only me</Text>
               <CheckBox checked={viewer === 'Only me'} />
@@ -150,7 +164,7 @@ const PostMedia = () => {
           </View>
         </BottomSheet>
 
-        <View style={[styles.configLayout, styles.rowLayout]}>
+        <View style={[styles.configLayout, globalStyles.rowLayout]}>
           <View style={styles.configEdgeLayout}>
             <Icon name="chatbubble-ellipses-outline" type="ionicon" />
             <Text style={styles.label}>Allow Comments</Text>
@@ -165,7 +179,7 @@ const PostMedia = () => {
           />
         </View>
 
-        <View style={[styles.configLayout, styles.rowLayout]}>
+        <View style={[styles.configLayout, globalStyles.rowLayout]}>
           <View style={styles.configEdgeLayout}>
             <Icon name="location-pin" type="fonrawesome" />
             <Text style={styles.label}>Allow Duet</Text>
@@ -180,7 +194,7 @@ const PostMedia = () => {
           />
         </View>
 
-        <View style={[styles.configLayout, styles.rowLayout]}>
+        <View style={[styles.configLayout, globalStyles.rowLayout]}>
           <View style={styles.configEdgeLayout}>
             <Icon name="location-pin" type="fonrawesome" />
             <Text style={styles.label}>Allow Share</Text>
@@ -211,11 +225,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: 'white',
-  },
-  rowLayout: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
   header: {
     paddingVertical: 5,
