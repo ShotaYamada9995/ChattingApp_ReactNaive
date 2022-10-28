@@ -10,6 +10,7 @@ import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
+import {LoginManager, Profile} from 'react-native-fbsdk-next';
 
 GoogleSignin.configure({
   webClientId:
@@ -42,6 +43,29 @@ const RegisterOptions = () => {
     }
   };
 
+  const signUpWithFacebook = async () => {
+    LoginManager.logInWithPermissions(['public_profile']).then(
+      async function (result) {
+        if (result.isCancelled) {
+          console.log('Facebook cancelled');
+        } else {
+          console.log(
+            'Facebook login success with permissions: ' +
+              result.grantedPermissions?.toString(),
+          );
+
+          const currentProfile = await Profile.getCurrentProfile();
+          if (currentProfile) {
+            console.log('Facebook user: ', currentProfile);
+          }
+        }
+      },
+      function (error) {
+        console.log('Facebook login fail with error: ' + error);
+      },
+    );
+  };
+
   return (
     <View style={styles.container}>
       <AuthHeader title="Sign Up" />
@@ -60,7 +84,11 @@ const RegisterOptions = () => {
           onPress={signUpWithGoogle}
         />
         <AuthCard icon="logo-apple" title="Continue with Apple" />
-        <AuthCard icon="logo-facebook" title="Continue with Facebook" />
+        <AuthCard
+          icon="logo-facebook"
+          title="Continue with Facebook"
+          onPress={signUpWithFacebook}
+        />
         <AuthCard icon="logo-twitter" title="Continue with Twitter" />
       </ScrollView>
 
