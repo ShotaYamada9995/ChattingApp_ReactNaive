@@ -32,13 +32,14 @@ export const trim = async (video: Video) => {
   }
 };
 
-export const genFrames = async (videoPath: string) => {
-  const name = videoPath.substring(0, videoPath.lastIndexOf('.'));
+export const genFrames = async video => {
+  const name = video.path.substring(0, video.path.lastIndexOf('.'));
+  const ext = 'png';
 
-  const framePath = `${name}_frame_%4d.jpeg`;
+  const framePath = `${name}_frame_%4d.${ext}`;
 
   const session = await FFmpegKit.execute(
-    `-i ${videoPath} -preset ultrafast -r 1/1 ${framePath}`,
+    `-i ${video.path} -preset ultrafast -r 1/1 ${framePath}`,
   );
 
   const returnCode = await session.getReturnCode();
@@ -46,18 +47,15 @@ export const genFrames = async (videoPath: string) => {
   if (ReturnCode.isSuccess(returnCode)) {
     // SUCCESS
     let frames: Frame[] = [];
-    let count = 1;
 
-    for (let time = 0; time <= video.duration; time += 0.1) {
-      let frameIndex = `${count}`.padStart(4, '0');
+    for (let time = 1; time <= video.duration; time++) {
+      let frameIndex = `${time}`.padStart(4, '0');
       let frame = {
         time,
-        image: `${name}_frame_${frameIndex}.png`,
+        image: `${name}_frame_${frameIndex}.${ext}`,
       };
 
       frames.push(frame);
-
-      count++;
     }
 
     return frames;

@@ -196,8 +196,9 @@ const Trim = () => {
   useEffect(() => {
     setTrims([{startTime: 0, endTime: Number(videoData.duration.toFixed(1))}]);
     (async () => {
-      const frames = await genFrames(videoData.path);
-      console.log(frames);
+      const frames = await genFrames(videoData);
+      setFrames(frames);
+      console.log(frames?.length);
     })();
   }, []);
 
@@ -295,6 +296,13 @@ const Trim = () => {
       {/* ) : (
         <ActivityIndicator size="large" />
       )} */}
+
+      {frames.length > 0 && (
+        <Image
+          style={{width: 100, height: 200}}
+          source={{uri: frames[0].image}}
+        />
+      )}
     </View>
   );
 };
