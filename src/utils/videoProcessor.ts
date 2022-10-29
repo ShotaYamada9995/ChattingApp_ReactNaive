@@ -68,3 +68,20 @@ export const genFrames = async video => {
   //   return 'error';
   // }
 };
+
+export const genFirstFrame = async (videoPath: string) => {
+  const name = videoPath.substring(0, videoPath.lastIndexOf('.'));
+  const ext = 'png';
+
+  const framePath = `${name}_default_thumbnail.${ext}`;
+
+  const session = await FFmpegKit.execute(
+    `-ss 1 -y -i ${videoPath} -preset ultrafast -vframes 1 ${framePath}`,
+  );
+
+  const returnCode = await session.getReturnCode();
+
+  if (ReturnCode.isSuccess(returnCode)) {
+    return framePath;
+  }
+};

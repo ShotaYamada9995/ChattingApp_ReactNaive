@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   View,
   Text,
@@ -17,22 +17,30 @@ import {MentionInput} from 'react-native-controlled-mentions';
 
 import globalStyles from '../../../styles/globalStyles';
 
+import {genFirstFrame} from '../../../utils/videoProcessor';
+
 import TagPeople from './TagPeople';
+import SelectCover from './SelectCover';
+
+type Viewer = 'Everyone' | 'Friends' | 'Only me';
 
 const PostMedia = () => {
   const navigation = useNavigation();
+
+  const [coverImage, setCoverImage] = useState<string | undefined>('');
   const [config, setConfig] = useState({
     allowComments: true,
     allowDuet: true,
     allowShare: true,
   });
+  const [showSelectCoverImage, setShowSelectCoverImage] = useState(false);
   const [showViewers, setShowViewers] = useState(false);
   const [showTagScreen, setShowTagScreen] = useState(false);
-  const [viewer, setViewer] = useState<'Everyone' | 'Friends' | 'Only me'>(
-    'Everyone',
-  );
+  const [viewer, setViewer] = useState<Viewer>('Everyone');
   const [caption, setCaption] = useState('');
   const captionRef = useRef(null);
+
+  const video = useSelector((state: any) => state.video);
 
   const toggleComments = () => {
     setConfig(config => ({...config, allowComments: !config.allowComments}));
@@ -46,7 +54,7 @@ const PostMedia = () => {
     setConfig(config => ({...config, allowShare: !config.allowShare}));
   };
 
-  const selectViewer = viewer => {
+  const selectViewer = (viewer: Viewer) => {
     setViewer(viewer);
     setShowViewers(false);
   };
@@ -54,6 +62,13 @@ const PostMedia = () => {
   const handleOnChangeCaption = (caption: string) => {
     setCaption(caption);
   };
+
+  useEffect(() => {
+    (async () => {
+      const frame: string | undefined = await genFirstFrame(video.path);
+      setCoverImage(frame);
+    })();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -92,11 +107,29 @@ const PostMedia = () => {
         </View>
 
         <View style={styles.coverContainer}>
-          <TouchableOpacity style={styles.selectCoverBtn}>
+          {!!coverImage && (
+            <Image
+              source={{uri: coverImage}}
+              style={{width: '100%', height: '100%'}}
+              resizeMode="contain"
+            />
+          )}
+          <TouchableOpacity
+            style={styles.selectCoverBtn}
+            onPress={() => setShowSelectCoverImage(true)}>
             <Text style={styles.selectCoverText}>Select cover</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
+
+      <BottomSheet
+        onBackdropPress={() => setShowSelectCoverImage(false)}
+        isVisible={showSelectCoverImage}>
+        <SelectCover
+          defaultCoverImage={coverImage}
+          onCancel={() => setShowSelectCoverImage(false)}
+        />
+      </BottomSheet>
 
       <KeyboardAvoidingView
         style={{flex: 1}}
@@ -271,6 +304,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     padding: 10,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   selectCoverText: {
     color: 'white',
