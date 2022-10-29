@@ -13,6 +13,7 @@ import {
 import {Icon, Button, BottomSheet, CheckBox} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
+import {MentionInput} from 'react-native-controlled-mentions';
 
 import globalStyles from '../../../styles/globalStyles';
 
@@ -30,8 +31,8 @@ const PostMedia = () => {
   const [viewer, setViewer] = useState<'Everyone' | 'Friends' | 'Only me'>(
     'Everyone',
   );
-
-  const caption = useRef(null);
+  const [caption, setCaption] = useState('');
+  const captionRef = useRef(null);
 
   const toggleComments = () => {
     setConfig(config => ({...config, allowComments: !config.allowComments}));
@@ -50,6 +51,10 @@ const PostMedia = () => {
     setShowViewers(false);
   };
 
+  const handleOnChangeCaption = (caption: string) => {
+    setCaption(caption);
+  };
+
   return (
     <View style={styles.container}>
       <View style={[globalStyles.rowLayout, styles.header]}>
@@ -63,14 +68,26 @@ const PostMedia = () => {
       <TouchableOpacity
         activeOpacity={1}
         style={styles.captionCoverContaienr}
-        onPress={() => caption.current?.focus()}>
+        onPress={() => captionRef.current?.focus()}>
         <View style={styles.captionContainer}>
-          <TextInput
-            ref={caption}
+          <MentionInput
+            inputRef={captionRef}
             multiline
             placeholder="Describe your post, add hashtags or mention creators that inspired you"
             placeholderTextColor="grey"
+            value={caption}
+            onChange={handleOnChangeCaption}
             style={styles.inputField}
+            partTypes={[
+              {
+                pattern: /(?<=#).*?(?=( |$))/g,
+                textStyle: {fontWeight: 'bold'},
+              },
+              {
+                pattern: /(?<=@).*?(?=( |$))/g,
+                textStyle: {fontWeight: 'bold'},
+              },
+            ]}
           />
         </View>
 
@@ -242,7 +259,7 @@ const styles = StyleSheet.create({
   captionContainer: {
     flex: 2,
   },
-  inputField: {fontSize: 16},
+  inputField: {fontSize: 16, color: 'black'},
   coverContainer: {
     flex: 1,
     backgroundColor: 'black',

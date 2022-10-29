@@ -154,7 +154,7 @@ const Trim = () => {
   };
 
   const renderThumb = useCallback(() => <Thumb name="high" />, []);
-  const renderRail = useCallback(() => <Rail />, []);
+  const renderRail = useCallback(() => <Rail frames={frames} />, [frames]);
   const renderRailSelected = useCallback(() => <RailSelected />, []);
   const renderLabel = useCallback(
     (seconds: number) => <Label text={mmssTimeFormat(seconds)} />,
@@ -195,11 +195,10 @@ const Trim = () => {
 
   useEffect(() => {
     setTrims([{startTime: 0, endTime: Number(videoData.duration.toFixed(1))}]);
-    (async () => {
-      const frames = await genFrames(videoData);
-      setFrames(frames);
-      console.log(frames?.length);
-    })();
+    // (async () => {
+    //   const frames = await genFrames(videoData);
+    //   setFrames(frames);
+    // })();
   }, []);
 
   return (
@@ -270,14 +269,13 @@ const Trim = () => {
         )}
       </View>
 
-      {/* {frames.length > 0 ? ( */}
-      {/* <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.sliderContainer}> */}
-
+      {/* {frames.length > 0 ? (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.sliderContainer}> */}
       <Slider
-        style={styles.slider}
+        style={[styles.slider, {width: '80%'}]}
         min={0}
         max={videoData.duration}
         low={slider.low}
@@ -292,17 +290,12 @@ const Trim = () => {
         onValueChanged={handleDurationChange}
         onSliderTouchEnd={handleOnSlideTouchEnd}
       />
-      {/* </ScrollView> */}
-      {/* ) : (
-        <ActivityIndicator size="large" />
+      {/* </ScrollView>
+      ) : (
+        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <ActivityIndicator size="large" />
+        </View>
       )} */}
-
-      {frames.length > 0 && (
-        <Image
-          style={{width: 100, height: 200}}
-          source={{uri: frames[0].image}}
-        />
-      )}
     </View>
   );
 };
@@ -349,7 +342,6 @@ const styles = StyleSheet.create({
   slider: {
     alignSelf: 'center',
     marginTop: 30,
-    width: '80%',
   },
 });
 
