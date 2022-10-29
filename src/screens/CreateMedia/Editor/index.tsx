@@ -73,7 +73,6 @@ const styles = StyleSheet.create({
   video: {
     width: '100%',
     height: '100%',
-    // aspectRatio: 9 / 16,
     backgroundColor: 'black',
   },
   sideBar: {position: 'absolute', top: 20, right: 10},
