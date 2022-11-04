@@ -2,7 +2,6 @@ import React from 'react';
 import {View, Image} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {Icon, Badge} from '@rneui/themed';
-
 import Inspiring from './Insipiring';
 import Following from './Following';
 

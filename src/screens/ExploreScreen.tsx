@@ -1,12 +1,28 @@
-import React from "react"
-import {View, Text} from "react-native"
+import {View, Text, TouchableOpacity} from 'react-native';
+import React from 'react';
+import MiniProfile from './Profiles/MiniProfile';
 
 const ExploreScreen = () => {
-    return (
-        <View>
-            <Text>Explore</Text>
-        </View>
-    )
-}
+  const navigation = useNavigation();
 
-export default ExploreScreen
+  return (
+    <View>
+      <Text>Explore</Text>
+      {/* <StackNavigation /> */}
+      <TouchableOpacity onPress={() => navigation.navigate('MiniProfile')}>
+        <Text>Message</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export default ExploreScreen;
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#111',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+// });

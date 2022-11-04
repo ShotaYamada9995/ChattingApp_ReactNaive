@@ -63,6 +63,8 @@ const Post = ({data, isActive}: PostProps) => {
     setIsFollowing(!isFollowing);
   };
 
+  const openMiniProfile = () => {};
+
   const getVideoUrl = (url: string, filename: string) => {
     return new Promise((resolve, reject) => {
       RNFS.readDir(RNFS.DocumentDirectoryPath)
@@ -150,11 +152,15 @@ const Post = ({data, isActive}: PostProps) => {
       <View style={styles.bottomSection}>
         <View style={styles.bottomLeftSection}>
           <View style={styles.videoInfoContainer}>
-            <Image
-              source={require('../assets/images/profile_picture.webp')}
-              style={styles.userPic}
-            />
-            <Text style={styles.username}>Valentine Orga</Text>
+            <Pressable
+              style={styles.videoInfoContainer}
+              onPress={() => navigation.navigate('MiniProfile')}>
+              <Image
+                source={require('../assets/images/profile_picture.webp')}
+                style={styles.userPic}
+              />
+              <Text style={styles.username}>Valentine Orga</Text>
+            </Pressable>
             <Pressable onPress={toggleFollow}>
               {isFollowing ? (
                 <Text style={styles.followingTag}>following</Text>

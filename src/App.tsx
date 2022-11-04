@@ -5,7 +5,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import RNBootSplash from 'react-native-bootsplash';
 import {useSelector} from 'react-redux';
-
 import RegisterOptions from './screens/Authentication/RegisterOptions';
 import RegisterEmail from './screens/Authentication/RegisterEmail';
 import RegisterPassword from './screens/Authentication/RegisterPassword';
@@ -16,6 +15,7 @@ import Main from './navigation/MainNavigator';
 import VideoEditor from './screens/CreateMedia/Editor';
 import Trim from './screens/CreateMedia/Editor/Trim';
 import PostMedia from './screens/CreateMedia/Post';
+import MiniProfile from './screens/Profiles/MiniProfile';
 
 type AppStackParamsList = {
   RegisterOptions: undefined;
@@ -28,6 +28,7 @@ type AppStackParamsList = {
   VideoEditor: undefined;
   Trim: undefined;
   PostMedia: undefined;
+  MiniProfile: undefined;
 };
 
 const AppStack = createNativeStackNavigator<AppStackParamsList>();
@@ -62,6 +63,7 @@ const MainScreenStack = () => {
         options={{animation: 'slide_from_bottom'}}
       />
       <AppStack.Screen name="PostMedia" component={PostMedia} />
+      <AppStack.Screen name="MiniProfile" component={MiniProfile} />
     </AppStack.Navigator>
   );
 };
