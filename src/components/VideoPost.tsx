@@ -7,6 +7,7 @@ import {
   Text,
   View,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 import Video from 'react-native-video';
 import RNFS from 'react-native-fs';
@@ -18,12 +19,12 @@ import {useNavigation, useIsFocused} from '@react-navigation/native';
 import {useIsForeground} from '../hooks/useIsForeground';
 import VideoLoadingIndicator from './shared/VideoLoadingIndicator';
 
-interface PostProps {
+interface VideoPostProps {
   data: VideoModel;
   isActive: boolean;
 }
 
-const Post = ({data, isActive}: PostProps) => {
+const VideoPost = ({data, isActive}: VideoPostProps) => {
   const navigation = useNavigation();
   const {uri, caption, channelName, musicName, likes, comments, avatarUri} =
     data;
@@ -62,8 +63,6 @@ const Post = ({data, isActive}: PostProps) => {
   const toggleFollow = () => {
     setIsFollowing(!isFollowing);
   };
-
-  const openMiniProfile = () => {};
 
   const getVideoUrl = (url: string, filename: string) => {
     return new Promise((resolve, reject) => {
@@ -159,8 +158,8 @@ const Post = ({data, isActive}: PostProps) => {
                 source={require('../assets/images/profile_picture.webp')}
                 style={styles.userPic}
               />
-              <Text style={styles.username}>Valentine Orga</Text>
             </Pressable>
+            <Text style={styles.username}>Valentine Orga</Text>
             <Pressable onPress={toggleFollow}>
               {isFollowing ? (
                 <Text style={styles.followingTag}>following</Text>
@@ -222,7 +221,7 @@ const Post = ({data, isActive}: PostProps) => {
   );
 };
 
-export default memo(Post);
+export default memo(VideoPost);
 
 const styles = StyleSheet.create({
   container: {

@@ -5,6 +5,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
 import RNBootSplash from 'react-native-bootsplash';
 import {useSelector} from 'react-redux';
+
 import RegisterOptions from './screens/Authentication/RegisterOptions';
 import RegisterEmail from './screens/Authentication/RegisterEmail';
 import RegisterPassword from './screens/Authentication/RegisterPassword';
@@ -72,10 +73,10 @@ export default () => {
   const user = useSelector(state => state.user);
 
   const renderScreenStack = () => {
-    if (user.isLoggedIn) {
-      return <MainScreenStack />;
-    }
-    return <AuthScreenStack />;
+    // if (user.isLoggedIn) {
+    return <MainScreenStack />;
+    // }
+    // return <AuthScreenStack />;
   };
 
   useEffect(() => {
