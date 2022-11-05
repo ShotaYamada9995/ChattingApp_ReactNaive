@@ -7,13 +7,16 @@ import {
   Dimensions,
 } from 'react-native';
 import React from 'react';
+import {useNavigation} from '@react-navigation/native';
 
 const windowHeight = Dimensions.get('window').height;
 
-const MiniProfile = ({navigation}) => {
+const MiniProfile = () => {
+  const navigation = useNavigation();
+  
   return (
     <View style={styles.modalContainer}>
-      <TouchableOpacity style={styles.backButton}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Image
           style={styles.backButtonIcon}
           source={require('../../assets/icons/arrow-forward.png')}
