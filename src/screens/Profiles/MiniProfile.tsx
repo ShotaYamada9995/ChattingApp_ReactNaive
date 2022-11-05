@@ -218,7 +218,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   backButtonIcon: {
-    rotation: 180,
+    transform: [{rotate: '180deg'}],
     alignSelf: 'center',
   },
   backButton: {
