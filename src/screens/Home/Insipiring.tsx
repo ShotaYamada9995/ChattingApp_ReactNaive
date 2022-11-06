@@ -8,12 +8,15 @@ import videosData from '../../videosData';
 import {WINDOW_HEIGHT} from '../../utils';
 import MediaRepository from '../../repositories/MediaRepository';
 import VideoLoadingIndicator from '../../components/shared/VideoLoadingIndicator';
+import {useNavigation} from '@react-navigation/native';
 
 const Home = () => {
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [videos, setVideos] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
+
+  const navigation = useNavigation();
 
   const bottomTabHeight = useBottomTabBarHeight();
 
@@ -45,14 +48,15 @@ const Home = () => {
   };
 
   useEffect(() => {
-    (async () => {
-      try {
-        const videos = await MediaRepository.getVideos(0);
-        // setVideos(videos.data);
-      } catch (error) {
-        console.log('Error: ', error);
-      }
-    })();
+    navigation.navigate('MiniProfile');
+    // (async () => {
+    //   try {
+    //     const videos = await MediaRepository.getVideos(0);
+    //     // setVideos(videos.data);
+    //   } catch (error) {
+    //     console.log('Error: ', error);
+    //   }
+    // })();
   }, []);
 
   return (

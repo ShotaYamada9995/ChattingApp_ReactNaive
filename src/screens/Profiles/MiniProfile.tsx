@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
+import DraggableBottomSheet from '../../components/DraggableBottomSheet';
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -83,6 +84,8 @@ const MiniProfile = () => {
           <Text style={styles.messageButtonText}>Message</Text>
         </TouchableOpacity>
       </View>
+
+      <DraggableBottomSheet />
     </View>
   );
 };
