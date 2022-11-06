@@ -21,14 +21,12 @@ import {useIsForeground} from '../hooks/useIsForeground';
 import VideoLoadingIndicator from './shared/VideoLoadingIndicator';
 
 interface VideoPostProps {
-  data: VideoModel;
+  videoItem: any;
   isActive: boolean;
 }
 
-const VideoPost = ({data, isActive}: VideoPostProps) => {
+const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
   const navigation = useNavigation();
-  const {uri, caption, channelName, musicName, likes, comments, avatarUri} =
-    data;
 
   const [video, setVideo] = useState({
     url: '',
@@ -87,16 +85,16 @@ const VideoPost = ({data, isActive}: VideoPostProps) => {
   };
 
   const setVideoUrl = () => {
-    const filename: string = uri.substring(
-      uri.lastIndexOf('/') + 1,
-      uri.length,
+    const filename: string = videoItem.file[0].cdnUrl.substring(
+      videoItem.file[0].cdnUrl.lastIndexOf('/') + 1,
+      videoItem.file[0].cdnUrl.length,
     );
     const path_name = RNFS.DocumentDirectoryPath + '/' + filename;
 
     // download video
     RNFS.exists(path_name).then(exists => {
       if (exists) {
-        getVideoUrl(uri, filename)
+        getVideoUrl(videoItem.file[0].cdnUrl, filename)
           .then(res => {
             setVideo(video => ({...video, url: res}));
           })
@@ -105,12 +103,12 @@ const VideoPost = ({data, isActive}: VideoPostProps) => {
           });
       } else {
         RNFS.downloadFile({
-          fromUrl: uri,
+          fromUrl: videoItem.file[0].cdnUrl,
           toFile: path_name.replace(/%20/g, '_'),
           background: true,
         })
           .promise.then(res => {
-            getVideoUrl(uri, filename)
+            getVideoUrl(videoItem.file[0].cdnUrl, filename)
               .then(res => {
                 setVideo(video => ({...video, url: res}));
               })
@@ -119,7 +117,7 @@ const VideoPost = ({data, isActive}: VideoPostProps) => {
               });
           })
           .catch(err => {
-            setVideo(video => ({...video, url: uri}));
+            setVideo(video => ({...video, url: videoItem.file[0].cdnUrl}));
           });
       }
     });
@@ -136,9 +134,9 @@ const VideoPost = ({data, isActive}: VideoPostProps) => {
 
   return (
     <View style={[styles.container, {height: videoPostHeight}]}>
-      {video.url && isFocused ? (
+      {videoItem.file[0].cdnUrl && isFocused ? (
         <Video
-          source={{uri: video.url}}
+          source={{uri: videoItem.file[0].cdnUrl}}
           style={styles.video}
           resizeMode="contain"
           paused={video.isPaused || !canPlayVideo}
@@ -175,7 +173,7 @@ const VideoPost = ({data, isActive}: VideoPostProps) => {
               )}
             </Pressable>
           </View>
-          <Text style={styles.caption}>{caption}</Text>
+          <Text style={styles.caption}>{videoItem.text}</Text>
           <Text>#cute #dog</Text>
           <View style={styles.videoInfoContainer}>
             <Icon

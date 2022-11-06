@@ -6,17 +6,18 @@ import {getStatusBarHeight} from 'react-native-status-bar-height';
 import VideoPost from '../../components/VideoPost';
 import videosData from '../../videosData';
 import {WINDOW_HEIGHT} from '../../utils';
-import {getVideos} from '../../repositories/MediaRepository';
+import MediaRepository from '../../repositories/MediaRepository';
+import VideoLoadingIndicator from '../../components/shared/VideoLoadingIndicator';
 
 const Home = () => {
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [videos, setVideo] = useState([]);
+  const [videos, setVideos] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
 
   const bottomTabHeight = useBottomTabBarHeight();
 
-  const keyExtractor = useCallback(video => video.id, []);
+  const keyExtractor = useCallback((item: any) => item._id, [videos]);
 
   const getItemLayout = useCallback(
     (data, index) => ({
@@ -28,7 +29,7 @@ const Home = () => {
   );
 
   const renderVideoPost = ({item, index}) => (
-    <VideoPost data={item} isActive={activeVideoIndex === index} />
+    <VideoPost videoItem={item} isActive={activeVideoIndex === index} />
   );
 
   const loadMore = () => {
@@ -46,8 +47,8 @@ const Home = () => {
   useEffect(() => {
     (async () => {
       try {
-        const videos = await getVideos(0);
-        console.log(videos);
+        const videos = await MediaRepository.getVideos(0);
+        // setVideos(videos.data);
       } catch (error) {
         console.log('Error: ', error);
       }
@@ -56,19 +57,23 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={videosData}
-        keyExtractor={keyExtractor}
-        pagingEnabled
-        renderItem={renderVideoPost}
-        onScroll={handleOnScroll}
-        showsVerticalScrollIndicator={false}
-        windowSize={3}
-        maxToRenderPerBatch={3}
-        getItemLayout={getItemLayout}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0}
-      />
+      {videos.length > 0 ? (
+        <FlatList
+          data={videos}
+          keyExtractor={keyExtractor}
+          pagingEnabled
+          renderItem={renderVideoPost}
+          onScroll={handleOnScroll}
+          showsVerticalScrollIndicator={false}
+          windowSize={3}
+          maxToRenderPerBatch={3}
+          getItemLayout={getItemLayout}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0}
+        />
+      ) : (
+        <VideoLoadingIndicator />
+      )}
 
       {/* {isLoadingMore && (
         <ActivityIndicator size="large" style={styles.scrollLoader} />
