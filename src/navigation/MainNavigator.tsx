@@ -9,6 +9,7 @@ import ExploreScreen from '../screens/ExploreScreen';
 import AudioRoomScreen from '../screens/AudioRoomScreen';
 import ChatScreen from '../screens/Chats';
 import VideoCapture from '../screens/CreateMedia';
+import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../utils';
 
 const MainTab = createBottomTabNavigator();
 
@@ -16,16 +17,25 @@ const Main = () => {
   return (
     <MainTab.Navigator
       screenOptions={{
-        tabBarStyle: {backgroundColor: '#001433', borderTopWidth: 0},
+        tabBarStyle: {
+          backgroundColor: '#001433',
+          borderTopWidth: 0,
+          height: WINDOW_HEIGHT * 0.07,
+        },
         headerShown: false,
         tabBarActiveTintColor: 'white',
+        tabBarItemStyle: {marginVertical: 5},
       }}>
       <MainTab.Screen
         name="Home"
         component={Home}
         options={{
           tabBarIcon: ({focused}) => (
-            <Icon name="home" color={focused ? 'white' : 'grey'} />
+            <Icon
+              name="home"
+              color={focused ? 'white' : 'grey'}
+              size={WINDOW_WIDTH * 0.06}
+            />
           ),
         }}
       />
@@ -38,6 +48,7 @@ const Main = () => {
               name="compass"
               type="ionicon"
               color={focused ? 'white' : 'grey'}
+              size={WINDOW_WIDTH * 0.06}
             />
           ),
         }}
@@ -62,7 +73,11 @@ const Main = () => {
         component={AudioRoomScreen}
         options={{
           tabBarIcon: ({focused}) => (
-            <Icon name="notifications" color={focused ? 'white' : 'grey'} />
+            <Icon
+              name="notifications"
+              color={focused ? 'white' : 'grey'}
+              size={WINDOW_WIDTH * 0.06}
+            />
           ),
         }}
       />
@@ -71,7 +86,11 @@ const Main = () => {
         component={ChatScreen}
         options={{
           tabBarIcon: ({focused}) => (
-            <Icon name="person" color={focused ? 'white' : 'grey'} />
+            <Icon
+              name="person"
+              color={focused ? 'white' : 'grey'}
+              size={WINDOW_WIDTH * 0.06}
+            />
           ),
         }}
       />

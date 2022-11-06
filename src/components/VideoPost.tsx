@@ -7,11 +7,12 @@ import {
   Text,
   View,
   ActivityIndicator,
-  StatusBar,
+  Platform,
 } from 'react-native';
 import Video from 'react-native-video';
 import RNFS from 'react-native-fs';
 import {Icon} from '@rneui/themed';
+import {getStatusBarHeight} from 'react-native-status-bar-height';
 
 import {VideoModel} from '../videosData';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../utils';
@@ -44,6 +45,11 @@ const VideoPost = ({data, isActive}: VideoPostProps) => {
   const isForeGround = useIsForeground();
   const isFocused = useIsFocused();
   const canPlayVideo = isForeGround && isFocused;
+
+  const videoPostHeight =
+    Platform.OS === 'ios'
+      ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
+      : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104;
 
   const togglePause = () => {
     setVideo(video => ({...video, isPaused: !video.isPaused}));
@@ -127,13 +133,14 @@ const VideoPost = ({data, isActive}: VideoPostProps) => {
       setVideo(video => ({...video, isPaused: true}));
     }
   }, [isActive]);
+
   return (
-    <View style={[styles.container, {height: WINDOW_HEIGHT - bottomTabHeight}]}>
+    <View style={[styles.container, {height: videoPostHeight}]}>
       {video.url && isFocused ? (
         <Video
           source={{uri: video.url}}
           style={styles.video}
-          resizeMode="cover"
+          resizeMode="contain"
           paused={video.isPaused || !canPlayVideo}
           onBuffer={data => setIsBuffering(data.isBuffering)}
           repeat
@@ -226,6 +233,7 @@ export default memo(VideoPost);
 const styles = StyleSheet.create({
   container: {
     width: WINDOW_WIDTH,
+    backgroundColor: 'black',
   },
   video: {
     position: 'absolute',

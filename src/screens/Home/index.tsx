@@ -2,6 +2,7 @@ import React from 'react';
 import {View, Image} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {Icon, Badge} from '@rneui/themed';
+import {WINDOW_WIDTH} from '../../utils';
 
 import Inspiring from './Insipiring';
 import Following from './Following';
@@ -29,7 +30,10 @@ const HomeTabNavigator = () => {
             width: 40,
             marginLeft: 30,
           },
-          tabBarLabelStyle: {textTransform: 'none', fontSize: 18},
+          tabBarLabelStyle: {
+            textTransform: 'none',
+            fontSize: WINDOW_WIDTH * 0.04,
+          },
           tabBarActiveTintColor: '#FFFFFF',
           tabBarInactiveTintColor: '#C7C6C7',
         }}>

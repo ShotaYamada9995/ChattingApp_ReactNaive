@@ -1,6 +1,7 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {View, FlatList, StyleSheet, ActivityIndicator} from 'react-native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
+import {getStatusBarHeight} from 'react-native-status-bar-height';
 
 import VideoPost from '../../components/VideoPost';
 import videosData from '../../videosData';
@@ -11,7 +12,7 @@ const Home = () => {
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [videos, setVideo] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const bottomTabHeight = useBottomTabBarHeight();
 
@@ -37,10 +38,21 @@ const Home = () => {
 
   const handleOnScroll = e => {
     const index = Math.round(
-      e.nativeEvent.contentOffset.y / (WINDOW_HEIGHT - bottomTabHeight),
+      e.nativeEvent.contentOffset.y / (WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104),
     );
     setActiveVideoIndex(index);
   };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const videos = await getVideos(0);
+        console.log(videos);
+      } catch (error) {
+        console.log('Error: ', error);
+      }
+    })();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -58,9 +70,9 @@ const Home = () => {
         onEndReachedThreshold={0}
       />
 
-      {isLoadingMore && (
+      {/* {isLoadingMore && (
         <ActivityIndicator size="large" style={styles.scrollLoader} />
-      )}
+      )} */}
     </View>
   );
 };
