@@ -1,16 +1,9 @@
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
+import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
-import DraggableBottomSheet from '../../components/DraggableBottomSheet';
 
-const windowHeight = Dimensions.get('window').height;
+import DraggableBottomSheet from '../../components/DraggableBottomSheet';
+import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../utils';
 
 const MiniProfile = () => {
   const navigation = useNavigation();
@@ -97,7 +90,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     padding: 16,
-    paddingTop: windowHeight / 6,
+    paddingTop: WINDOW_HEIGHT / 6,
     alignItems: 'center',
     textAlignVertical: 'center',
     backgroundColor: '#292D32',

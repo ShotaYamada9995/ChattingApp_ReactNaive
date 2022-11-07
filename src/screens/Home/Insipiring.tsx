@@ -52,7 +52,7 @@ const Home = () => {
     // (async () => {
     //   try {
     //     const videos = await MediaRepository.getVideos(0);
-    //     // setVideos(videos.data);
+    //     setVideos(videos.data.slice(0, 4));
     //   } catch (error) {
     //     console.log('Error: ', error);
     //   }

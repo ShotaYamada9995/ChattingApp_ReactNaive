@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   dragHandle: {
-    width: '50%',
+    width: '100%',
     height: 32,
     alignSelf: 'center',
     justifyContent: 'center',
