@@ -73,10 +73,10 @@ export default () => {
   const user = useSelector(state => state.user);
 
   const renderScreenStack = () => {
-    // if (user.isLoggedIn) {
-    return <MainScreenStack />;
-    // }
-    // return <AuthScreenStack />;
+    if (user.isLoggedIn) {
+      return <MainScreenStack />;
+    }
+    return <AuthScreenStack />;
   };
 
   useEffect(() => {

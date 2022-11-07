@@ -2,6 +2,7 @@ import React from 'react';
 import {View, StyleSheet, Image} from 'react-native';
 import {Icon, Text} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
+import {WINDOW_WIDTH} from '../../utils';
 
 interface AuthHeaderProps {
   title: string;
@@ -16,7 +17,7 @@ export default ({title, caption}: AuthHeaderProps) => {
         <Icon
           name="arrow-back"
           type="ionicon"
-          size={28}
+          size={WINDOW_WIDTH * 0.07}
           onPress={() => navigation.goBack()}
         />
 
@@ -41,14 +42,13 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   logoIcon: {
-    width: 30,
-    height: 30,
+    transform: [{scale: WINDOW_WIDTH * 0.003}],
   },
   title: {
     textAlign: 'center',
   },
   caption: {
-    fontSize: 15,
+    fontSize: WINDOW_WIDTH * 0.04,
     color: '#aaa',
     textAlign: 'center',
   },

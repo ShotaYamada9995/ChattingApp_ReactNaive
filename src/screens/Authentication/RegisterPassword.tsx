@@ -10,6 +10,7 @@ import AuthHeader from '../../components/headers/AuthHeader';
 import AuthFooter from '../../components/footers/AuthFooter';
 import globalStyles from '../../styles/globalStyles';
 import {update} from '../../store/reducers/User';
+import {WINDOW_WIDTH} from '../../utils';
 
 const schema = yup.object().shape({
   password: yup
@@ -138,7 +139,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   caption: {
-    fontSize: 12,
+    fontSize: WINDOW_WIDTH * 0.04,
     color: '#aaa',
     textAlign: 'center',
   },
