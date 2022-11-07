@@ -46,10 +46,12 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
+    fontFamily: 'Gilroy-Medium',
   },
   caption: {
     fontSize: WINDOW_WIDTH * 0.04,
     color: '#aaa',
     textAlign: 'center',
+    fontFamily: 'Gilroy-Regular',
   },
 });

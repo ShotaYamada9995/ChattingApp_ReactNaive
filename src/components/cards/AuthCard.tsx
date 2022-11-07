@@ -32,5 +32,6 @@ const styles = StyleSheet.create({
     marginLeft: 50,
     fontWeight: 'bold',
     fontSize: WINDOW_WIDTH * 0.04,
+    fontFamily: 'Gilroy-Medium',
   },
 });

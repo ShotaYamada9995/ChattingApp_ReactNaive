@@ -41,8 +41,7 @@ const AppStack = createNativeStackNavigator<AppStackParamsList>();
 const AuthScreenStack = () => {
   return (
     <AppStack.Navigator
-      screenOptions={{headerShown: false, animation: 'slide_from_right'}}
-      initialRouteName="ConfirmBio">
+      screenOptions={{headerShown: false, animation: 'slide_from_right'}}>
       <AppStack.Screen name="RegisterOptions" component={RegisterOptions} />
       <AppStack.Screen name="RegisterEmail" component={RegisterEmail} />
       <AppStack.Screen name="RegisterPassword" component={RegisterPassword} />

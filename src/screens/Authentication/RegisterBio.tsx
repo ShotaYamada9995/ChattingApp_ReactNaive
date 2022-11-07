@@ -7,6 +7,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 
 import AuthHeader from '../../components/headers/AuthHeader';
 import {WINDOW_WIDTH} from '../../utils';
+import {useNavigation} from '@react-navigation/native';
 
 const schema = yup.object().shape({
   firstname: yup.string().required('Please enter your email'),
@@ -19,8 +20,11 @@ type Values = {
 };
 
 export default () => {
+  const navigation = useNavigation();
+
   const handleSubmit = (values: Values) => {
     console.log(values);
+    navigation.navigate('ConfirmBio');
   };
 
   return (

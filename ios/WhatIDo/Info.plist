@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>LSApplicationCategoryType</key>
-	<string></string>
+	<string/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -38,7 +38,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UILaunchStoryboardName</key>
 	<string>BootSplash.storyboard</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -71,6 +71,26 @@
 		<string>Octicons.ttf</string>
 		<string>Zocial.ttf</string>
 		<string>Fontisto.ttf</string>
+		<string>Gilroy-Black.ttf</string>
+		<string>Gilroy-BlackItalic.ttf</string>
+		<string>Gilroy-Bold.ttf</string>
+		<string>Gilroy-BoldItalic.ttf</string>
+		<string>Gilroy-ExtraBold.ttf</string>
+		<string>Gilroy-ExtraBoldItalic.ttf</string>
+		<string>Gilroy-Heavy.ttf</string>
+		<string>Gilroy-HeavyItalic.ttf</string>
+		<string>Gilroy-Light.ttf</string>
+		<string>Gilroy-LightItalic.ttf</string>
+		<string>Gilroy-Medium.ttf</string>
+		<string>Gilroy-MediumItalic.ttf</string>
+		<string>Gilroy-Regular.ttf</string>
+		<string>Gilroy-RegularItalic.ttf</string>
+		<string>Gilroy-SemiBold.ttf</string>
+		<string>Gilroy-SemiBoldItalic.ttf</string>
+		<string>Gilroy-Thin.ttf</string>
+		<string>Gilroy-ThinItalic.ttf</string>
+		<string>Gilroy-UltraLight.ttf</string>
+		<string>Gilroy-UltraLightItalic.ttf</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>WhatIDo needs access to your Camera.</string>

@@ -98,7 +98,7 @@ const RegisterPassword = () => {
 
               <CheckBox
                 title="Remember for 90 days"
-                textStyle={{marginLeft: 0}}
+                textStyle={{marginLeft: 0, fontFamily: 'Gilroy-Medium'}}
                 checked={remember}
                 onPress={() => setRemember(current => !current)}
               />
@@ -138,11 +138,14 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
+    fontFamily: 'Gilroy-Medium',
   },
   caption: {
     fontSize: WINDOW_WIDTH * 0.04,
+    fontFamily: 'Gilroy-Medium',
     color: '#aaa',
     textAlign: 'center',
+    marginTop: 5,
   },
   codeInput: {
     width: '100%',
