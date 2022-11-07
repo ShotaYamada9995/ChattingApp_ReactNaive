@@ -50,7 +50,8 @@ const RegisterPassword = () => {
     password: string;
   };
   const handleSubmit = (values: Values) => {
-    dispatch(update());
+    // dispatch(update());
+    navigation.navigate('RegisterBio');
   };
 
   return (

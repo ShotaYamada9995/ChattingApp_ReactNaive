@@ -10,6 +10,8 @@ import RegisterOptions from './screens/Authentication/RegisterOptions';
 import RegisterEmail from './screens/Authentication/RegisterEmail';
 import RegisterPassword from './screens/Authentication/RegisterPassword';
 import VerifyEmail from './screens/Authentication/VerifyEmail';
+import RegisterBio from './screens/Authentication/RegisterBio';
+import ConfirmBio from './screens/Authentication/ConfirmBio';
 import LoginOptions from './screens/Authentication/LoginOptions';
 import LoginForm from './screens/Authentication/LoginForm';
 import Main from './navigation/MainNavigator';
@@ -23,6 +25,8 @@ type AppStackParamsList = {
   RegisterEmail: undefined;
   RegisterPassword: undefined;
   VerifyEmail: {code: string};
+  RegisterBio: undefined;
+  ConfirmBio: undefined;
   LoginOptions: undefined;
   LoginForm: undefined;
   Main: undefined;
@@ -37,11 +41,14 @@ const AppStack = createNativeStackNavigator<AppStackParamsList>();
 const AuthScreenStack = () => {
   return (
     <AppStack.Navigator
-      screenOptions={{headerShown: false, animation: 'slide_from_right'}}>
+      screenOptions={{headerShown: false, animation: 'slide_from_right'}}
+      initialRouteName="ConfirmBio">
       <AppStack.Screen name="RegisterOptions" component={RegisterOptions} />
       <AppStack.Screen name="RegisterEmail" component={RegisterEmail} />
       <AppStack.Screen name="RegisterPassword" component={RegisterPassword} />
       <AppStack.Screen name="VerifyEmail" component={VerifyEmail} />
+      <AppStack.Screen name="RegisterBio" component={RegisterBio} />
+      <AppStack.Screen name="ConfirmBio" component={ConfirmBio} />
       <AppStack.Screen name="LoginOptions" component={LoginOptions} />
       <AppStack.Screen name="LoginForm" component={LoginForm} />
     </AppStack.Navigator>
@@ -73,10 +80,10 @@ export default () => {
   const user = useSelector(state => state.user);
 
   const renderScreenStack = () => {
-    // if (user.isLoggedIn) {
-    return <MainScreenStack />;
-    // }
-    // return <AuthScreenStack />;
+    if (user.isLoggedIn) {
+      return <MainScreenStack />;
+    }
+    return <AuthScreenStack />;
   };
 
   useEffect(() => {

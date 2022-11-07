@@ -11,6 +11,10 @@ import {WINDOW_WIDTH} from '../../utils';
 const schema = yup.object().shape({
   firstname: yup.string().required('Please enter your email'),
   lastname: yup.string().required(),
+  email: yup
+    .string()
+    .email('Invalid email')
+    .required('Please enter your email'),
 });
 
 type Values = {
@@ -33,7 +37,7 @@ export default () => {
       <ScrollView contentContainerStyle={styles.formContainer}>
         <Formik
           validationSchema={schema}
-          initialValues={{firstname: '', lastname: ''}}
+          initialValues={{firstname: '', lastname: '', email: ''}}
           onSubmit={handleSubmit}>
           {({handleChange, handleSubmit, values, errors, isSubmitting}) => (
             <>
@@ -64,6 +68,28 @@ export default () => {
                 onChangeText={handleChange('lastname')}
                 errorMessage={errors.lastname}
                 errorStyle={{marginTop: 20}}
+              />
+
+              <Input
+                label="Email"
+                labelStyle={{
+                  ...styles.dropdownLabel,
+                  marginBottom: 5,
+                  marginLeft: 0,
+                }}
+                placeholder="WhatIDo@gmail.com"
+                style={styles.inputField}
+                rightIcon={
+                  values.email && !errors.email ? (
+                    <Icon name="checkmark-circle" type="ionicon" />
+                  ) : undefined
+                }
+                rightIconContainerStyle={{
+                  backgroundColor: '#F1F1F1',
+                }}
+                value={values.email}
+                onChangeText={handleChange('email')}
+                errorMessage={errors.email}
               />
 
               <Text style={styles.dropdownLabel}>Area of Expertise</Text>
@@ -130,11 +156,10 @@ export default () => {
               />
 
               <Button
-                title="Next"
-                type="outline"
+                title="Confirm Info"
                 containerStyle={styles.btn}
-                buttonStyle={{paddingVertical: 10, borderColor: '#001433'}}
-                titleStyle={{color: '#001433'}}
+                buttonStyle={{paddingVertical: 10}}
+                color="#001433"
                 loading={isSubmitting}
                 disabled={isSubmitting}
               />

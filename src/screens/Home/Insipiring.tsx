@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useState, useCallback, useEffect, useRef} from 'react';
 import {View, FlatList, StyleSheet, ActivityIndicator} from 'react-native';
 import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
@@ -6,26 +6,25 @@ import {getStatusBarHeight} from 'react-native-status-bar-height';
 import VideoPost from '../../components/VideoPost';
 import videosData from '../../videosData';
 import {WINDOW_HEIGHT} from '../../utils';
-import MediaRepository from '../../repositories/MediaRepository';
+import FeedsRepository from '../../repositories/FeedsRepository';
 import VideoLoadingIndicator from '../../components/shared/VideoLoadingIndicator';
 import {useNavigation} from '@react-navigation/native';
+import {current} from '@reduxjs/toolkit';
+import Video from 'react-native-video';
+// import MediaRepository from '../../repositories/MediaRepository';
 
 const Home = () => {
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [videos, setVideos] = useState([]);
-  const [currentPage, setCurrentPage] = useState(0);
-
-  const navigation = useNavigation();
-
-  const bottomTabHeight = useBottomTabBarHeight();
+  const currentPage = useRef(0);
 
   const keyExtractor = useCallback((item: any) => item._id, [videos]);
 
   const getItemLayout = useCallback(
     (data, index) => ({
-      length: WINDOW_HEIGHT - bottomTabHeight,
-      offset: (WINDOW_HEIGHT - bottomTabHeight) * index,
+      length: WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104,
+      offset: (WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104) * index,
       index,
     }),
     [],
@@ -35,9 +34,23 @@ const Home = () => {
     <VideoPost videoItem={item} isActive={activeVideoIndex === index} />
   );
 
-  const loadMore = () => {
+  const loadMoreVideos = async () => {
     setIsLoadingMore(true);
-    // load more videos
+
+    try {
+      const videos = await FeedsRepository.getInspiringVideos(
+        currentPage.current,
+      );
+
+      setVideos(current => {
+        return [...current, ...videos.data.slice(0, 4)];
+      });
+
+      currentPage.current++;
+    } catch (error) {
+      console.log('Error loading more videos: ');
+      console.error(error);
+    }
   };
 
   const handleOnScroll = e => {
@@ -47,11 +60,17 @@ const Home = () => {
     setActiveVideoIndex(index);
   };
 
+  const renderScrollLoader = () => {
+    return isLoadingMore ? (
+      <ActivityIndicator size="large" style={styles.scrollLoader} />
+    ) : null;
+  };
+
   useEffect(() => {
     (async () => {
       try {
-        const videos = await MediaRepository.getVideos(0);
-        setVideos(videos.data.slice(0, 4));
+        const videos = await FeedsRepository.getInspiringVideos(0);
+        setVideos(videos.data.slice(0, 1));
       } catch (error) {
         console.log('Error: ', error);
       }
@@ -71,16 +90,13 @@ const Home = () => {
           windowSize={3}
           maxToRenderPerBatch={3}
           getItemLayout={getItemLayout}
-          onEndReached={loadMore}
+          ListFooterComponent={renderScrollLoader}
+          onEndReached={loadMoreVideos}
           onEndReachedThreshold={0}
         />
       ) : (
         <VideoLoadingIndicator />
       )}
-
-      {/* {isLoadingMore && (
-        <ActivityIndicator size="large" style={styles.scrollLoader} />
-      )} */}
     </View>
   );
 };
