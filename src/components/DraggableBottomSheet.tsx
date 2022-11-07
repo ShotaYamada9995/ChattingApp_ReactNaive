@@ -25,27 +25,28 @@ export default () => {
 
         if (gesture.dy > 0) {
           if (gesture.dy <= DRAG_THRESHOLD) {
-            springAnimation('up');
+            moveBottomSheet('up');
           } else {
-            springAnimation('down');
+            moveBottomSheet('down');
           }
         } else {
           if (gesture.dy >= -DRAG_THRESHOLD) {
-            springAnimation('down');
+            moveBottomSheet('down');
           } else {
-            springAnimation('up');
+            moveBottomSheet('up');
           }
         }
       },
     }),
   ).current;
 
-  const springAnimation = (direction: 'up' | 'down') => {
+  const moveBottomSheet = (direction: 'up' | 'down') => {
     lastGestureDy.current =
       direction === 'down' ? MAX_DOWNWARD_TRANSLATE_Y : MAX_UPWARD_TRANSLATE_Y;
 
-    Animated.spring(animatedValue, {
+    Animated.timing(animatedValue, {
       toValue: lastGestureDy.current,
+      duration: 300,
       useNativeDriver: true,
     }).start();
   };
@@ -71,7 +72,7 @@ export default () => {
 
       <View style={{position: 'absolute', bottom: 0}}>
         {/* Press to close profile */}
-        <Button title="Close" onPress={() => springAnimation('down')} />
+        <Button title="Close" onPress={() => moveBottomSheet('down')} />
       </View>
     </Animated.View>
   );
