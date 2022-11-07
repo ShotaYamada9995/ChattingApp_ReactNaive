@@ -10,6 +10,7 @@ import AuthHeader from '../../components/headers/AuthHeader';
 import AuthFooter from '../../components/footers/AuthFooter';
 import globalStyles from '../../styles/globalStyles';
 import {update} from '../../store/reducers/User';
+import {WINDOW_WIDTH} from '../../utils';
 
 const schema = yup.object().shape({
   password: yup
@@ -49,7 +50,8 @@ const RegisterPassword = () => {
     password: string;
   };
   const handleSubmit = (values: Values) => {
-    dispatch(update());
+    // dispatch(update());
+    navigation.navigate('RegisterBio');
   };
 
   return (
@@ -96,7 +98,7 @@ const RegisterPassword = () => {
 
               <CheckBox
                 title="Remember for 90 days"
-                textStyle={{marginLeft: 0}}
+                textStyle={{marginLeft: 0, fontFamily: 'Gilroy-Medium'}}
                 checked={remember}
                 onPress={() => setRemember(current => !current)}
               />
@@ -136,11 +138,14 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
+    fontFamily: 'Gilroy-Medium',
   },
   caption: {
-    fontSize: 12,
+    fontSize: WINDOW_WIDTH * 0.04,
+    fontFamily: 'Gilroy-Medium',
     color: '#aaa',
     textAlign: 'center',
+    marginTop: 5,
   },
   codeInput: {
     width: '100%',

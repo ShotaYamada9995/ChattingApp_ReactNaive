@@ -3,6 +3,7 @@ import {View, StyleSheet} from 'react-native';
 import {Text} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
 import globalStyles from '../../styles/globalStyles';
+import {WINDOW_WIDTH} from '../../utils';
 
 interface AuthFooterProps {
   action: string;
@@ -13,13 +14,17 @@ const AuthFooter = ({action}: AuthFooterProps) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.footerTop}>
+      <Text style={styles.footerTopText}>
         By continuing, you agree to WhatIdo's{' '}
-        <Text style={styles.link} onPress={() => console.log('Terms Bitch!')}>
+        <Text
+          style={styles.link}
+          onPress={() => console.log('My App, My Terms!')}>
           Terms of Service
         </Text>{' '}
         and consent that you've read WhatIdo's{' '}
-        <Text style={styles.link} onPress={() => console.log('Privacy Bitch!')}>
+        <Text
+          style={styles.link}
+          onPress={() => console.log('Your Data, Your Privacy!')}>
           Privacy Policy
         </Text>
       </Text>
@@ -56,7 +61,13 @@ const styles = StyleSheet.create({
   link: {
     color: '#0085FF',
   },
-  footerTop: {textAlign: 'center', lineHeight: 20, marginHorizontal: 30},
+  footerTopText: {
+    textAlign: 'center',
+    lineHeight: 20,
+    marginHorizontal: 30,
+    fontSize: WINDOW_WIDTH * 0.04,
+    fontFamily: 'Gilroy-Medium',
+  },
   footerBottom: {
     borderTopWidth: 1,
     borderTopColor: '#ccc',
@@ -68,7 +79,8 @@ const styles = StyleSheet.create({
   },
   footerBottomText: {
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: WINDOW_WIDTH * 0.05,
+    fontFamily: 'Gilroy-Medium',
   },
 });
 
