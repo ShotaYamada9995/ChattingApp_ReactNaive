@@ -8,11 +8,12 @@ import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../utils';
 const MiniProfile = () => {
   const navigation = useNavigation();
 
+const MiniProfile = () => {
+  const navigation = useNavigation();
+  
   return (
     <View style={styles.modalContainer}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Image
           style={styles.backButtonIcon}
           source={require('../../assets/icons/arrow-forward.png')}

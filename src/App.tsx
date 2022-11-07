@@ -24,7 +24,7 @@ type AppStackParamsList = {
   RegisterOptions: undefined;
   RegisterEmail: undefined;
   RegisterPassword: undefined;
-  VerifyEmail: {code: string};
+  VerifyEmail: undefined;
   RegisterBio: undefined;
   ConfirmBio: undefined;
   LoginOptions: undefined;
