@@ -2,13 +2,18 @@ import axios from 'axios';
 
 import {DOMAIN} from './repository';
 
-interface User {
+interface UserRegData {
   email: string;
   password: string;
   expertise: string;
   firstName: string;
   lastName: string;
   otp: string;
+}
+
+interface UserLoginData {
+  email: string;
+  password: string;
 }
 class AuthRepository {
   async validateEmail(email: string) {
@@ -35,8 +40,16 @@ class AuthRepository {
     return response;
   }
 
-  async register(user: User) {
+  async register(user: UserRegData) {
     const endpoint = `${DOMAIN}/auth/register2`;
+
+    const response = await axios.post(endpoint, user);
+
+    return response;
+  }
+
+  async login(user: UserLoginData) {
+    const endpoint = `${DOMAIN}/auth/login`;
 
     const response = await axios.post(endpoint, user);
 

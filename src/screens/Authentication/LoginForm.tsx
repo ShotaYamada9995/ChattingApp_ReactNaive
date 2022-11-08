@@ -9,6 +9,12 @@ import AuthFooter from '../../components/footers/AuthFooter';
 
 import globalStyles from '../../styles/globalStyles';
 
+import AuthRepository from '../../repositories/AuthRepository';
+import {useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+
+import {login} from '../../store/reducers/Auth';
+
 const schema = yup.object().shape({
   email: yup
     .string()
@@ -24,15 +30,33 @@ const schema = yup.object().shape({
 });
 
 const LoginForm = () => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [remember, setRemember] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   type Values = {
     email: string;
     password: string;
   };
 
-  const handleSubmit = (values: Values) => {
-    console.log(values);
+  const handleSubmit = async (values: Values) => {
+    setIsSubmitting(true);
+
+    try {
+      const user = await AuthRepository.login(values);
+      console.log(user);
+
+      const currentTime = Math.round(Date.now() / 1000);
+      const loginDuration = 86400 * 90;
+      const loginExpiryDate = currentTime + loginDuration;
+
+      // dispatch(login({...user, loginExpiryDate}));
+    } catch (error) {
+      console.log('Login Error');
+      console.error(error);
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -47,7 +71,7 @@ const LoginForm = () => {
           validationSchema={schema}
           initialValues={{email: '', password: ''}}
           onSubmit={handleSubmit}>
-          {({handleChange, handleSubmit, values, errors, isSubmitting}) => (
+          {({handleChange, handleSubmit, values, errors}) => (
             <>
               <Input
                 label="Email"
