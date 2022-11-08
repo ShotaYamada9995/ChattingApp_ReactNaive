@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, ScrollView, StyleSheet} from 'react-native';
+import {View, ScrollView, StyleSheet, ActivityIndicator} from 'react-native';
 import {Input, Button, Icon} from '@rneui/themed';
 import {Formik} from 'formik';
 import * as yup from 'yup';
@@ -10,6 +10,8 @@ import {useNavigation} from '@react-navigation/native';
 
 import {update} from '../../store/reducers/Auth';
 import {useDispatch} from 'react-redux';
+
+import AuthRepository from '../../repositories/AuthRepository';
 
 const schema = yup.object().shape({
   email: yup

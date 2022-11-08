@@ -2,30 +2,6 @@ import axios from 'axios';
 
 import {DOMAIN} from './repository';
 
-export const validateEmail = async (email: string) => {
-  const endpoint = `${DOMAIN}/auth/emailValidate`;
-
-  const response = await axios.post(endpoint, {email});
-
-  return response;
-};
-
-export const sendOtp = async (email: string) => {
-  const endpoint = `${DOMAIN}/auth/otp`;
-
-  const response = await axios.post(endpoint, {email});
-
-  return response;
-};
-
-export const validateOtp = async (email: string, otp: string) => {
-  const endpoint = `${DOMAIN}/auth/otpValidate`;
-
-  const response = await axios.post(endpoint, {email, otp});
-
-  return response;
-};
-
 interface User {
   email: string;
   password: string;
@@ -34,11 +10,38 @@ interface User {
   lastName: string;
   otp: string;
 }
+class AuthRepository {
+  async validateEmail(email: string) {
+    const endpoint = `${DOMAIN}/auth/emailValidate`;
 
-export const register = async (user: User) => {
-  const endpoint = `${DOMAIN}/auth/register2`;
+    const response = await axios.post(endpoint, {email});
 
-  const response = await axios.post(endpoint, user);
+    return response;
+  }
 
-  return response;
-};
+  async sendOtp(email: string) {
+    const endpoint = `${DOMAIN}/auth/otp`;
+
+    const response = await axios.post(endpoint, {email});
+
+    return response;
+  }
+
+  async validateOtp(email: string, otp: string) {
+    const endpoint = `${DOMAIN}/auth/otpValidate`;
+
+    const response = await axios.post(endpoint, {email, otp});
+
+    return response;
+  }
+
+  async register(user: User) {
+    const endpoint = `${DOMAIN}/auth/register2`;
+
+    const response = await axios.post(endpoint, user);
+
+    return response;
+  }
+}
+
+export default new AuthRepository();
