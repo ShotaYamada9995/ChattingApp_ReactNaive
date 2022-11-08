@@ -42,14 +42,17 @@ const Home = () => {
         currentPage.current,
       );
 
-      setVideos(current => {
-        return [...current, ...videos.data.slice(0, 4)];
-      });
+      // setVideos(current => {
+      //   return [...current, ...videos.data.slice(0, 4)];
+      // });
+      console.log('Loaded new videos. Page: ', currentPage.current);
 
       currentPage.current++;
     } catch (error) {
       console.log('Error loading more videos: ');
       console.error(error);
+    } finally {
+      setIsLoadingMore(false);
     }
   };
 
@@ -70,11 +73,7 @@ const Home = () => {
     (async () => {
       try {
         const videos = await FeedsRepository.getInspiringVideos(0);
-        setVideos(videos.data.slice(2, 4));
-
-        console.log(
-          videos.data.slice(2, 4).map(video => ({video: video.file[0].cdnUrl})),
-        );
+        setVideos(videos.data.slice(2, 5));
 
         if (!user.isLoggedIn) {
           setTimeout(() => setShowAuthModal(true), 3000);
@@ -99,7 +98,7 @@ const Home = () => {
           maxToRenderPerBatch={3}
           getItemLayout={getItemLayout}
           ListFooterComponent={renderScrollLoader}
-          onEndReached={loadMoreVideos}
+          // onEndReached={loadMoreVideos}
           onEndReachedThreshold={0}
         />
       ) : (
