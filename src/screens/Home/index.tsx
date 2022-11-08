@@ -2,6 +2,8 @@ import React from 'react';
 import {View, Image} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {Icon, Badge} from '@rneui/themed';
+import {WINDOW_WIDTH} from '../../utils';
+
 import Inspiring from './Insipiring';
 import Following from './Following';
 
@@ -28,7 +30,10 @@ const HomeTabNavigator = () => {
             width: 40,
             marginLeft: 30,
           },
-          tabBarLabelStyle: {textTransform: 'none', fontSize: 18},
+          tabBarLabelStyle: {
+            textTransform: 'none',
+            fontSize: WINDOW_WIDTH * 0.04,
+          },
           tabBarActiveTintColor: '#FFFFFF',
           tabBarInactiveTintColor: '#C7C6C7',
         }}>
@@ -39,7 +44,7 @@ const HomeTabNavigator = () => {
       <View style={{position: 'absolute', top: 20, left: 10}}>
         <Image
           source={require('../../assets/icons/audio.png')}
-          style={{width: 20, height: 20}}
+          style={{transform: [{scale: WINDOW_WIDTH * 0.002}]}}
         />
         <Badge
           status="error"
@@ -48,7 +53,12 @@ const HomeTabNavigator = () => {
       </View>
 
       <View style={{position: 'absolute', top: 20, right: 10}}>
-        <Icon name="chatbox-ellipses" color="white" type="ionicon" />
+        <Icon
+          name="chatbox-ellipses"
+          color="white"
+          type="ionicon"
+          size={WINDOW_WIDTH * 0.08}
+        />
         <Badge
           status="error"
           containerStyle={{position: 'absolute', top: 0, left: 20}}

@@ -1,15 +1,12 @@
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
+import {Image, StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
 
-const windowHeight = Dimensions.get('window').height;
+import DraggableBottomSheet from '../../components/DraggableBottomSheet';
+import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../utils';
+
+const MiniProfile = () => {
+  const navigation = useNavigation();
 
 const MiniProfile = () => {
   const navigation = useNavigation();
@@ -81,6 +78,8 @@ const MiniProfile = () => {
           <Text style={styles.messageButtonText}>Message</Text>
         </TouchableOpacity>
       </View>
+
+      <DraggableBottomSheet />
     </View>
   );
 };
@@ -92,7 +91,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     padding: 16,
-    paddingTop: windowHeight / 6,
+    paddingTop: WINDOW_HEIGHT / 6,
     alignItems: 'center',
     textAlignVertical: 'center',
     backgroundColor: '#292D32',
@@ -106,10 +105,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   userPic: {
-    width: 200,
-    height: 200,
+    width: WINDOW_WIDTH * 0.5,
+    height: WINDOW_WIDTH * 0.5,
     borderRadius: 100,
-    margin: 32,
+    marginBottom: 10,
     borderWidth: 5,
     borderColor: 'white',
   },
@@ -124,15 +123,15 @@ const styles = StyleSheet.create({
   },
   userName: {
     color: 'white',
-    fontSize: 24,
+    fontSize: WINDOW_WIDTH * 0.06,
   },
   rating: {
     color: 'white',
-    fontSize: 20,
+    fontSize: WINDOW_WIDTH * 0.05,
   },
   flagIcon: {
-    width: 25,
-    height: 20,
+    width: WINDOW_WIDTH * 0.05,
+    aspectRatio: 1,
     borderRadius: 3,
   },
   bigDot: {
@@ -144,7 +143,7 @@ const styles = StyleSheet.create({
   },
   bio: {
     color: 'white',
-    fontSize: 16,
+    fontSize: WINDOW_WIDTH * 0.04,
   },
   tagSection: {
     width: '100%',
@@ -153,7 +152,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   tag: {
-    fontSize: 14,
+    fontSize: WINDOW_WIDTH * 0.04,
     margin: 2,
     borderRadius: 5,
     padding: 6,
@@ -179,7 +178,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statText: {
-    fontSize: 16,
+    fontSize: WINDOW_WIDTH * 0.04,
     color: 'white',
   },
   buttonSection: {
@@ -198,7 +197,7 @@ const styles = StyleSheet.create({
   },
   followButtonText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: WINDOW_WIDTH * 0.05,
     marginRight: 24,
     marginLeft: 24,
     marginTop: 4,
@@ -214,14 +213,14 @@ const styles = StyleSheet.create({
   },
   messageButtonText: {
     color: 'black',
-    fontSize: 20,
+    fontSize: WINDOW_WIDTH * 0.05,
     marginRight: 24,
     marginLeft: 24,
     marginTop: 4,
     marginBottom: 4,
   },
   backButtonIcon: {
-    transform: [{rotate: '180deg'}],
+    transform: [{rotate: '180deg'}, {scale: WINDOW_WIDTH * 0.003}],
     alignSelf: 'center',
   },
   backButton: {
@@ -230,8 +229,8 @@ const styles = StyleSheet.create({
     top: 16,
     alignItem: 'center',
     justifyContent: 'center',
-    height: 50,
-    width: 50,
+    height: WINDOW_WIDTH * 0.13,
+    width: WINDOW_WIDTH * 0.13,
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     borderRadius: 45,
   },

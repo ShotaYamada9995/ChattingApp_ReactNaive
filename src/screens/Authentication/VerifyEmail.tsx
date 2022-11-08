@@ -45,7 +45,7 @@ const VerifyEmail = () => {
             color: '#001433',
           }}
         />
-        <Text>
+        <Text style={{fontFamily: 'Gilroy-Medium'}}>
           Didn't get a code? <Text style={globalStyles.link}>Resend</Text>
         </Text>
 
