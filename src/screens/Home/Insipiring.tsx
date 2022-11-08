@@ -1,25 +1,25 @@
 import React, {useState, useCallback, useEffect, useRef} from 'react';
 import {View, FlatList, StyleSheet, ActivityIndicator} from 'react-native';
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
-import {getStatusBarHeight} from 'react-native-status-bar-height';
 
 import VideoPost from '../../components/VideoPost';
-import videosData from '../../videosData';
 import {WINDOW_HEIGHT} from '../../utils';
 import FeedsRepository from '../../repositories/FeedsRepository';
 import VideoLoadingIndicator from '../../components/shared/VideoLoadingIndicator';
-import {useNavigation} from '@react-navigation/native';
-import {current} from '@reduxjs/toolkit';
-import Video from 'react-native-video';
-// import MediaRepository from '../../repositories/MediaRepository';
+import {BottomSheet} from '@rneui/themed';
+import {useSelector} from 'react-redux';
+import AuthModal from './modules/AuthModal';
 
 const Home = () => {
+  const user = useSelector((state: any) => state.user);
+
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [videos, setVideos] = useState([]);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+
   const currentPage = useRef(0);
 
-  const keyExtractor = useCallback((item: any) => item._id, [videos]);
+  const keyExtractor = (item: any, index: number) => item._id;
 
   const getItemLayout = useCallback(
     (data, index) => ({
@@ -70,7 +70,15 @@ const Home = () => {
     (async () => {
       try {
         const videos = await FeedsRepository.getInspiringVideos(0);
-        setVideos(videos.data.slice(0, 1));
+        setVideos(videos.data.slice(2, 4));
+
+        console.log(
+          videos.data.slice(2, 4).map(video => ({video: video.file[0].cdnUrl})),
+        );
+
+        if (!user.isLoggedIn) {
+          setTimeout(() => setShowAuthModal(true), 3000);
+        }
       } catch (error) {
         console.log('Error: ', error);
       }
@@ -97,6 +105,13 @@ const Home = () => {
       ) : (
         <VideoLoadingIndicator />
       )}
+
+      <BottomSheet
+        onBackdropPress={() => setShowAuthModal(false)}
+        isVisible={showAuthModal}
+        containerStyle={styles.authModalContainer}>
+        <AuthModal onCancel={() => setShowAuthModal(false)} />
+      </BottomSheet>
     </View>
   );
 };
@@ -108,6 +123,9 @@ const styles = StyleSheet.create({
   scrollLoader: {
     alignSelf: 'center',
     marginVertical: 10,
+  },
+  authModalContainer: {
+    justifyContent: 'center',
   },
 });
 

@@ -71,6 +71,15 @@ const MainScreenStack = () => {
       />
       <AppStack.Screen name="PostMedia" component={PostMedia} />
       <AppStack.Screen name="MiniProfile" component={MiniProfile} />
+
+      <AppStack.Screen name="RegisterOptions" component={RegisterOptions} />
+      <AppStack.Screen name="RegisterEmail" component={RegisterEmail} />
+      <AppStack.Screen name="RegisterPassword" component={RegisterPassword} />
+      <AppStack.Screen name="VerifyEmail" component={VerifyEmail} />
+      <AppStack.Screen name="RegisterBio" component={RegisterBio} />
+      <AppStack.Screen name="ConfirmBio" component={ConfirmBio} />
+      <AppStack.Screen name="LoginOptions" component={LoginOptions} />
+      <AppStack.Screen name="LoginForm" component={LoginForm} />
     </AppStack.Navigator>
   );
 };
@@ -79,10 +88,10 @@ export default () => {
   const user = useSelector(state => state.user);
 
   const renderScreenStack = () => {
-    if (user.isLoggedIn) {
-      return <MainScreenStack />;
-    }
-    return <AuthScreenStack />;
+    // if (user.isLoggedIn) {
+    return <MainScreenStack />;
+    // }
+    // return <AuthScreenStack />;
   };
 
   useEffect(() => {
