@@ -9,6 +9,7 @@ import AuthFooter from '../../components/footers/AuthFooter';
 import {useNavigation} from '@react-navigation/native';
 
 import {update} from '../../store/reducers/Auth';
+import {useDispatch} from 'react-redux';
 
 const schema = yup.object().shape({
   email: yup
@@ -18,13 +19,14 @@ const schema = yup.object().shape({
 });
 
 const RegisterEmail = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
 
   type Values = {
     email: string;
   };
   const submit = (values: Values) => {
-    update({email: values.email});
+    dispatch(update(values));
 
     navigation.navigate('VerifyEmail');
   };

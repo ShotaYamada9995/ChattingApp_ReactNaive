@@ -9,7 +9,7 @@ import {useNavigation} from '@react-navigation/native';
 import AuthHeader from '../../components/headers/AuthHeader';
 import AuthFooter from '../../components/footers/AuthFooter';
 import globalStyles from '../../styles/globalStyles';
-import {update} from '../../store/reducers/User';
+import {update} from '../../store/reducers/Auth';
 import {WINDOW_WIDTH} from '../../utils';
 
 const schema = yup.object().shape({
@@ -25,7 +25,6 @@ const schema = yup.object().shape({
 const RegisterPassword = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [code, setCode] = useState('');
   const [remember, setRemember] = useState(false);
 
   const genPassword = () => {
@@ -50,7 +49,7 @@ const RegisterPassword = () => {
     password: string;
   };
   const handleSubmit = (values: Values) => {
-    // dispatch(update());
+    dispatch(update(values));
     navigation.navigate('RegisterBio');
   };
 

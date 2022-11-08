@@ -8,18 +8,16 @@ import AuthFooter from '../../components/footers/AuthFooter';
 import globalStyles from '../../styles/globalStyles';
 import {useNavigation} from '@react-navigation/native';
 import {update} from '../../store/reducers/Auth';
-import {useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 
 const VerifyEmail = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
-  const auth = useSelector((state: any) => state.auth);
-
-  console.log(auth.email);
 
   const [code, setCode] = useState('');
 
   const submit = () => {
-    update({otp: code});
+    dispatch(update({otp: code}));
     navigation.navigate('RegisterPassword');
   };
 

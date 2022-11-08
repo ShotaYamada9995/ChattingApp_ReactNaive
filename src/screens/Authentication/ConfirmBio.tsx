@@ -4,6 +4,7 @@ import {Text, Input, Button, Icon} from '@rneui/themed';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import SelectDropdown from 'react-native-select-dropdown';
+import {useSelector} from 'react-redux';
 
 import AuthHeader from '../../components/headers/AuthHeader';
 import {WINDOW_WIDTH} from '../../utils';
@@ -23,6 +24,8 @@ type Values = {
 };
 
 export default () => {
+  const auth = useSelector((state: any) => state.auth);
+
   const handleSubmit = (values: Values) => {
     console.log(values);
   };
@@ -49,6 +52,7 @@ export default () => {
                   marginLeft: 0,
                 }}
                 placeholder="Ugochukwu"
+                value={auth.firstname}
                 style={styles.inputField}
                 value={values.firstname}
                 onChangeText={handleChange('firstname')}
@@ -63,6 +67,7 @@ export default () => {
                   marginLeft: 0,
                 }}
                 placeholder="Orga"
+                value={auth.lastname}
                 style={{...styles.inputField, marginBottom: -20}}
                 value={values.lastname}
                 onChangeText={handleChange('lastname')}
@@ -78,6 +83,7 @@ export default () => {
                   marginLeft: 0,
                 }}
                 placeholder="WhatIDo@gmail.com"
+                defaultValue={auth.email}
                 style={styles.inputField}
                 rightIcon={
                   values.email && !errors.email ? (
@@ -95,6 +101,7 @@ export default () => {
               <Text style={styles.dropdownLabel}>Area of Expertise</Text>
               <SelectDropdown
                 data={['Data 1', 'Data 2']}
+                defaultValue={auth.expertise}
                 buttonStyle={styles.dropdownContainer}
                 buttonTextStyle={styles.dropdown}
                 dropdownStyle={styles.dropdownStyle}
@@ -116,6 +123,7 @@ export default () => {
               <Text style={styles.dropdownLabel}>Category</Text>
               <SelectDropdown
                 data={['Data 1', 'Data 2']}
+                defaultValue={auth.category}
                 buttonStyle={styles.dropdownContainer}
                 buttonTextStyle={styles.dropdown}
                 dropdownStyle={styles.dropdownStyle}
@@ -137,6 +145,7 @@ export default () => {
               <Text style={styles.dropdownLabel}>Sub-category</Text>
               <SelectDropdown
                 data={['Data 1', 'Data 2']}
+                defaultValue={auth.subCategory}
                 buttonStyle={styles.dropdownContainer}
                 buttonTextStyle={styles.dropdown}
                 dropdownStyle={styles.dropdownStyle}

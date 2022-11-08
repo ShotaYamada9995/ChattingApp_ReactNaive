@@ -76,7 +76,7 @@ const Home = () => {
         setVideos(videos.data.slice(2, 5));
 
         if (!user.isLoggedIn) {
-          setTimeout(() => setShowAuthModal(true), 3000);
+          setTimeout(() => setShowAuthModal(true), 2000);
         }
       } catch (error) {
         console.log('Error: ', error);

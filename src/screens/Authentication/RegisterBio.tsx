@@ -9,21 +9,31 @@ import AuthHeader from '../../components/headers/AuthHeader';
 import {WINDOW_WIDTH} from '../../utils';
 import {useNavigation} from '@react-navigation/native';
 
+import {update} from '../../store/reducers/Auth';
+import {useDispatch} from 'react-redux';
+
 const schema = yup.object().shape({
   firstname: yup.string().required('Please enter your email'),
   lastname: yup.string().required(),
+  expertise: yup.string().required(),
+  category: yup.string().required(),
+  subCategory: yup.string().required(),
 });
 
 type Values = {
   firstname: string;
   lastname: string;
+  expertise: string;
+  category: string;
+  subCategory: string;
 };
 
 export default () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
 
   const handleSubmit = (values: Values) => {
-    console.log(values);
+    dispatch(update(values));
     navigation.navigate('ConfirmBio');
   };
 
@@ -37,9 +47,22 @@ export default () => {
       <ScrollView contentContainerStyle={styles.formContainer}>
         <Formik
           validationSchema={schema}
-          initialValues={{firstname: '', lastname: ''}}
+          initialValues={{
+            firstname: '',
+            lastname: '',
+            expertise: '',
+            category: '',
+            subCategory: '',
+          }}
           onSubmit={handleSubmit}>
-          {({handleChange, handleSubmit, values, errors, isSubmitting}) => (
+          {({
+            handleChange,
+            handleSubmit,
+            setFieldValue,
+            values,
+            errors,
+            isSubmitting,
+          }) => (
             <>
               <Input
                 label="First name"
@@ -88,7 +111,9 @@ export default () => {
                     color="grey"
                   />
                 )}
-                onSelect={(selectedItem, index) => console.log(selectedItem)}
+                onSelect={(selectedItem, index) =>
+                  setFieldValue('expertise', selectedItem)
+                }
               />
 
               <Text style={styles.dropdownLabel}>Category</Text>
@@ -109,7 +134,9 @@ export default () => {
                     color="grey"
                   />
                 )}
-                onSelect={(selectedItem, index) => console.log(selectedItem)}
+                onSelect={(selectedItem, index) =>
+                  setFieldValue('category', selectedItem)
+                }
               />
 
               <Text style={styles.dropdownLabel}>Sub-category</Text>
@@ -130,7 +157,9 @@ export default () => {
                     color="grey"
                   />
                 )}
-                onSelect={(selectedItem, index) => console.log(selectedItem)}
+                onSelect={(selectedItem, index) =>
+                  setFieldValue('subCategory', selectedItem)
+                }
               />
 
               <Button
@@ -139,6 +168,7 @@ export default () => {
                 containerStyle={styles.btn}
                 buttonStyle={{paddingVertical: 10, borderColor: '#001433'}}
                 titleStyle={{color: '#001433'}}
+                onPress={handleSubmit}
                 loading={isSubmitting}
                 disabled={isSubmitting}
               />
