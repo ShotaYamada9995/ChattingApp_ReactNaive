@@ -8,6 +8,8 @@ import AuthHeader from '../../components/headers/AuthHeader';
 import AuthFooter from '../../components/footers/AuthFooter';
 import {useNavigation} from '@react-navigation/native';
 
+import {update} from '../../store/reducers/Auth';
+
 const schema = yup.object().shape({
   email: yup
     .string()
@@ -21,8 +23,10 @@ const RegisterEmail = () => {
   type Values = {
     email: string;
   };
-  const handleSubmit = (values: Values) => {
-    navigation.navigate('VerifyEmail', {code: '0419'});
+  const submit = (values: Values) => {
+    update({email: values.email});
+
+    navigation.navigate('VerifyEmail');
   };
   return (
     <View style={styles.container}>
@@ -35,7 +39,7 @@ const RegisterEmail = () => {
         <Formik
           validationSchema={schema}
           initialValues={{email: ''}}
-          onSubmit={handleSubmit}>
+          onSubmit={submit}>
           {({handleChange, handleSubmit, values, errors, isSubmitting}) => (
             <>
               <Input

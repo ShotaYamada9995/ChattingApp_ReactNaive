@@ -6,13 +6,22 @@ import OTPTextView from 'react-native-otp-textinput';
 import AuthHeader from '../../components/headers/AuthHeader';
 import AuthFooter from '../../components/footers/AuthFooter';
 import globalStyles from '../../styles/globalStyles';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import {update} from '../../store/reducers/Auth';
+import {useSelector} from 'react-redux';
 
 const VerifyEmail = () => {
   const navigation = useNavigation();
-  const route = useRoute();
+  const auth = useSelector((state: any) => state.auth);
+
+  console.log(auth.email);
 
   const [code, setCode] = useState('');
+
+  const submit = () => {
+    update({otp: code});
+    navigation.navigate('RegisterPassword');
+  };
 
   return (
     <View style={styles.container}>
@@ -53,7 +62,7 @@ const VerifyEmail = () => {
             containerStyle={styles.btn}
             buttonStyle={{paddingVertical: 10}}
             color="#001433"
-            onPress={() => navigation.navigate('RegisterPassword')}
+            onPress={submit}
           />
         </View>
       </ScrollView>
