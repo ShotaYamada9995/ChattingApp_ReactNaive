@@ -168,7 +168,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
               .replace(/%2F/g, '/'),
           }}
           style={styles.video}
-          resizeMode="contain"
+          resizeMode="cover"
           paused={video.isPaused || !canPlayVideo}
           onBuffer={data => setIsBuffering(data.isBuffering)}
           repeat

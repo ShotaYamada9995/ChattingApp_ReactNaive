@@ -17,7 +17,7 @@ const Home = () => {
   const [videos, setVideos] = useState([]);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  const currentPage = useRef(0);
+  const currentPage = useRef(1);
 
   const keyExtractor = (item: any, index: number) => item._id;
 
@@ -37,23 +37,23 @@ const Home = () => {
   const loadMoreVideos = async () => {
     setIsLoadingMore(true);
 
-    try {
-      const videos = await FeedsRepository.getInspiringVideos(
-        currentPage.current,
-      );
+    // try {
+    console.log(currentPage.current);
+    //   const videos = await FeedsRepository.getInspiringVideos(
+    //     currentPage.current,
+    //   );
 
-      // setVideos(current => {
-      //   return [...current, ...videos.data.slice(0, 4)];
-      // });
-      console.log('Loaded new videos. Page: ', currentPage.current);
+    //   setVideos(current => {
+    //     return [...current, ...videos.data];
+    //   });
 
-      currentPage.current++;
-    } catch (error) {
-      console.log('Error loading more videos: ');
-      console.error(error);
-    } finally {
-      setIsLoadingMore(false);
-    }
+    currentPage.current++;
+    // } catch (error) {
+    //   console.log('Error loading more videos: ');
+    //   console.error(error);
+    // } finally {
+    //   setIsLoadingMore(false);
+    // }
   };
 
   const handleOnScroll = e => {
@@ -73,7 +73,7 @@ const Home = () => {
     (async () => {
       try {
         const videos = await FeedsRepository.getInspiringVideos(0);
-        setVideos(videos.data.slice(0, 4));
+        setVideos(videos.data);
 
         if (!user.isLoggedIn) {
           setTimeout(() => setShowAuthModal(true), 2000);
@@ -98,8 +98,8 @@ const Home = () => {
           maxToRenderPerBatch={3}
           getItemLayout={getItemLayout}
           ListFooterComponent={renderScrollLoader}
-          // onEndReached={loadMoreVideos}
-          onEndReachedThreshold={0}
+          onEndReached={loadMoreVideos}
+          onEndReachedThreshold={0.001}
         />
       ) : (
         <VideoLoadingIndicator />
