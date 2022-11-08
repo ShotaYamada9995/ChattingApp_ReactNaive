@@ -8,6 +8,7 @@ import {useSelector} from 'react-redux';
 
 import AuthHeader from '../../components/headers/AuthHeader';
 import {WINDOW_WIDTH} from '../../utils';
+import AuthHeader1 from '../../components/headers/AuthHeader1';
 
 const schema = yup.object().shape({
   firstname: yup.string().required('Please enter your email'),
@@ -21,6 +22,9 @@ const schema = yup.object().shape({
 type Values = {
   firstname: string;
   lastname: string;
+  expertise: string;
+  category: string;
+  subCategory: string;
 };
 
 export default () => {
@@ -32,15 +36,19 @@ export default () => {
 
   return (
     <View style={styles.container}>
-      <AuthHeader
-        title="Welcome back"
-        caption="Please enter your details below"
-      />
+      <AuthHeader1 />
 
       <ScrollView contentContainerStyle={styles.formContainer}>
         <Formik
           validationSchema={schema}
-          initialValues={{firstname: '', lastname: '', email: ''}}
+          initialValues={{
+            firstname: auth.firstname,
+            lastname: auth.lastname,
+            email: auth.email,
+            expertise: auth.expertise,
+            category: auth.category,
+            subCategory: auth.subCategory,
+          }}
           onSubmit={handleSubmit}>
           {({handleChange, handleSubmit, values, errors, isSubmitting}) => (
             <>
@@ -52,7 +60,6 @@ export default () => {
                   marginLeft: 0,
                 }}
                 placeholder="Ugochukwu"
-                value={auth.firstname}
                 style={styles.inputField}
                 value={values.firstname}
                 onChangeText={handleChange('firstname')}
@@ -67,7 +74,6 @@ export default () => {
                   marginLeft: 0,
                 }}
                 placeholder="Orga"
-                value={auth.lastname}
                 style={{...styles.inputField, marginBottom: -20}}
                 value={values.lastname}
                 onChangeText={handleChange('lastname')}
@@ -83,7 +89,6 @@ export default () => {
                   marginLeft: 0,
                 }}
                 placeholder="WhatIDo@gmail.com"
-                defaultValue={auth.email}
                 style={styles.inputField}
                 rightIcon={
                   values.email && !errors.email ? (
@@ -101,7 +106,7 @@ export default () => {
               <Text style={styles.dropdownLabel}>Area of Expertise</Text>
               <SelectDropdown
                 data={['Data 1', 'Data 2']}
-                defaultValue={auth.expertise}
+                defaultValue={values.expertise}
                 buttonStyle={styles.dropdownContainer}
                 buttonTextStyle={styles.dropdown}
                 dropdownStyle={styles.dropdownStyle}
@@ -123,7 +128,7 @@ export default () => {
               <Text style={styles.dropdownLabel}>Category</Text>
               <SelectDropdown
                 data={['Data 1', 'Data 2']}
-                defaultValue={auth.category}
+                defaultValue={values.category}
                 buttonStyle={styles.dropdownContainer}
                 buttonTextStyle={styles.dropdown}
                 dropdownStyle={styles.dropdownStyle}
@@ -145,7 +150,7 @@ export default () => {
               <Text style={styles.dropdownLabel}>Sub-category</Text>
               <SelectDropdown
                 data={['Data 1', 'Data 2']}
-                defaultValue={auth.subCategory}
+                defaultValue={values.subCategory}
                 buttonStyle={styles.dropdownContainer}
                 buttonTextStyle={styles.dropdown}
                 dropdownStyle={styles.dropdownStyle}
@@ -169,6 +174,7 @@ export default () => {
                 containerStyle={styles.btn}
                 buttonStyle={{paddingVertical: 10}}
                 color="#001433"
+                onPress={handleSubmit}
                 loading={isSubmitting}
                 disabled={isSubmitting}
               />

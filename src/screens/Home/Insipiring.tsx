@@ -70,14 +70,14 @@ const Home = () => {
   };
 
   useEffect(() => {
+    if (!user.isLoggedIn) {
+      setTimeout(() => setShowAuthModal(true), 2000);
+    }
+
     (async () => {
       try {
         const videos = await FeedsRepository.getInspiringVideos(0);
         setVideos(videos.data.slice(2, 5));
-
-        if (!user.isLoggedIn) {
-          setTimeout(() => setShowAuthModal(true), 2000);
-        }
       } catch (error) {
         console.log('Error: ', error);
       }

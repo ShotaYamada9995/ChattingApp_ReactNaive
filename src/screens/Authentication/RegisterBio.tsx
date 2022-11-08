@@ -11,6 +11,7 @@ import {useNavigation} from '@react-navigation/native';
 
 import {update} from '../../store/reducers/Auth';
 import {useDispatch} from 'react-redux';
+import AuthHeader1 from '../../components/headers/AuthHeader1';
 
 const schema = yup.object().shape({
   firstname: yup.string().required('Please enter your email'),
@@ -39,10 +40,7 @@ export default () => {
 
   return (
     <View style={styles.container}>
-      <AuthHeader
-        title="Welcome back"
-        caption="Please enter your details below"
-      />
+      <AuthHeader1 />
 
       <ScrollView contentContainerStyle={styles.formContainer}>
         <Formik
@@ -169,7 +167,6 @@ export default () => {
                 buttonStyle={{paddingVertical: 10, borderColor: '#001433'}}
                 titleStyle={{color: '#001433'}}
                 onPress={handleSubmit}
-                loading={isSubmitting}
                 disabled={isSubmitting}
               />
             </>
