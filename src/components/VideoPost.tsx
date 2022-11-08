@@ -85,16 +85,28 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
   };
 
   const setVideoUrl = () => {
-    const filename: string = videoItem.file[0].cdnUrl.substring(
-      videoItem.file[0].cdnUrl.lastIndexOf('/') + 1,
-      videoItem.file[0].cdnUrl.length,
+    const filename: string = encodeURIComponent(
+      videoItem.file[0].cdnUrl,
+    ).substring(
+      encodeURIComponent(videoItem.file[0].cdnUrl)
+        .replace(/%3A/g, ':')
+        .replace(/%2F/g, '/')
+        .lastIndexOf('/') + 1,
+      encodeURIComponent(videoItem.file[0].cdnUrl)
+        .replace(/%3A/g, ':')
+        .replace(/%2F/g, '/').length,
     );
     const path_name = RNFS.DocumentDirectoryPath + '/' + filename;
 
     // download video
     RNFS.exists(path_name).then(exists => {
       if (exists) {
-        getVideoUrl(videoItem.file[0].cdnUrl, filename)
+        getVideoUrl(
+          encodeURIComponent(videoItem.file[0].cdnUrl)
+            .replace(/%3A/g, ':')
+            .replace(/%2F/g, '/'),
+          filename,
+        )
           .then(res => {
             setVideo(video => ({...video, url: res}));
           })
@@ -103,12 +115,19 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
           });
       } else {
         RNFS.downloadFile({
-          fromUrl: videoItem.file[0].cdnUrl,
+          fromUrl: encodeURIComponent(videoItem.file[0].cdnUrl)
+            .replace(/%3A/g, ':')
+            .replace(/%2F/g, '/'),
           toFile: path_name.replace(/%20/g, '_'),
           background: true,
         })
           .promise.then(res => {
-            getVideoUrl(videoItem.file[0].cdnUrl, filename)
+            getVideoUrl(
+              encodeURIComponent(videoItem.file[0].cdnUrl)
+                .replace(/%3A/g, ':')
+                .replace(/%2F/g, '/'),
+              filename,
+            )
               .then(res => {
                 setVideo(video => ({...video, url: res}));
               })
@@ -117,7 +136,12 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
               });
           })
           .catch(err => {
-            setVideo(video => ({...video, url: videoItem.file[0].cdnUrl}));
+            setVideo(video => ({
+              ...video,
+              url: encodeURIComponent(videoItem.file[0].cdnUrl)
+                .replace(/%3A/g, ':')
+                .replace(/%2F/g, '/'),
+            }));
           });
       }
     });
@@ -134,9 +158,15 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
 
   return (
     <View style={[styles.container, {height: videoPostHeight}]}>
-      {videoItem.file[0].cdnUrl && isFocused ? (
+      {encodeURIComponent(videoItem.file[0].cdnUrl)
+        .replace(/%3A/g, ':')
+        .replace(/%2F/g, '/') && isFocused ? (
         <Video
-          source={{uri: videoItem.file[0].cdnUrl}}
+          source={{
+            uri: encodeURIComponent(videoItem.file[0].cdnUrl)
+              .replace(/%3A/g, ':')
+              .replace(/%2F/g, '/'),
+          }}
           style={styles.video}
           resizeMode="contain"
           paused={video.isPaused || !canPlayVideo}
