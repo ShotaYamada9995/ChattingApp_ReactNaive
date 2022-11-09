@@ -15,6 +15,8 @@ const Home = () => {
   const user = useSelector((state: any) => state.user);
   const inspiringVideos = useSelector((state: any) => state.inspiringVideos);
 
+  console.log('User: ', user);
+
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [videos, setVideos] = useState([]);

@@ -3,6 +3,7 @@ import {View, ScrollView, StyleSheet} from 'react-native';
 import {Text, Input, CheckBox, Button, Icon} from '@rneui/themed';
 import {Formik} from 'formik';
 import * as yup from 'yup';
+import {useToast} from 'react-native-toast-notifications';
 
 import AuthHeader from '../../components/headers/AuthHeader';
 import AuthFooter from '../../components/footers/AuthFooter';
@@ -13,23 +14,18 @@ import AuthRepository from '../../repositories/AuthRepository';
 import {useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 
-import {login} from '../../store/reducers/Auth';
+import {login} from '../../store/reducers/User';
 
 const schema = yup.object().shape({
   email: yup
     .string()
     .email('Invalid email')
     .required('Please enter your email'),
-  password: yup
-    .string()
-    .required('Please enter your password')
-    .matches(
-      /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
-      'Password must contain at least 8 characters with at least one uppercase letter, one lowercase letter, one number and one special character(allowed characters => #, ?, !, @, $, %, ^, &, *, -)',
-    ),
+  password: yup.string().required('Please enter your password'),
 });
 
 const LoginForm = () => {
+  const toast = useToast();
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const [remember, setRemember] = useState(false);
@@ -45,16 +41,41 @@ const LoginForm = () => {
 
     try {
       const user = await AuthRepository.login(values);
-      console.log(user);
 
       const currentTime = Math.round(Date.now() / 1000);
       const loginDuration = 86400 * 90;
       const loginExpiryDate = currentTime + loginDuration;
 
-      // dispatch(login({...user, loginExpiryDate}));
-    } catch (error) {
-      console.log('Login Error');
-      console.error(error);
+      dispatch(
+        login({
+          token: user.data.token,
+          ...user.data.user,
+          loginExpiryDate: remember ? loginExpiryDate : 0,
+        }),
+      );
+
+      navigation.navigate('Main');
+
+      toast.show('Login Successful', {
+        type: 'success',
+        duration: 2000,
+      });
+    } catch (error: any) {
+      if (error.status === undefined) {
+        toast.show(
+          'Login failed. Please check your network connection and try again',
+          {
+            type: 'danger',
+            duration: 2000,
+          },
+        );
+      } else if (error.status === 401) {
+        toast.show('Incorrect email or password', {
+          type: 'danger',
+          duration: 2000,
+        });
+      }
+
       setIsSubmitting(false);
     }
   };
