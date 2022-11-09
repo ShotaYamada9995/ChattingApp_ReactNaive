@@ -35,11 +35,12 @@ export const userSlice = createSlice({
           return video;
         }
       });
+
       return newState;
     },
   },
 });
 
-export const {addVideos} = userSlice.actions;
+export const {addVideos, likeVideo, unlikeVideo} = userSlice.actions;
 
 export default userSlice.reducer;

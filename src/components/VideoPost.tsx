@@ -19,8 +19,12 @@ import {VideoModel} from '../videosData';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../utils';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
 import {useIsForeground} from '../hooks/useIsForeground';
-import VideoLoadingIndicator from './shared/VideoLoadingIndicator';
 import {TouchableOpacity} from 'react-native-gesture-handler';
+
+import {likeVideo, unlikeVideo} from '../store/reducers/InspiringVideos';
+import {useDispatch, useSelector} from 'react-redux';
+
+import MediaRepository from '../repositories/MediaRepository';
 
 interface VideoPostProps {
   videoItem: any;
@@ -28,7 +32,9 @@ interface VideoPostProps {
 }
 
 const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
+  const user = useSelector((state: any) => state.user);
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   const [video, setVideo] = useState({
     url: '',
@@ -72,7 +78,41 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
     setIsFollowing(!isFollowing);
   };
 
-  const shareVideo = () => {
+  const like = async () => {
+    if (user.isLoggedIn) {
+      dispatch(likeVideo({id: videoItem._id, username: user.slug}));
+
+      try {
+        await MediaRepository.likeVideo({
+          id: videoItem._id,
+          userSlug: user.slug,
+        });
+      } catch (error) {
+        return;
+      }
+    } else {
+      navigation.navigate('LoginOptions');
+    }
+  };
+
+  const unlike = async () => {
+    if (user.isLoggedIn) {
+      dispatch(unlikeVideo({id: videoItem._id, username: user.slug}));
+
+      try {
+        await MediaRepository.unlikeVideo({
+          id: videoItem._id,
+          userSlug: user.slug,
+        });
+      } catch (error) {
+        return;
+      }
+    } else {
+      navigation.navigate('LoginOptions');
+    }
+  };
+
+  const share = async () => {
     const options = {
       message: videoItem.text,
       url: videoUrl,
@@ -179,7 +219,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
 
   return (
     <View style={[styles.container, {height: videoPostHeight}]}>
-      {isActive && isFocused ? (
+      {/* {isActive && isFocused ? (
         <Video
           poster={videoItem.thumbnail[0].cdnUrl}
           posterResizeMode="cover"
@@ -192,12 +232,12 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
           onBuffer={data => setIsBuffering(data.isBuffering)}
           repeat
         />
-      ) : (
-        <Image
+      ) : ( */}
+      {/* <Image
           source={{uri: videoItem.thumbnail[0].cdnUrl}}
           style={styles.thumbnail}
-        />
-      )}
+        /> */}
+      {/* )} */}
 
       {video.isBuffering && (
         <ActivityIndicator
@@ -235,7 +275,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
               size={20}
               onPress={togglePause}
             />
-            <Text style={styles.viewsCount}>{videoItem.inspired.length}</Text>
+            <Text style={styles.viewsCount}>{videoItem.inspired_count}</Text>
           </View>
         </View>
 
@@ -247,13 +287,27 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             style={styles.verticalBarIcon}
             onPress={toggleBookmark}
           />
-          <Icon
-            name="heart"
-            type="ionicon"
-            color={video.isLiked ? 'red' : 'white'}
-            style={styles.verticalBarIcon}
-            onPress={toggleLike}
-          />
+
+          {!user.isLoggedIn || !videoItem.inspired.includes(user?.slug) ? (
+            <TouchableOpacity onPress={like}>
+              <Icon
+                name="heart"
+                type="ionicon"
+                color="white"
+                style={styles.verticalBarIcon}
+              />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={unlike}>
+              <Icon
+                name="heart"
+                type="ionicon"
+                color="red"
+                style={styles.verticalBarIcon}
+              />
+            </TouchableOpacity>
+          )}
+
           <Icon
             name="chatbubbles"
             type="ionicon"
@@ -261,7 +315,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             style={styles.verticalBarIcon}
           />
 
-          <TouchableOpacity onPress={shareVideo}>
+          <TouchableOpacity onPress={share}>
             <Icon
               name="arrow-redo"
               type="ionicon"
