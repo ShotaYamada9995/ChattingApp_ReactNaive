@@ -410,6 +410,8 @@ PODS:
   - RNScreens (3.18.2):
     - React-Core
     - React-RCTImage
+  - RNShare (8.0.0):
+    - React-Core
   - RNSVG (13.5.0):
     - React-Core
   - SocketRocket (0.6.0)
@@ -493,6 +495,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNShare (from `../node_modules/react-native-share`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - VisionCamera (from `../node_modules/react-native-vision-camera`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -608,6 +611,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-crop-picker"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNShare:
+    :path: "../node_modules/react-native-share"
   RNSVG:
     :path: "../node_modules/react-native-svg"
   VisionCamera:
@@ -675,6 +680,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
   RNImageCropPicker: 648356d68fbf9911a1016b3e3723885d28373eda
   RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
+  RNShare: 36aa3e6958373a0ad1c95a1c960adef589da3794
   RNSVG: 38ca962c970dbce1ca38991a5aebf26d163f9efb
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   SPTPersistentCache: df36ea46762d7cf026502bbb86a8b79d0080dff4

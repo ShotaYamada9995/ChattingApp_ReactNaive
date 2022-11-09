@@ -38,8 +38,6 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
 
   const [isFollowing, setIsFollowing] = useState(false);
 
-  const bottomTabHeight = useBottomTabBarHeight();
-
   const isForeGround = useIsForeground();
   const isFocused = useIsFocused();
   const canPlayVideo = isForeGround && isFocused;
@@ -48,6 +46,10 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
     Platform.OS === 'ios'
       ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
       : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104;
+
+  const videoUrl = encodeURIComponent(videoItem.file[0].cdnUrl)
+    .replace(/%3A/g, ':')
+    .replace(/%2F/g, '/');
 
   const togglePause = () => {
     setVideo(video => ({...video, isPaused: !video.isPaused}));
@@ -163,9 +165,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
           poster={videoItem.thumbnail[0].cdnUrl}
           posterResizeMode="cover"
           source={{
-            uri: encodeURIComponent(videoItem.file[0].cdnUrl)
-              .replace(/%3A/g, ':')
-              .replace(/%2F/g, '/'),
+            uri: videoUrl,
           }}
           style={styles.video}
           resizeMode="cover"
@@ -174,7 +174,10 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
           repeat
         />
       ) : (
-        <VideoLoadingIndicator />
+        <Image
+          source={{uri: videoItem.thumbnail[0].cdnUrl}}
+          style={styles.thumbnail}
+        />
       )}
 
       {video.isBuffering && (
@@ -262,6 +265,11 @@ const styles = StyleSheet.create({
   container: {
     width: WINDOW_WIDTH,
     backgroundColor: 'black',
+  },
+  thumbnail: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
   },
   video: {
     position: 'absolute',

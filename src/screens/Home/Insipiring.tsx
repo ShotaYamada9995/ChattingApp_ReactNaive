@@ -6,11 +6,14 @@ import {WINDOW_HEIGHT} from '../../utils';
 import FeedsRepository from '../../repositories/FeedsRepository';
 import VideoLoadingIndicator from '../../components/shared/VideoLoadingIndicator';
 import {BottomSheet} from '@rneui/themed';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import AuthModal from './modules/AuthModal';
+import {addVideos} from '../../store/reducers/InspiringVideos';
 
 const Home = () => {
+  const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
+  const inspiringVideos = useSelector((state: any) => state.inspiringVideos);
 
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -43,9 +46,7 @@ const Home = () => {
     //     currentPage.current,
     //   );
 
-    //   setVideos(current => {
-    //     return [...current, ...videos.data];
-    //   });
+    //  dispatch(addVideos(videos.data));
 
     currentPage.current++;
     // } catch (error) {
@@ -73,7 +74,7 @@ const Home = () => {
     (async () => {
       try {
         const videos = await FeedsRepository.getInspiringVideos(0);
-        setVideos(videos.data);
+        dispatch(addVideos(videos.data));
 
         if (!user.isLoggedIn) {
           setTimeout(() => setShowAuthModal(true), 2000);
@@ -88,7 +89,7 @@ const Home = () => {
     <View style={styles.container}>
       {videos.length > 0 ? (
         <FlatList
-          data={videos}
+          data={inspiringVideos}
           keyExtractor={keyExtractor}
           pagingEnabled
           renderItem={renderVideoPost}
@@ -98,8 +99,8 @@ const Home = () => {
           maxToRenderPerBatch={3}
           getItemLayout={getItemLayout}
           ListFooterComponent={renderScrollLoader}
-          onEndReached={loadMoreVideos}
-          onEndReachedThreshold={0.001}
+          // onEndReached={loadMoreVideos}
+          // onEndReachedThreshold={0.001}
         />
       ) : (
         <VideoLoadingIndicator />

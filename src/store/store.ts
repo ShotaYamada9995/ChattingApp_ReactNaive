@@ -15,17 +15,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Auth from './reducers/Auth';
 import User from './reducers/User';
 import Video from './reducers/Video';
+import InspiringVideos from './reducers/InspiringVideos';
 
 const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
+  blacklist: ['ínspiringVideos'],
 };
 
 const reducers = combineReducers({
   auth: Auth,
   user: User,
   video: Video,
+  inspiringVideos: InspiringVideos,
 });
 const persistedReducer = persistReducer(persistConfig, reducers);
 
