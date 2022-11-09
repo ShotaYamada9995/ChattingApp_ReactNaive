@@ -158,10 +158,10 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
 
   return (
     <View style={[styles.container, {height: videoPostHeight}]}>
-      {encodeURIComponent(videoItem.file[0].cdnUrl)
-        .replace(/%3A/g, ':')
-        .replace(/%2F/g, '/') && isFocused ? (
+      {isActive && isFocused ? (
         <Video
+          poster={videoItem.thumbnail[0].cdnUrl}
+          posterResizeMode="cover"
           source={{
             uri: encodeURIComponent(videoItem.file[0].cdnUrl)
               .replace(/%3A/g, ':')
@@ -213,7 +213,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
               size={20}
               onPress={togglePause}
             />
-            <Text style={styles.viewsCount}>25k</Text>
+            <Text style={styles.viewsCount}>{videoItem.inspired.length}</Text>
           </View>
         </View>
 
