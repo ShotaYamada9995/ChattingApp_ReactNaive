@@ -13,12 +13,14 @@ import Video from 'react-native-video';
 import RNFS from 'react-native-fs';
 import {Icon} from '@rneui/themed';
 import {getStatusBarHeight} from 'react-native-status-bar-height';
+import Share from 'react-native-share';
 
 import {VideoModel} from '../videosData';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../utils';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
 import {useIsForeground} from '../hooks/useIsForeground';
 import VideoLoadingIndicator from './shared/VideoLoadingIndicator';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 interface VideoPostProps {
   videoItem: any;
@@ -70,87 +72,104 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
     setIsFollowing(!isFollowing);
   };
 
-  const getVideoUrl = (url: string, filename: string) => {
-    return new Promise((resolve, reject) => {
-      RNFS.readDir(RNFS.DocumentDirectoryPath)
-        .then(result => {
-          result.forEach(element => {
-            if (element.name == filename.replace(/%20/g, '_')) {
-              resolve(element.path);
-            }
-          });
-        })
-        .catch(err => {
-          reject(url);
-        });
-    });
+  const shareVideo = () => {
+    const options = {
+      message: videoItem.text,
+      url: videoUrl,
+    };
+
+    togglePause();
+
+    Share.open(options)
+      .then(res => {
+        return;
+      })
+      .catch(err => {
+        return;
+      })
+      .finally(() => togglePause());
   };
 
-  const setVideoUrl = () => {
-    const filename: string = encodeURIComponent(
-      videoItem.file[0].cdnUrl,
-    ).substring(
-      encodeURIComponent(videoItem.file[0].cdnUrl)
-        .replace(/%3A/g, ':')
-        .replace(/%2F/g, '/')
-        .lastIndexOf('/') + 1,
-      encodeURIComponent(videoItem.file[0].cdnUrl)
-        .replace(/%3A/g, ':')
-        .replace(/%2F/g, '/').length,
-    );
-    const path_name = RNFS.DocumentDirectoryPath + '/' + filename;
+  // const getVideoUrl = (url: string, filename: string) => {
+  //   return new Promise((resolve, reject) => {
+  //     RNFS.readDir(RNFS.DocumentDirectoryPath)
+  //       .then(result => {
+  //         result.forEach(element => {
+  //           if (element.name == filename.replace(/%20/g, '_')) {
+  //             resolve(element.path);
+  //           }
+  //         });
+  //       })
+  //       .catch(err => {
+  //         reject(url);
+  //       });
+  //   });
+  // };
 
-    // download video
-    RNFS.exists(path_name).then(exists => {
-      if (exists) {
-        getVideoUrl(
-          encodeURIComponent(videoItem.file[0].cdnUrl)
-            .replace(/%3A/g, ':')
-            .replace(/%2F/g, '/'),
-          filename,
-        )
-          .then(res => {
-            setVideo(video => ({...video, url: res}));
-          })
-          .catch(url => {
-            setVideo(video => ({...video, url: url}));
-          });
-      } else {
-        RNFS.downloadFile({
-          fromUrl: encodeURIComponent(videoItem.file[0].cdnUrl)
-            .replace(/%3A/g, ':')
-            .replace(/%2F/g, '/'),
-          toFile: path_name.replace(/%20/g, '_'),
-          background: true,
-        })
-          .promise.then(res => {
-            getVideoUrl(
-              encodeURIComponent(videoItem.file[0].cdnUrl)
-                .replace(/%3A/g, ':')
-                .replace(/%2F/g, '/'),
-              filename,
-            )
-              .then(res => {
-                setVideo(video => ({...video, url: res}));
-              })
-              .catch(url => {
-                setVideo(video => ({...video, url: url}));
-              });
-          })
-          .catch(err => {
-            setVideo(video => ({
-              ...video,
-              url: encodeURIComponent(videoItem.file[0].cdnUrl)
-                .replace(/%3A/g, ':')
-                .replace(/%2F/g, '/'),
-            }));
-          });
-      }
-    });
-  };
+  // const setVideoUrl = () => {
+  //   const filename: string = encodeURIComponent(
+  //     videoItem.file[0].cdnUrl,
+  //   ).substring(
+  //     encodeURIComponent(videoItem.file[0].cdnUrl)
+  //       .replace(/%3A/g, ':')
+  //       .replace(/%2F/g, '/')
+  //       .lastIndexOf('/') + 1,
+  //     encodeURIComponent(videoItem.file[0].cdnUrl)
+  //       .replace(/%3A/g, ':')
+  //       .replace(/%2F/g, '/').length,
+  //   );
+  //   const path_name = RNFS.DocumentDirectoryPath + '/' + filename;
+
+  //   // download video
+  //   RNFS.exists(path_name).then(exists => {
+  //     if (exists) {
+  //       getVideoUrl(
+  //         encodeURIComponent(videoItem.file[0].cdnUrl)
+  //           .replace(/%3A/g, ':')
+  //           .replace(/%2F/g, '/'),
+  //         filename,
+  //       )
+  //         .then(res => {
+  //           setVideo(video => ({...video, url: res}));
+  //         })
+  //         .catch(url => {
+  //           setVideo(video => ({...video, url: url}));
+  //         });
+  //     } else {
+  //       RNFS.downloadFile({
+  //         fromUrl: encodeURIComponent(videoItem.file[0].cdnUrl)
+  //           .replace(/%3A/g, ':')
+  //           .replace(/%2F/g, '/'),
+  //         toFile: path_name.replace(/%20/g, '_'),
+  //         background: true,
+  //       })
+  //         .promise.then(res => {
+  //           getVideoUrl(
+  //             encodeURIComponent(videoItem.file[0].cdnUrl)
+  //               .replace(/%3A/g, ':')
+  //               .replace(/%2F/g, '/'),
+  //             filename,
+  //           )
+  //             .then(res => {
+  //               setVideo(video => ({...video, url: res}));
+  //             })
+  //             .catch(url => {
+  //               setVideo(video => ({...video, url: url}));
+  //             });
+  //         })
+  //         .catch(err => {
+  //           setVideo(video => ({
+  //             ...video,
+  //             url: encodeURIComponent(videoItem.file[0].cdnUrl)
+  //               .replace(/%3A/g, ':')
+  //               .replace(/%2F/g, '/'),
+  //           }));
+  //         });
+  //     }
+  //   });
+  // };
 
   useEffect(() => {
-    setVideoUrl();
     if (isActive) {
       setVideo(video => ({...video, isPaused: false}));
     } else {
@@ -241,12 +260,16 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             color="white"
             style={styles.verticalBarIcon}
           />
-          <Icon
-            name="arrow-redo"
-            type="ionicon"
-            color="white"
-            style={styles.verticalBarIcon}
-          />
+
+          <TouchableOpacity onPress={shareVideo}>
+            <Icon
+              name="arrow-redo"
+              type="ionicon"
+              color="white"
+              style={styles.verticalBarIcon}
+            />
+          </TouchableOpacity>
+
           <Icon
             name="ellipsis-horizontal"
             type="ionicon"

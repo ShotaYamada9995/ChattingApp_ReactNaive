@@ -87,7 +87,7 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      {videos.length > 0 ? (
+      {inspiringVideos.length > 0 ? (
         <FlatList
           data={inspiringVideos}
           keyExtractor={keyExtractor}
