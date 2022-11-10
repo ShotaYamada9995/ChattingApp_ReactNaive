@@ -71,18 +71,20 @@ const Home = () => {
   };
 
   useEffect(() => {
-    (async () => {
-      try {
-        const videos = await FeedsRepository.getInspiringVideos(0);
-        dispatch(addVideos(videos.data));
+    if (inspiringVideos.length === 0) {
+      (async () => {
+        try {
+          const videos = await FeedsRepository.getInspiringVideos(0);
+          dispatch(addVideos(videos.data));
 
-        if (!user.isLoggedIn) {
-          setTimeout(() => setShowAuthModal(true), 2000);
+          if (!user.isLoggedIn) {
+            setTimeout(() => setShowAuthModal(true), 2000);
+          }
+        } catch (error) {
+          console.log('Error: ', error);
         }
-      } catch (error) {
-        console.log('Error: ', error);
-      }
-    })();
+      })();
+    }
   }, []);
 
   return (

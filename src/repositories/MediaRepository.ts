@@ -39,7 +39,17 @@ class MediaRepository {
   async uploadMedia(payload: UploadMediaProps) {
     const endpoint = `${DOMAIN}/media/create`;
 
-    const response = await axios.post(endpoint, payload);
+    const handleProgressEvent = (progressEvent: any) => {
+      const percent = Math.round(
+        (progressEvent.loaded * 100) / progressEvent.total,
+      );
+
+      console.log('Upload progress: ', percent);
+    };
+
+    const response = await axios.post(endpoint, payload, {
+      onUploadProgress: handleProgressEvent,
+    });
 
     return response;
   }

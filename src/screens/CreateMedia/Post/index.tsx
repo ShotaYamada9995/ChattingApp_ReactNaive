@@ -9,11 +9,15 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import {Icon, Button, BottomSheet, CheckBox} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import {MentionInput} from 'react-native-controlled-mentions';
+import {Video as VideoCompressor} from 'react-native-compressor';
+
+import MediaRepository from '../../../repositories/MediaRepository';
 
 import globalStyles from '../../../styles/globalStyles';
 
@@ -26,9 +30,12 @@ type Viewer = 'Everyone' | 'Friends' | 'Only me';
 
 const PostMedia = () => {
   const navigation = useNavigation();
-  const user = useSelector((state: any) => state.user);
+  const {user, video} = useSelector((state: any) => ({
+    user: state.user,
+    video: state.video,
+  }));
 
-  const [coverImage, setCoverImage] = useState<string | undefined>('');
+  const [coverImage, setCoverImage] = useState<string>('');
   const [config, setConfig] = useState({
     allowComments: true,
     allowDuet: true,
@@ -42,8 +49,6 @@ const PostMedia = () => {
   const [tags, setTags] = useState([]);
 
   const captionRef = useRef(null);
-
-  const video = useSelector((state: any) => state.video);
 
   const toggleComments = () => {
     setConfig(config => ({...config, allowComments: !config.allowComments}));
@@ -66,9 +71,35 @@ const PostMedia = () => {
     setCaption(caption);
   };
 
+  const postMedia = async () => {
+    try {
+      const compressedVideo = await VideoCompressor.compress(
+        video.path,
+        {compressionMethod: 'auto'},
+        progress => {
+          console.log('Compression Progress: ', progress);
+        },
+      );
+
+      const upload = await MediaRepository.uploadMedia({
+        file: compressedVideo,
+        thumbnail: coverImage,
+        community: 'music',
+        tags: [],
+        text: caption,
+        userSlug: user.slug,
+      });
+
+      console.log('Upload: ', upload);
+    } catch (error) {
+      console.log('Error posting video');
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     (async () => {
-      const frame: string | undefined = await genFirstFrame(video.path);
+      const frame: string = await genFirstFrame(video.path);
       setCoverImage(frame);
     })();
   }, []);
@@ -117,12 +148,24 @@ const PostMedia = () => {
               resizeMode="contain"
             />
           ) : null}
+
+          {!coverImage ? (
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <ActivityIndicator color="white" />
+            </View>
+          ) : null}
+
           <TouchableOpacity
             style={styles.selectCoverBtn}
             onPress={() => (coverImage ? setShowSelectCoverImage(true) : null)}>
             <Text style={styles.selectCoverText}>Select cover</Text>
           </TouchableOpacity>
         </View>
+
+        {/* {!coverImage ? ( */}
+
+        {/* ) : null} */}
       </TouchableOpacity>
 
       <BottomSheet
@@ -274,6 +317,8 @@ const PostMedia = () => {
         containerStyle={styles.btn}
         buttonStyle={{paddingVertical: 10, borderColor: '#001433'}}
         color="#001433"
+        disabled={coverImage ? false : true}
+        onPress={postMedia}
       />
     </View>
   );
