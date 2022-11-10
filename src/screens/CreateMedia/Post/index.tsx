@@ -107,16 +107,16 @@ const PostMedia = () => {
         </View>
 
         <View style={styles.coverContainer}>
-          {!!coverImage && (
+          {coverImage ? (
             <Image
               source={{uri: coverImage}}
               style={{width: '100%', height: '100%'}}
               resizeMode="contain"
             />
-          )}
+          ) : null}
           <TouchableOpacity
             style={styles.selectCoverBtn}
-            onPress={() => setShowSelectCoverImage(true)}>
+            onPress={() => (coverImage ? setShowSelectCoverImage(true) : null)}>
             <Text style={styles.selectCoverText}>Select cover</Text>
           </TouchableOpacity>
         </View>

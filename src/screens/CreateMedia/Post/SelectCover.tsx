@@ -12,6 +12,11 @@ import Slider from 'rn-range-slider';
 
 import {genFrames} from '../../../utils/videoProcessor';
 
+import Notch from '../../../components/slider/Notch';
+import RailSelected from '../../../components/slider/RailSelected';
+import Thumb from './modules/slider/Thumb';
+import Rail from './modules/slider/Rail';
+
 interface SelectCoverProps {
   defaultCoverImage: string | undefined;
   onCancel: () => void;
@@ -21,6 +26,13 @@ export default ({defaultCoverImage, onCancel}: SelectCoverProps) => {
   const video = useSelector((state: any) => state.video);
   const [coverImage, setCoverImage] = useState(defaultCoverImage);
   const [frames, setFrames] = useState([]);
+
+  const renderThumb = useCallback(
+    () => <Thumb image={`${coverImage}`} />,
+    [coverImage],
+  );
+  const renderRail = useCallback(() => <Rail />, []);
+  const renderRailSelected = useCallback(() => <RailSelected />, []);
 
   return (
     <View style={styles.container}>
@@ -43,6 +55,19 @@ export default ({defaultCoverImage, onCancel}: SelectCoverProps) => {
           />
         </View>
       )}
+
+      <Slider
+        disableRange
+        style={styles.slider}
+        min={0}
+        max={100}
+        step={1}
+        renderThumb={renderThumb}
+        renderRail={renderRail}
+        renderRailSelected={renderRailSelected}
+        // onValueChanged
+        // onSliderTouchEnd={handleOnSlideTouchEnd}
+      />
     </View>
   );
 };
@@ -75,5 +100,10 @@ const styles = StyleSheet.create({
   coverImage: {
     width: '100%',
     height: '100%',
+  },
+  slider: {
+    alignSelf: 'center',
+    marginTop: 30,
+    width: '50%',
   },
 });

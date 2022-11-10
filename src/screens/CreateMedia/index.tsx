@@ -101,7 +101,7 @@ const VideoCapture = () => {
     })
       .then(video => {
         const duration = video.duration / 1000;
-        if (video.mime === 'video/mp4') {
+        if (video.mime.includes('video')) {
           dispatch(
             update({
               duration,
@@ -110,7 +110,7 @@ const VideoCapture = () => {
           );
           navigation.navigate('VideoEditor');
         } else {
-          Alert.alert('Invalid video format. Video must be an mp4 file');
+          Alert.alert('You can only select videos');
         }
       })
       .catch(err => {

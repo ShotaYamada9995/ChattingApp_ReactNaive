@@ -275,7 +275,7 @@ const Trim = () => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.sliderContainer}> */}
       <Slider
-        style={[styles.slider, {width: '80%'}]}
+        style={styles.slider}
         min={0}
         max={videoData.duration}
         low={slider.low}
@@ -342,6 +342,7 @@ const styles = StyleSheet.create({
   slider: {
     alignSelf: 'center',
     marginTop: 30,
+    width: '80%',
   },
 });
 

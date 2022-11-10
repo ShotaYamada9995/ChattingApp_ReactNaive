@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useMemo} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import Video from 'react-native-video';
 import {Icon, Button} from '@rneui/themed';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
@@ -14,6 +14,16 @@ const VideoEditor = () => {
   const isForeGround = useIsForeground();
   const isFocused = useIsFocused();
   const canPlayVideo = isForeGround && isFocused;
+
+  const goToPost = () => {
+    if (video.duration > 120) {
+      Alert.alert(
+        'Video duration cannot exceed 2 minuetes. Trim the video or select a new video.',
+      );
+    } else {
+      navigation.navigate('PostMedia');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -53,7 +63,7 @@ const VideoEditor = () => {
           containerStyle={styles.btn}
           buttonStyle={{paddingVertical: 10}}
           color="#001433"
-          onPress={() => navigation.navigate('PostMedia')}
+          onPress={goToPost}
         />
       </View>
     </View>
