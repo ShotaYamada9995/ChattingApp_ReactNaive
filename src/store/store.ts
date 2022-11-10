@@ -16,12 +16,13 @@ import Auth from './reducers/Auth';
 import User from './reducers/User';
 import Video from './reducers/Video';
 import InspiringVideos from './reducers/InspiringVideos';
+import Bookmarks from './reducers/Bookmarks';
 
 const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  blacklist: ['ínspiringVideos'],
+  blacklist: ['auth', 'ínspiringVideos'],
 };
 
 const reducers = combineReducers({
@@ -29,6 +30,7 @@ const reducers = combineReducers({
   user: User,
   video: Video,
   inspiringVideos: InspiringVideos,
+  bookmarks: Bookmarks,
 });
 const persistedReducer = persistReducer(persistConfig, reducers);
 
@@ -39,7 +41,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }), // '.concat(logger) to add logger
+    }),
 });
 
 export const persistor = persistStore(store);

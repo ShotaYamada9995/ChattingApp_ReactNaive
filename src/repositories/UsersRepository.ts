@@ -10,6 +10,14 @@ class FeedsRepository {
 
     return response;
   }
+
+  async getUsersFollowing(userSlug: string) {
+    const endpoint = `${DOMAIN}/following/${userSlug}`;
+
+    const response = await axios.get(endpoint);
+
+    return response;
+  }
 }
 
 export default new FeedsRepository();

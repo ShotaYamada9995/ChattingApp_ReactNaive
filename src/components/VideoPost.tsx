@@ -12,7 +12,6 @@ import {
 import Video from 'react-native-video';
 import RNFS from 'react-native-fs';
 import {Icon} from '@rneui/themed';
-import {getStatusBarHeight} from 'react-native-status-bar-height';
 import Share from 'react-native-share';
 
 import {VideoModel} from '../videosData';
@@ -237,12 +236,12 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
           onBuffer={data => setIsBuffering(data.isBuffering)}
           repeat
         />
-      ) : ( */}
-      {/* <Image
+      ) : (
+        <Image
           source={{uri: videoItem.thumbnail[0].cdnUrl}}
           style={styles.thumbnail}
-        /> */}
-      {/* )} */}
+        />
+      )} */}
 
       {video.isBuffering && (
         <ActivityIndicator
@@ -286,44 +285,39 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
 
         <View style={styles.bottomRightSection}>
           {bookmarks.some((video: any) => video._id === videoItem._id) ? (
-            <TouchableOpacity
-              onPress={() => dispatch(removeBookmark({id: videoItem._id}))}>
-              <Icon
-                name="bookmark"
-                type="ionicon"
-                color="white"
-                style={styles.verticalBarIcon}
-              />
-            </TouchableOpacity>
+            <Icon
+              name="bookmark"
+              type="ionicon"
+              color="white"
+              style={styles.verticalBarIcon}
+              onPress={() => dispatch(removeBookmark({id: videoItem._id}))}
+            />
           ) : (
-            <TouchableOpacity onPress={() => dispatch(addBookmark(videoItem))}>
-              <Icon
-                name="bookmark-outline"
-                type="ionicon"
-                color="white"
-                style={styles.verticalBarIcon}
-              />
-            </TouchableOpacity>
+            <Icon
+              name="bookmark-outline"
+              type="ionicon"
+              color="white"
+              style={styles.verticalBarIcon}
+              onPress={() => dispatch(addBookmark(videoItem))}
+            />
           )}
 
           {!user.isLoggedIn || !videoItem.inspired.includes(user?.slug) ? (
-            <TouchableOpacity onPress={like}>
-              <Icon
-                name="heart"
-                type="ionicon"
-                color="white"
-                style={styles.verticalBarIcon}
-              />
-            </TouchableOpacity>
+            <Icon
+              name="heart"
+              type="ionicon"
+              color="white"
+              style={styles.verticalBarIcon}
+              onPress={like}
+            />
           ) : (
-            <TouchableOpacity onPress={unlike}>
-              <Icon
-                name="heart"
-                type="ionicon"
-                color="red"
-                style={styles.verticalBarIcon}
-              />
-            </TouchableOpacity>
+            <Icon
+              name="heart"
+              type="ionicon"
+              color="red"
+              style={styles.verticalBarIcon}
+              onPress={unlike}
+            />
           )}
 
           <Icon
@@ -333,14 +327,13 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             style={styles.verticalBarIcon}
           />
 
-          <TouchableOpacity onPress={share}>
-            <Icon
-              name="arrow-redo"
-              type="ionicon"
-              color="white"
-              style={styles.verticalBarIcon}
-            />
-          </TouchableOpacity>
+          <Icon
+            name="arrow-redo"
+            type="ionicon"
+            color="white"
+            style={styles.verticalBarIcon}
+            onPress={share}
+          />
 
           <Icon
             name="ellipsis-horizontal"

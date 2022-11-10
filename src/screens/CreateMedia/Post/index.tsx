@@ -26,6 +26,7 @@ type Viewer = 'Everyone' | 'Friends' | 'Only me';
 
 const PostMedia = () => {
   const navigation = useNavigation();
+  const user = useSelector((state: any) => state.user);
 
   const [coverImage, setCoverImage] = useState<string | undefined>('');
   const [config, setConfig] = useState({
@@ -157,21 +158,23 @@ const PostMedia = () => {
             onCancel={() => setShowTagScreen(false)}
           />
         </BottomSheet>
+        {user.isLoggedIn && (
+          <TouchableOpacity
+            style={[styles.configLayout, globalStyles.rowLayout]}>
+            <View style={styles.configEdgeLayout}>
+              {/* <Icon name="location-outline" type="ionicon" /> */}
+              <Text style={styles.label}>Location</Text>
+            </View>
 
-        <TouchableOpacity style={[styles.configLayout, globalStyles.rowLayout]}>
-          <View style={styles.configEdgeLayout}>
-            <Icon name="location-outline" type="ionicon" />
-            <Text style={styles.label}>Location</Text>
-          </View>
-
-          <Icon name="chevron-right" color="black" />
-        </TouchableOpacity>
+            <Icon name="chevron-right" color="black" />
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity
           style={[styles.configLayout, globalStyles.rowLayout]}
           onPress={() => setShowViewers(true)}>
           <View style={styles.configEdgeLayout}>
-            <Icon name="location-outline" type="ionicon" />
+            {/* <Icon name="location-outline" type="ionicon" /> */}
             <Text style={styles.label}>Who can watch this video?</Text>
           </View>
 
@@ -222,7 +225,7 @@ const PostMedia = () => {
 
         <View style={[styles.configLayout, globalStyles.rowLayout]}>
           <View style={styles.configEdgeLayout}>
-            <Icon name="chatbubble-ellipses-outline" type="ionicon" />
+            {/* <Icon name="chatbubble-ellipses-outline" type="ionicon" /> */}
             <Text style={styles.label}>Allow Comments</Text>
           </View>
 
@@ -237,7 +240,7 @@ const PostMedia = () => {
 
         <View style={[styles.configLayout, globalStyles.rowLayout]}>
           <View style={styles.configEdgeLayout}>
-            <Icon name="location-pin" type="fonrawesome" />
+            {/* <Icon name="location-pin" type="fonrawesome" /> */}
             <Text style={styles.label}>Allow Duet</Text>
           </View>
 
@@ -252,7 +255,7 @@ const PostMedia = () => {
 
         <View style={[styles.configLayout, globalStyles.rowLayout]}>
           <View style={styles.configEdgeLayout}>
-            <Icon name="location-pin" type="fonrawesome" />
+            {/* <Icon name="location-pin" type="fonrawesome" /> */}
             <Text style={styles.label}>Allow Share</Text>
           </View>
 

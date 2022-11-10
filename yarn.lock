@@ -6588,6 +6588,11 @@ react-native-codegen@^0.70.6:
     jscodeshift "^0.13.1"
     nullthrows "^1.1.1"
 
+react-native-compressor@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/react-native-compressor/-/react-native-compressor-1.6.1.tgz#f1e4b765f172c649a453f39b3b7478554f825596"
+  integrity sha512-SmyRPWIQY7RPz50bXkkhLcIjoMMIB62rJJls9cG7XCeMIN/I8TFijmXZjEWrgzRlUMBa0JMr7AIXSLvcMp9hfA==
+
 react-native-controlled-mentions@^2.2.5:
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/react-native-controlled-mentions/-/react-native-controlled-mentions-2.2.5.tgz#2eddcdf6b6a0ead0c448be4bb0239e10eca84a29"

@@ -24,7 +24,7 @@ const Users = ({title, tags, onSelect}: Users) => {
       <View style={globalStyle.rowLayout}>
         <View style={globalStyle.rowLayout}>
           <Avatar
-            source={require('../assets/images/profile_picture.webp')}
+            source={require('../../../../assets/images/profile_picture.webp')}
             rounded
             size="medium"
           />

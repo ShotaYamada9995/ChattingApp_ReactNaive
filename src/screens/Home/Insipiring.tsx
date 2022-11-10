@@ -98,7 +98,7 @@ const Home = () => {
           windowSize={3}
           maxToRenderPerBatch={3}
           getItemLayout={getItemLayout}
-          ListFooterComponent={renderScrollLoader}
+          // ListFooterComponent={renderScrollLoader}
           // onEndReached={loadMoreVideos}
           // onEndReachedThreshold={0.001}
         />

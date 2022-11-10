@@ -6,6 +6,15 @@ interface LikeUnlikePayload {
   id: string;
   userSlug: string;
 }
+
+interface UploadMediaProps {
+  file: string;
+  thumbnail: string;
+  community: string;
+  tags: string[];
+  text: string;
+  userSlug: string;
+}
 class MediaRepository {
   async getVideos(page: number) {
     const endpoint = `${DOMAIN}/media/fetchVideos?page=${page}`;
@@ -25,6 +34,14 @@ class MediaRepository {
     const endpoint = `${DOMAIN}/media/unlikeVideo`;
 
     await axios.post(endpoint, payload);
+  }
+
+  async uploadMedia(payload: UploadMediaProps) {
+    const endpoint = `${DOMAIN}/media/create`;
+
+    const response = await axios.post(endpoint, payload);
+
+    return response;
   }
 }
 

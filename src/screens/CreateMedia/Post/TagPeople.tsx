@@ -16,7 +16,7 @@ import Users from './modules/Users';
 
 interface TagPeopleProps {
   tags: any[];
-  setTags: () => void;
+  setTags: any;
   onCancel: () => void;
 }
 
