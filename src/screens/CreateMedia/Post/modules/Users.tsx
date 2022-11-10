@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Avatar, CheckBox} from '@rneui/themed';
 
-import globalStyle from '../styles/globalStyles';
+import globalStyle from '../../../../styles/globalStyles';
 
 type User = {
   image: string;

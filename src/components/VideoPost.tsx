@@ -22,6 +22,8 @@ import {useIsForeground} from '../hooks/useIsForeground';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import {likeVideo, unlikeVideo} from '../store/reducers/InspiringVideos';
+import {addBookmark, removeBookmark} from '../store/reducers/Bookmarks';
+
 import {useDispatch, useSelector} from 'react-redux';
 
 import MediaRepository from '../repositories/MediaRepository';
@@ -32,7 +34,10 @@ interface VideoPostProps {
 }
 
 const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
-  const user = useSelector((state: any) => state.user);
+  const {user, bookmarks} = useSelector((state: any) => ({
+    user: state.user,
+    bookmarks: state.bookmarks,
+  }));
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
@@ -280,13 +285,26 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
         </View>
 
         <View style={styles.bottomRightSection}>
-          <Icon
-            name={video.isBookmarked ? 'bookmark' : 'bookmark-outline'}
-            type="ionicon"
-            color="white"
-            style={styles.verticalBarIcon}
-            onPress={toggleBookmark}
-          />
+          {bookmarks.some((video: any) => video._id === videoItem._id) ? (
+            <TouchableOpacity
+              onPress={() => dispatch(removeBookmark({id: videoItem._id}))}>
+              <Icon
+                name="bookmark"
+                type="ionicon"
+                color="white"
+                style={styles.verticalBarIcon}
+              />
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={() => dispatch(addBookmark(videoItem))}>
+              <Icon
+                name="bookmark-outline"
+                type="ionicon"
+                color="white"
+                style={styles.verticalBarIcon}
+              />
+            </TouchableOpacity>
+          )}
 
           {!user.isLoggedIn || !videoItem.inspired.includes(user?.slug) ? (
             <TouchableOpacity onPress={like}>

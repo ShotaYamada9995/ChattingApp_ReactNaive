@@ -38,6 +38,8 @@ const PostMedia = () => {
   const [showTagScreen, setShowTagScreen] = useState(false);
   const [viewer, setViewer] = useState<Viewer>('Everyone');
   const [caption, setCaption] = useState('');
+  const [tags, setTags] = useState([]);
+
   const captionRef = useRef(null);
 
   const video = useSelector((state: any) => state.video);
@@ -149,7 +151,11 @@ const PostMedia = () => {
         <BottomSheet
           onBackdropPress={() => setShowTagScreen(false)}
           isVisible={showTagScreen}>
-          <TagPeople onCancel={() => setShowTagScreen(false)} />
+          <TagPeople
+            tags={tags}
+            setTags={setTags}
+            onCancel={() => setShowTagScreen(false)}
+          />
         </BottomSheet>
 
         <TouchableOpacity style={[styles.configLayout, globalStyles.rowLayout]}>

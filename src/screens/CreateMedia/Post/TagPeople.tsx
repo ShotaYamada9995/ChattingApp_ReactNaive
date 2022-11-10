@@ -12,14 +12,15 @@ import {Button, Icon, SearchBar, Avatar} from '@rneui/themed';
 
 import globalStyles from '../../../styles/globalStyles';
 
-import Users from '../../../components/Users';
+import Users from './modules/Users';
 
-interface TagPeople {
+interface TagPeopleProps {
+  tags: any[];
+  setTags: () => void;
   onCancel: () => void;
 }
 
-const TagPeople = ({onCancel}) => {
-  const [tags, setTags] = useState([]);
+const TagPeople = ({tags, setTags, onCancel}: TagPeopleProps) => {
   const [users, setUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
 
@@ -47,7 +48,9 @@ const TagPeople = ({onCancel}) => {
       <Users title="All Users" />
 
       <View style={styles.tagsContainer}>
-        <ScrollView contentContainerStyle={styles.selectedUsersContainer}>
+        <ScrollView
+          contentContainerStyle={styles.selectedUsersContainer}
+          horizontal>
           <TouchableOpacity style={{alignSelf: 'flex-start'}}>
             <Avatar
               source={require('../../../assets/images/profile_picture.webp')}
