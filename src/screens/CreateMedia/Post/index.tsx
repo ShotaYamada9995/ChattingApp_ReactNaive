@@ -81,11 +81,17 @@ const PostMedia = () => {
         },
       );
 
+      const tags = caption
+        .split(' ')
+        .filter(word => word[0] === '#')
+        .map(tag => tag.substring(1, tag.length));
+
       const upload = await MediaRepository.uploadMedia({
+        token: user.token,
         file: compressedVideo,
         thumbnail: coverImage,
         community: 'music',
-        tags: [],
+        tags,
         text: caption,
         userSlug: user.slug,
       });
@@ -318,7 +324,7 @@ const PostMedia = () => {
         buttonStyle={{paddingVertical: 10, borderColor: '#001433'}}
         color="#001433"
         disabled={coverImage ? false : true}
-        onPress={postMedia}
+        // onPress={postMedia}
       />
     </View>
   );

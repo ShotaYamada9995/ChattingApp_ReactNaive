@@ -8,6 +8,7 @@ interface LikeUnlikePayload {
 }
 
 interface UploadMediaProps {
+  token: string;
   file: string;
   thumbnail: string;
   community: string;
@@ -39,16 +40,29 @@ class MediaRepository {
   async uploadMedia(payload: UploadMediaProps) {
     const endpoint = `${DOMAIN}/media/create`;
 
-    const handleProgressEvent = (progressEvent: any) => {
-      const percent = Math.round(
-        (progressEvent.loaded * 100) / progressEvent.total,
-      );
+    const {token, file, thumbnail, community, tags, text, userSlug} = payload;
 
-      console.log('Upload progress: ', percent);
-    };
+    let mediaData = new FormData();
 
-    const response = await axios.post(endpoint, payload, {
-      onUploadProgress: handleProgressEvent,
+    mediaData.append('file', file);
+    mediaData.append('thumbnail', thumbnail);
+    mediaData.append('community', community);
+    mediaData.append('tags', tags);
+    mediaData.append('text', text);
+    mediaData.append('userSlug', userSlug);
+
+    const response = await axios.post(endpoint, mediaData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token.substring(4, token.length)}`,
+      },
+      onUploadProgress: (progressEvent: any) => {
+        const percent = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total,
+        );
+
+        console.log('Upload progress: ', percent);
+      },
     });
 
     return response;

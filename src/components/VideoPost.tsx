@@ -46,6 +46,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
     isPaused: true,
     isLiked: false,
     isBookmarked: false,
+    isLoaded: false,
   });
 
   const [isFollowing, setIsFollowing] = useState(false);
@@ -65,17 +66,6 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
 
   const togglePause = () => {
     setVideo(video => ({...video, isPaused: !video.isPaused}));
-  };
-
-  const toggleLike = () => {
-    setVideo(video => ({...video, isLiked: !video.isLiked}));
-  };
-  const toggleBookmark = () => {
-    setVideo(video => ({...video, isBookmarked: !video.isBookmarked}));
-  };
-
-  const setIsBuffering = (isBuffering: boolean) => {
-    setVideo(video => ({...video, isBuffering}));
   };
 
   const toggleFollow = () => {
@@ -227,7 +217,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
         styles.container,
         {height: videoPostHeight + (WINDOW_WIDTH * 0.15) / 2},
       ]}>
-      {/* {isActive && isFocused ? (
+      {isFocused && (
         <Video
           poster={videoItem.thumbnail[0].cdnUrl}
           posterResizeMode="cover"
@@ -237,21 +227,20 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
           style={styles.video}
           resizeMode="cover"
           paused={video.isPaused || !canPlayVideo}
-          onBuffer={data => setIsBuffering(data.isBuffering)}
+          playInBackground={false}
+          onLoad={() => setVideo(video => ({...video, isLoaded: true}))}
           repeat
         />
-      ) : (
-        <Image
-          source={{uri: videoItem.thumbnail[0].cdnUrl}}
-          style={styles.thumbnail}
-        />
-      )} */}
+      )}
 
-      {/* {video.isBuffering && (
-        <ActivityIndicator
-          style={{position: 'absolute', top: '50%', left: '50%'}}
-        />
-      )} */}
+      {!video.isLoaded && (
+        <View style={{position: 'absolute', width: '100%', height: '100%'}}>
+          <Image
+            source={{uri: videoItem.thumbnail[0].cdnUrl}}
+            style={{width: '100%', height: '100%'}}
+          />
+        </View>
+      )}
 
       <View style={styles.bottomSection}>
         <View style={styles.bottomLeftSection}>
