@@ -112,9 +112,9 @@ const styles = StyleSheet.create({
   postIcon: {
     justifyContent: 'center',
     alignItems: 'center',
-    width: 55,
-    height: 55,
-    borderRadius: 30,
+    width: WINDOW_WIDTH * 0.15,
+    aspectRatio: 1,
+    borderRadius: 100,
     marginTop: -50,
   },
 });

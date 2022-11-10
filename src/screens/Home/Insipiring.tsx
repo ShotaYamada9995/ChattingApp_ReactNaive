@@ -1,5 +1,11 @@
 import React, {useState, useCallback, useEffect, useRef} from 'react';
-import {View, FlatList, StyleSheet, ActivityIndicator} from 'react-native';
+import {
+  View,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+  Platform,
+} from 'react-native';
 
 import VideoPost from '../../components/VideoPost';
 import {WINDOW_HEIGHT} from '../../utils';
@@ -9,6 +15,11 @@ import {BottomSheet} from '@rneui/themed';
 import {useDispatch, useSelector} from 'react-redux';
 import AuthModal from './modules/AuthModal';
 import {addVideos} from '../../store/reducers/InspiringVideos';
+
+const flatlistHeight =
+  Platform.OS === 'ios'
+    ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
+    : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104;
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -100,6 +111,8 @@ const Home = () => {
           windowSize={3}
           maxToRenderPerBatch={3}
           getItemLayout={getItemLayout}
+          style={styles.videosContainer}
+
           // ListFooterComponent={renderScrollLoader}
           // onEndReached={loadMoreVideos}
           // onEndReachedThreshold={0.001}
@@ -126,6 +139,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: 10,
   },
+  videosContainer: {flexGrow: 0},
   authModalContainer: {
     justifyContent: 'center',
   },

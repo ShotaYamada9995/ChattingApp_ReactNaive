@@ -222,7 +222,11 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
   }, [isActive]);
 
   return (
-    <View style={[styles.container, {height: videoPostHeight}]}>
+    <View
+      style={[
+        styles.container,
+        {height: videoPostHeight + (WINDOW_WIDTH * 0.15) / 2},
+      ]}>
       {/* {isActive && isFocused ? (
         <Video
           poster={videoItem.thumbnail[0].cdnUrl}
@@ -243,11 +247,11 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
         />
       )} */}
 
-      {video.isBuffering && (
+      {/* {video.isBuffering && (
         <ActivityIndicator
           style={{position: 'absolute', top: '50%', left: '50%'}}
         />
-      )}
+      )} */}
 
       <View style={styles.bottomSection}>
         <View style={styles.bottomLeftSection}>
@@ -351,7 +355,7 @@ export default memo(VideoPost);
 
 const styles = StyleSheet.create({
   container: {
-    width: WINDOW_WIDTH,
+    width: '100%',
     backgroundColor: 'black',
   },
   thumbnail: {
