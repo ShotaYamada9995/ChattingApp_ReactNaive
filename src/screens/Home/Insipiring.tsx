@@ -4,22 +4,18 @@ import {
   FlatList,
   StyleSheet,
   ActivityIndicator,
-  Platform,
+  Text,
 } from 'react-native';
 
 import VideoPost from '../../components/VideoPost';
-import {WINDOW_HEIGHT} from '../../utils';
+import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../utils';
 import FeedsRepository from '../../repositories/FeedsRepository';
 import VideoLoadingIndicator from '../../components/shared/VideoLoadingIndicator';
-import {BottomSheet} from '@rneui/themed';
+import {BottomSheet, Button} from '@rneui/themed';
 import {useDispatch, useSelector} from 'react-redux';
 import AuthModal from './modules/AuthModal';
 import {addVideos} from '../../store/reducers/InspiringVideos';
-
-const flatlistHeight =
-  Platform.OS === 'ios'
-    ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
-    : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104;
+import globalStyles from '../../styles/globalStyles';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -28,10 +24,13 @@ const Home = () => {
 
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [videos, setVideos] = useState([]);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  const currentPage = useRef(1);
+  const [loadingStatus, setLoadingStatus] = useState<
+    'pending' | 'success' | 'error'
+  >('pending');
+
+  const currentPage = useRef(0);
 
   const keyExtractor = (item: any, index: number) => item._id;
 
@@ -81,26 +80,34 @@ const Home = () => {
     ) : null;
   };
 
+  const getVideos = async (page: number) => {
+    if (loadingStatus !== 'pending') {
+      setLoadingStatus('pending');
+    }
+
+    try {
+      const videos = await FeedsRepository.getInspiringVideos(page);
+      dispatch(addVideos(videos.data));
+
+      setLoadingStatus('success');
+
+      if (!user.isLoggedIn) {
+        setShowAuthModal(true);
+      }
+    } catch (error) {
+      setLoadingStatus('error');
+    }
+  };
+
   useEffect(() => {
     if (inspiringVideos.length === 0) {
-      (async () => {
-        try {
-          const videos = await FeedsRepository.getInspiringVideos(0);
-          dispatch(addVideos(videos.data));
-
-          if (!user.isLoggedIn) {
-            setTimeout(() => setShowAuthModal(true), 2000);
-          }
-        } catch (error) {
-          console.log('Error: ', error);
-        }
-      })();
+      getVideos(currentPage.current);
     }
   }, []);
 
   return (
     <View style={styles.container}>
-      {inspiringVideos.length > 0 ? (
+      {loadingStatus === 'success' || inspiringVideos.length > 0 ? (
         <FlatList
           data={inspiringVideos}
           keyExtractor={keyExtractor}
@@ -111,14 +118,36 @@ const Home = () => {
           windowSize={3}
           maxToRenderPerBatch={3}
           getItemLayout={getItemLayout}
-          style={styles.videosContainer}
-
+          style={styles.videoContainer}
           // ListFooterComponent={renderScrollLoader}
           // onEndReached={loadMoreVideos}
           // onEndReachedThreshold={0.001}
         />
-      ) : (
+      ) : loadingStatus === 'pending' ? (
         <VideoLoadingIndicator />
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            backgroundColor: 'black',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: WINDOW_WIDTH * 0.05,
+              textAlign: 'center',
+              maxWidth: '90%',
+            }}>
+            Failed to load videos. Check your network connection and{' '}
+            <Text
+              style={globalStyles.link}
+              onPress={() => getVideos(currentPage.current)}>
+              try again
+            </Text>
+          </Text>
+        </View>
       )}
 
       <BottomSheet
@@ -139,7 +168,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: 10,
   },
-  videosContainer: {flexGrow: 0},
+  videoContainer: {flexGrow: 0},
   authModalContainer: {
     justifyContent: 'center',
   },
