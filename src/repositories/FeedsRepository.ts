@@ -25,7 +25,7 @@ class FeedsRepository {
           ...videos[i],
           user: {
             ...user.profile,
-            image: user.profileImage,
+            image: user.imageUrl.cdnUrl,
             followers,
           },
         });

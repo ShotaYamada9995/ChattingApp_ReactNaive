@@ -20,8 +20,6 @@ import {Video as VideoCompressor} from 'react-native-compressor';
 
 import MediaRepository from '../../../repositories/MediaRepository';
 
-import {WINDOW_HEIGHT} from '../../../utils';
-
 import globalStyles from '../../../styles/globalStyles';
 
 import {genFirstFrame} from '../../../utils/videoProcessor';
@@ -213,9 +211,10 @@ const PostMedia = () => {
             renderItem={item => (
               <TouchableOpacity
                 style={styles.mentionsContainer}
-                onPress={() =>
-                  setCaption(caption => caption + 'ValentineOrga')
-                }>
+                onPress={() => {
+                  setCaption(caption => caption + 'ValentineOrga');
+                  setShowMentions(false);
+                }}>
                 <Avatar
                   source={require('../../../assets/images/profile_picture.webp')}
                   rounded
@@ -235,10 +234,15 @@ const PostMedia = () => {
           keyExtractor={(item, index) => item._id}
           data={mentions}
           renderItem={item => (
-            <View style={{padding: 10, width: '100%'}}>
+            <TouchableOpacity
+              style={{padding: 10, width: '100%'}}
+              onPress={() => {
+                setCaption(caption => caption + 'WhatIDo');
+                setShowHashtags(false);
+              }}>
               <Text style={styles.title}>#WhatIDo</Text>
               <Text style={styles.description}>Lots of Tweets</Text>
-            </View>
+            </TouchableOpacity>
           )}
         />
       ) : (
@@ -380,7 +384,7 @@ const PostMedia = () => {
         buttonStyle={{paddingVertical: 10, borderColor: '#001433'}}
         color="#001433"
         disabled={coverImage ? false : true}
-        // onPress={postMedia}
+        onPress={postMedia}
       />
     </View>
   );

@@ -11,13 +11,13 @@ import {
 } from 'react-native';
 import Video from 'react-native-video';
 import RNFS from 'react-native-fs';
-import {Icon} from '@rneui/themed';
+import {Icon, BottomSheet} from '@rneui/themed';
 import Share from 'react-native-share';
 
-import {VideoModel} from '../videosData';
-import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../utils';
+import {VideoModel} from '../../../videosData';
+import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
-import {useIsForeground} from '../hooks/useIsForeground';
+import {useIsForeground} from '../../../hooks/useIsForeground';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import {
@@ -25,12 +25,13 @@ import {
   unlikeVideo,
   followUser,
   unfollowUser,
-} from '../store/reducers/InspiringVideos';
-import {addBookmark, removeBookmark} from '../store/reducers/Bookmarks';
+} from '../../../store/reducers/InspiringVideos';
+import {addBookmark, removeBookmark} from '../../../store/reducers/Bookmarks';
 
 import {useDispatch, useSelector} from 'react-redux';
 
-import MediaRepository from '../repositories/MediaRepository';
+import MediaRepository from '../../../repositories/MediaRepository';
+import Comments from './Comments';
 
 interface VideoPostProps {
   videoItem: any;
@@ -49,12 +50,10 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
     url: '',
     isBuffering: false,
     isPaused: true,
-    isLiked: false,
-    isBookmarked: false,
     isLoaded: false,
   });
 
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
   const isForeGround = useIsForeground();
   const isFocused = useIsFocused();
@@ -262,14 +261,14 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             <Pressable
               style={styles.videoInfoContainer}
               onPress={() => navigation.navigate('MiniProfile')}>
-              {videoItem.user.profileImage ? (
+              {videoItem.user.image ? (
                 <Image
-                  source={{uri: videoItem.user.profileImage}}
+                  source={{uri: videoItem.user.image}}
                   style={styles.userPic}
                 />
               ) : (
                 <Image
-                  source={require('../assets/images/default_profile_image.jpeg')}
+                  source={require('../../../assets/images/default_profile_image.jpeg')}
                   style={styles.userPic}
                 />
               )}
@@ -349,6 +348,14 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             type="ionicon"
             color="white"
             style={styles.verticalBarIcon}
+            onPress={() => setShowComments(true)}
+          />
+
+          <Comments
+            isVisible={showComments}
+            onClose={() => setShowComments(false)}
+            videoId={videoItem._id}
+            user={videoItem.user}
           />
 
           <Icon

@@ -7,7 +7,7 @@ import {
   Text,
 } from 'react-native';
 
-import VideoPost from '../../components/VideoPost';
+import VideoPost from './modules/VideoPost';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../utils';
 import FeedsRepository from '../../repositories/FeedsRepository';
 import VideoLoadingIndicator from '../../components/shared/VideoLoadingIndicator';
@@ -21,6 +21,8 @@ const Home = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
   const inspiringVideos = useSelector((state: any) => state.inspiringVideos);
+
+  console.log(inspiringVideos.length);
 
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
