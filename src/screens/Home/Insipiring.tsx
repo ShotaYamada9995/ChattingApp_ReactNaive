@@ -16,13 +16,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import AuthModal from './modules/AuthModal';
 import {addVideos} from '../../store/reducers/InspiringVideos';
 import globalStyles from '../../styles/globalStyles';
+import UsersRepository from '../../repositories/UsersRepository';
+import {addFollowers} from '../../store/reducers/User';
 
 const Home = () => {
   const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user);
   const inspiringVideos = useSelector((state: any) => state.inspiringVideos);
-
-  console.log(inspiringVideos.length);
 
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -89,6 +89,11 @@ const Home = () => {
 
     try {
       const videos = await FeedsRepository.getInspiringVideos(page);
+
+      if (user.isLoggedIn) {
+        const {data: following} = await UsersRepository.getFollowing(user.slug);
+        dispatch(addFollowers(following));
+      }
       dispatch(addVideos(videos));
 
       setLoadingStatus('success');

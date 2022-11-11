@@ -20,17 +20,14 @@ import {useNavigation, useIsFocused} from '@react-navigation/native';
 import {useIsForeground} from '../../../hooks/useIsForeground';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
-import {
-  likeVideo,
-  unlikeVideo,
-  followUser,
-  unfollowUser,
-} from '../../../store/reducers/InspiringVideos';
+import {likeVideo, unlikeVideo} from '../../../store/reducers/InspiringVideos';
+import {followUser, unfollowUser} from '../../../store/reducers/User';
 import {addBookmark, removeBookmark} from '../../../store/reducers/Bookmarks';
 
 import {useDispatch, useSelector} from 'react-redux';
 
 import MediaRepository from '../../../repositories/MediaRepository';
+import UsersRepository from '../../../repositories/UsersRepository';
 import Comments from './Comments';
 
 interface VideoPostProps {
@@ -127,14 +124,37 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
   const follow = async () => {
     dispatch(
       followUser({
-        id: videoItem._id,
-        userData: {userSlug: user.slug, _id: user._id, type: 'expert'},
+        following: videoItem.userSlug,
+        _id: videoItem.user.id,
+        type: 'expert',
       }),
     );
+
+    try {
+      await UsersRepository.followUser({
+        token: user.token,
+        slug: videoItem.userSlug,
+        userSlug: user.slug,
+        type: 'expert',
+      });
+    } catch (error) {
+      return;
+    }
   };
 
   const unfollow = async () => {
-    dispatch(unfollowUser({id: videoItem._id, userSlug: user.slug}));
+    dispatch(unfollowUser({userSlug: videoItem.userSlug}));
+
+    try {
+      await UsersRepository.unfollowUser({
+        token: user.token,
+        slug: videoItem.userSlug,
+        userSlug: user.slug,
+        type: 'expert',
+      });
+    } catch (error) {
+      return;
+    }
   };
 
   // const getVideoUrl = (url: string, filename: string) => {
@@ -279,8 +299,8 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
               </Text>
             </Pressable>
             {user.isLoggedIn ? (
-              videoItem.user.followers.some(
-                (follower: any) => follower.userSlug === user?.slug,
+              user.following.some(
+                (user: any) => user.following === videoItem.userSlug,
               ) ? (
                 <Text style={styles.followingTag} onPress={unfollow}>
                   following

@@ -32,9 +32,7 @@ class MediaRepository {
   async likeVideo(payload: LikeUnlikePayload) {
     const endpoint = `${DOMAIN}/media/likeVideo`;
 
-    const response = await axios.post(endpoint, payload);
-
-    return response;
+    await axios.post(endpoint, payload);
   }
 
   async unlikeVideo(payload: LikeUnlikePayload) {

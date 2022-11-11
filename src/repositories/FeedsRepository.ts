@@ -17,16 +17,12 @@ class FeedsRepository {
       try {
         const {data: user} = await UsersRepository.getUser(videos[i].userSlug);
 
-        const {data: followers} = await UsersRepository.getFollowers(
-          videos[i].userSlug,
-        );
-
         inspiringVideos.push({
           ...videos[i],
           user: {
+            id: user._id,
             ...user.profile,
             image: user.imageUrl.cdnUrl,
-            followers,
           },
         });
       } catch (error) {

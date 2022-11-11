@@ -14,7 +14,7 @@ import AuthRepository from '../../repositories/AuthRepository';
 import {useDispatch} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 
-import {login} from '../../store/reducers/User';
+import {addFollowers, login} from '../../store/reducers/User';
 import UsersRepository from '../../repositories/UsersRepository';
 
 const schema = yup.object().shape({
@@ -43,9 +43,13 @@ const LoginForm = () => {
     try {
       const {data: user} = await AuthRepository.login(values);
 
+      const {data: following} = await UsersRepository.getFollowing(user.slug);
+
       const currentTime = Math.round(Date.now() / 1000);
       const loginDuration = 86400 * 90;
       const loginExpiryDate = currentTime + loginDuration;
+
+      dispatch(addFollowers(following));
 
       dispatch(
         login({
