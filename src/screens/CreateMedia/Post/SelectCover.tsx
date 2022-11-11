@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
+import {BottomSheet} from '@rneui/themed';
 import Slider from 'rn-range-slider';
 
 import {genFrames} from '../../../utils/videoProcessor';
@@ -18,11 +19,12 @@ import Thumb from './modules/slider/Thumb';
 import Rail from './modules/slider/Rail';
 
 interface SelectCoverProps {
+  show: boolean;
   defaultCoverImage: string | undefined;
   onCancel: () => void;
 }
 
-export default ({defaultCoverImage, onCancel}: SelectCoverProps) => {
+export default ({show, defaultCoverImage, onCancel}: SelectCoverProps) => {
   const video = useSelector((state: any) => state.video);
   const [coverImage, setCoverImage] = useState(defaultCoverImage);
   const [frames, setFrames] = useState([]);
@@ -35,28 +37,29 @@ export default ({defaultCoverImage, onCancel}: SelectCoverProps) => {
   const renderRailSelected = useCallback(() => <RailSelected />, []);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.navBar}>
-        <TouchableOpacity onPress={onCancel}>
-          <Text style={styles.navBarText}>Cancel</Text>
-        </TouchableOpacity>
+    <BottomSheet isVisible={show}>
+      <View style={styles.container}>
+        <View style={styles.navBar}>
+          <TouchableOpacity onPress={onCancel}>
+            <Text style={styles.navBarText}>Cancel</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity>
-          <Text style={styles.navBarText}>Save</Text>
-        </TouchableOpacity>
-      </View>
-
-      {!!coverImage && (
-        <View style={styles.coverImageContainer}>
-          <Image
-            source={{uri: coverImage}}
-            style={styles.coverImage}
-            resizeMode="contain"
-          />
+          <TouchableOpacity>
+            <Text style={styles.navBarText}>Save</Text>
+          </TouchableOpacity>
         </View>
-      )}
 
-      {/* <Slider
+        {!!coverImage && (
+          <View style={styles.coverImageContainer}>
+            <Image
+              source={{uri: coverImage}}
+              style={styles.coverImage}
+              resizeMode="contain"
+            />
+          </View>
+        )}
+
+        {/* <Slider
         disableRange
         style={styles.slider}
         min={0}
@@ -68,7 +71,8 @@ export default ({defaultCoverImage, onCancel}: SelectCoverProps) => {
         // onValueChanged
         // onSliderTouchEnd={handleOnSlideTouchEnd}
       /> */}
-    </View>
+      </View>
+    </BottomSheet>
   );
 };
 

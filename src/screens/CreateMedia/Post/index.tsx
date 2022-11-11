@@ -10,14 +10,17 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  FlatList,
 } from 'react-native';
-import {Icon, Button, BottomSheet, CheckBox} from '@rneui/themed';
+import {Icon, Button, BottomSheet, CheckBox, Avatar} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
 import {useSelector} from 'react-redux';
 import {MentionInput} from 'react-native-controlled-mentions';
 import {Video as VideoCompressor} from 'react-native-compressor';
 
 import MediaRepository from '../../../repositories/MediaRepository';
+
+import {WINDOW_HEIGHT} from '../../../utils';
 
 import globalStyles from '../../../styles/globalStyles';
 
@@ -44,9 +47,23 @@ const PostMedia = () => {
   const [showSelectCoverImage, setShowSelectCoverImage] = useState(false);
   const [showViewers, setShowViewers] = useState(false);
   const [showTagScreen, setShowTagScreen] = useState(false);
+  const [showHashtags, setShowHashtags] = useState(false);
+  const [showMentions, setShowMentions] = useState(false);
+
   const [viewer, setViewer] = useState<Viewer>('Everyone');
   const [caption, setCaption] = useState('');
   const [tags, setTags] = useState([]);
+  const [mentions, setMentions] = useState<any[]>([
+    {_id: 1},
+    {_id: 2},
+    {_id: 3},
+    {_id: 4},
+    {_id: 5},
+    {_id: 6},
+    {_id: 7},
+    {_id: 8},
+    {_id: 9},
+  ]);
 
   const captionRef = useRef(null);
 
@@ -68,6 +85,18 @@ const PostMedia = () => {
   };
 
   const handleOnChangeCaption = (caption: string) => {
+    if (caption[caption.length - 1] === '@') {
+      setShowMentions(true);
+    } else if (showMentions) {
+      setShowMentions(false);
+    }
+
+    if (caption[caption.length - 1] === '#') {
+      setShowHashtags(true);
+    } else if (showHashtags) {
+      setShowHashtags(false);
+    }
+
     setCaption(caption);
   };
 
@@ -168,155 +197,182 @@ const PostMedia = () => {
             <Text style={styles.selectCoverText}>Select cover</Text>
           </TouchableOpacity>
         </View>
-
-        {/* {!coverImage ? ( */}
-
-        {/* ) : null} */}
       </TouchableOpacity>
 
-      <BottomSheet
-        onBackdropPress={() => setShowSelectCoverImage(false)}
-        isVisible={showSelectCoverImage}>
-        <SelectCover
-          defaultCoverImage={coverImage}
-          onCancel={() => setShowSelectCoverImage(false)}
-        />
-      </BottomSheet>
+      <SelectCover
+        show={showSelectCoverImage}
+        defaultCoverImage={coverImage}
+        onCancel={() => setShowSelectCoverImage(false)}
+      />
 
-      <KeyboardAvoidingView
-        style={{flex: 1}}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>
-        <TouchableOpacity
-          style={[styles.configLayout, globalStyles.rowLayout]}
-          onPress={() => setShowTagScreen(true)}>
-          <View style={styles.configEdgeLayout}>
-            <Icon name="person-outline" type="ionicon" />
-            <Text style={styles.label}>Tag people</Text>
-          </View>
+      {showMentions ? (
+        <KeyboardAvoidingView style={{flex: 1}} behavior="position">
+          <FlatList
+            keyExtractor={(item, index) => item._id}
+            data={mentions}
+            renderItem={item => (
+              <TouchableOpacity
+                style={styles.mentionsContainer}
+                onPress={() =>
+                  setCaption(caption => caption + 'ValentineOrga')
+                }>
+                <Avatar
+                  source={require('../../../assets/images/profile_picture.webp')}
+                  rounded
+                  size="medium"
+                />
 
-          <Icon name="chevron-right" color="black" />
-        </TouchableOpacity>
-
-        <BottomSheet
-          onBackdropPress={() => setShowTagScreen(false)}
-          isVisible={showTagScreen}>
-          <TagPeople
-            tags={tags}
-            setTags={setTags}
-            onCancel={() => setShowTagScreen(false)}
+                <View style={{marginLeft: 10}}>
+                  <Text style={styles.title}>Valentine Orga</Text>
+                  <Text style={styles.description}>@ValentineOrga</Text>
+                </View>
+              </TouchableOpacity>
+            )}
           />
-        </BottomSheet>
-        {user.isLoggedIn && (
+        </KeyboardAvoidingView>
+      ) : showHashtags ? (
+        <FlatList
+          keyExtractor={(item, index) => item._id}
+          data={mentions}
+          renderItem={item => (
+            <View style={{padding: 10, width: '100%'}}>
+              <Text style={styles.title}>#WhatIDo</Text>
+              <Text style={styles.description}>Lots of Tweets</Text>
+            </View>
+          )}
+        />
+      ) : (
+        <KeyboardAvoidingView
+          style={{flex: 1}}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>
           <TouchableOpacity
-            style={[styles.configLayout, globalStyles.rowLayout]}>
+            style={[styles.configLayout, globalStyles.rowLayout]}
+            onPress={() => setShowTagScreen(true)}>
             <View style={styles.configEdgeLayout}>
-              {/* <Icon name="location-outline" type="ionicon" /> */}
-              <Text style={styles.label}>Location</Text>
+              {/* <Icon name="person-outline" type="ionicon" /> */}
+              <Text style={styles.label}>Tag people</Text>
             </View>
 
             <Icon name="chevron-right" color="black" />
           </TouchableOpacity>
-        )}
 
-        <TouchableOpacity
-          style={[styles.configLayout, globalStyles.rowLayout]}
-          onPress={() => setShowViewers(true)}>
-          <View style={styles.configEdgeLayout}>
-            {/* <Icon name="location-outline" type="ionicon" /> */}
-            <Text style={styles.label}>Who can watch this video?</Text>
-          </View>
+          <TagPeople
+            show={showTagScreen}
+            tags={tags}
+            setTags={setTags}
+            onCancel={() => setShowTagScreen(false)}
+          />
 
-          <View style={styles.configEdgeLayout}>
-            <Text style={styles.selectedViewer}>{viewer}</Text>
-            <Icon name="chevron-right" color="black" />
-          </View>
-        </TouchableOpacity>
+          {user.isLoggedIn && (
+            <TouchableOpacity
+              style={[styles.configLayout, globalStyles.rowLayout]}>
+              <View style={styles.configEdgeLayout}>
+                {/* <Icon name="location-outline" type="ionicon" /> */}
+                <Text style={styles.label}>Location</Text>
+              </View>
 
-        <BottomSheet
-          onBackdropPress={() => setShowViewers(false)}
-          isVisible={showViewers}>
-          <View style={styles.bottomSheetView}>
-            <View
-              style={[styles.bottomSheetViewHeader, globalStyles.rowLayout]}>
-              <View />
-              <Text style={styles.bottomSheetViewTitle}>
-                Who can watch this video
-              </Text>
+              <Icon name="chevron-right" color="black" />
+            </TouchableOpacity>
+          )}
 
-              <TouchableOpacity onPress={() => setShowViewers(false)}>
-                <Icon name="close-outline" type="ionicon" size={30} />
-              </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.configLayout, globalStyles.rowLayout]}
+            onPress={() => setShowViewers(true)}>
+            <View style={styles.configEdgeLayout}>
+              {/* <Icon name="location-outline" type="ionicon" /> */}
+              <Text style={styles.label}>Who can watch this video?</Text>
             </View>
 
-            <TouchableOpacity
-              style={globalStyles.rowLayout}
-              onPress={() => selectViewer('Everyone')}>
-              <Text style={styles.label}>Everyone</Text>
-              <CheckBox checked={viewer === 'Everyone'} />
-            </TouchableOpacity>
+            <View style={styles.configEdgeLayout}>
+              <Text style={styles.selectedViewer}>{viewer}</Text>
+              <Icon name="chevron-right" color="black" />
+            </View>
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              style={globalStyles.rowLayout}
-              onPress={() => selectViewer('Friends')}>
-              <Text style={styles.label}>Friends</Text>
-              <CheckBox checked={viewer === 'Friends'} />
-            </TouchableOpacity>
+          <BottomSheet
+            onBackdropPress={() => setShowViewers(false)}
+            isVisible={showViewers}>
+            <View style={styles.bottomSheetView}>
+              <View
+                style={[styles.bottomSheetViewHeader, globalStyles.rowLayout]}>
+                <View />
+                <Text style={styles.bottomSheetViewTitle}>Tags</Text>
 
-            <TouchableOpacity
-              style={globalStyles.rowLayout}
-              onPress={() => selectViewer('Only me')}>
-              <Text style={styles.label}>Only me</Text>
-              <CheckBox checked={viewer === 'Only me'} />
-            </TouchableOpacity>
+                <TouchableOpacity onPress={() => setShowViewers(false)}>
+                  <Icon name="close-outline" type="ionicon" size={30} />
+                </TouchableOpacity>
+              </View>
+
+              <TouchableOpacity
+                style={globalStyles.rowLayout}
+                onPress={() => selectViewer('Everyone')}>
+                <Text style={styles.label}>Everyone</Text>
+                <CheckBox checked={viewer === 'Everyone'} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={globalStyles.rowLayout}
+                onPress={() => selectViewer('Friends')}>
+                <Text style={styles.label}>Friends</Text>
+                <CheckBox checked={viewer === 'Friends'} />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={globalStyles.rowLayout}
+                onPress={() => selectViewer('Only me')}>
+                <Text style={styles.label}>Only me</Text>
+                <CheckBox checked={viewer === 'Only me'} />
+              </TouchableOpacity>
+            </View>
+          </BottomSheet>
+
+          <View style={[styles.configLayout, globalStyles.rowLayout]}>
+            <View style={styles.configEdgeLayout}>
+              {/* <Icon name="chatbubble-ellipses-outline" type="ionicon" /> */}
+              <Text style={styles.label}>Allow Comments</Text>
+            </View>
+
+            <Switch
+              trackColor={{false: '#767577', true: '#81b0ff'}}
+              thumbColor="#001433"
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleComments}
+              value={config.allowComments}
+            />
           </View>
-        </BottomSheet>
 
-        <View style={[styles.configLayout, globalStyles.rowLayout]}>
-          <View style={styles.configEdgeLayout}>
-            {/* <Icon name="chatbubble-ellipses-outline" type="ionicon" /> */}
-            <Text style={styles.label}>Allow Comments</Text>
+          {/* <View style={[styles.configLayout, globalStyles.rowLayout]}>
+            <View style={styles.configEdgeLayout}>
+              <Icon name="location-pin" type="fonrawesome" />
+              <Text style={styles.label}>Allow Duet</Text>
+            </View>
+
+            <Switch
+              trackColor={{false: '#767577', true: '#81b0ff'}}
+              thumbColor="#001433"
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleDuet}
+              value={config.allowDuet}
+            />
+          </View> */}
+
+          <View style={[styles.configLayout, globalStyles.rowLayout]}>
+            <View style={styles.configEdgeLayout}>
+              {/* <Icon name="location-pin" type="fonrawesome" /> */}
+              <Text style={styles.label}>Allow Share</Text>
+            </View>
+
+            <Switch
+              trackColor={{false: '#767577', true: '#81b0ff'}}
+              thumbColor="#001433"
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleShare}
+              value={config.allowShare}
+            />
           </View>
-
-          <Switch
-            trackColor={{false: '#767577', true: '#81b0ff'}}
-            thumbColor="#f5dd4b"
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleComments}
-            value={config.allowComments}
-          />
-        </View>
-
-        <View style={[styles.configLayout, globalStyles.rowLayout]}>
-          <View style={styles.configEdgeLayout}>
-            {/* <Icon name="location-pin" type="fonrawesome" /> */}
-            <Text style={styles.label}>Allow Duet</Text>
-          </View>
-
-          <Switch
-            trackColor={{false: '#767577', true: '#81b0ff'}}
-            thumbColor="#f5dd4b"
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleDuet}
-            value={config.allowDuet}
-          />
-        </View>
-
-        <View style={[styles.configLayout, globalStyles.rowLayout]}>
-          <View style={styles.configEdgeLayout}>
-            {/* <Icon name="location-pin" type="fonrawesome" /> */}
-            <Text style={styles.label}>Allow Share</Text>
-          </View>
-
-          <Switch
-            trackColor={{false: '#767577', true: '#81b0ff'}}
-            thumbColor="#f5dd4b"
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleShare}
-            value={config.allowShare}
-          />
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      )}
 
       <Button
         title="Post"
@@ -375,6 +431,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20,
   },
+  title: {
+    color: 'grey',
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+  description: {
+    color: 'grey',
+    fontSize: 12,
+  },
   configLayout: {
     paddingVertical: 10,
     marginTop: 10,
@@ -413,6 +478,11 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: 'bold',
     fontSize: 18,
+  },
+  mentionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
   },
 });
 

@@ -248,14 +248,24 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             <Pressable
               style={styles.videoInfoContainer}
               onPress={() => navigation.navigate('MiniProfile')}>
-              <Image
-                source={require('../assets/images/profile_picture.webp')}
-                style={styles.userPic}
-              />
+              {videoItem.userProfile.profileImage ? (
+                <Image
+                  source={{uri: videoItem.userProfile.profileImage}}
+                  style={styles.userPic}
+                />
+              ) : (
+                <Image
+                  source={require('../assets/images/default_profile_image.jpeg')}
+                  style={styles.userPic}
+                />
+              )}
             </Pressable>
-            <Text style={styles.username}>
-              {videoItem.userProfile.firstName} {videoItem.userProfile.lastName}
-            </Text>
+            <Pressable onPress={() => navigation.navigate('MiniProfile')}>
+              <Text style={styles.username}>
+                {videoItem.userProfile.firstName}{' '}
+                {videoItem.userProfile.lastName}
+              </Text>
+            </Pressable>
             <Pressable onPress={toggleFollow}>
               {isFollowing ? (
                 <Text style={styles.followingTag}>following</Text>

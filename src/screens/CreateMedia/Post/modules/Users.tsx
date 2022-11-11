@@ -2,7 +2,7 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import {Avatar, CheckBox} from '@rneui/themed';
 
-import globalStyle from '../../../../styles/globalStyles';
+import globalStyles from '../../../../styles/globalStyles';
 
 type User = {
   image: string;
@@ -21,8 +21,8 @@ const Users = ({title, tags, onSelect}: Users) => {
     <View>
       <Text style={styles.title}>{title}</Text>
 
-      <View style={globalStyle.rowLayout}>
-        <View style={globalStyle.rowLayout}>
+      <View style={globalStyles.rowLayout}>
+        <View style={globalStyles.rowLayout}>
           <Avatar
             source={require('../../../../assets/images/profile_picture.webp')}
             rounded

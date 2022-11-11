@@ -8,19 +8,20 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import {Button, Icon, SearchBar, Avatar} from '@rneui/themed';
+import {Button, Icon, SearchBar, Avatar, BottomSheet} from '@rneui/themed';
 
 import globalStyles from '../../../styles/globalStyles';
 
 import Users from './modules/Users';
 
 interface TagPeopleProps {
+  show: boolean;
   tags: any[];
   setTags: any;
   onCancel: () => void;
 }
 
-const TagPeople = ({tags, setTags, onCancel}: TagPeopleProps) => {
+const TagPeople = ({show, tags, setTags, onCancel}: TagPeopleProps) => {
   const [users, setUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
 
@@ -29,49 +30,51 @@ const TagPeople = ({tags, setTags, onCancel}: TagPeopleProps) => {
   };
 
   return (
-    <View style={[styles.container]}>
-      <View style={globalStyles.rowLayout}>
-        <TouchableOpacity onPress={onCancel}>
-          <Icon name="close-outline" type="ionicon" size={30} />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Tag People</Text>
-        <View />
-      </View>
-
-      <SearchBar
-        placeholder="Who's in this video?"
-        value={searchText}
-        onChangeText={handleSearchText}
-        platform={Platform.OS === 'ios' ? 'ios' : 'android'}
-      />
-
-      <Users title="All Users" />
-
-      <View style={styles.tagsContainer}>
-        <ScrollView
-          contentContainerStyle={styles.selectedUsersContainer}
-          horizontal>
-          <TouchableOpacity style={{alignSelf: 'flex-start'}}>
-            <Avatar
-              source={require('../../../assets/images/profile_picture.webp')}
-              rounded
-              size="medium"
-            />
-
-            <View style={styles.avatarCancelIcon}>
-              <Icon name="close-circle" type="ionicon" size={20} />
-            </View>
+    <BottomSheet isVisible={show}>
+      <View style={[styles.container]}>
+        <View style={globalStyles.rowLayout}>
+          <TouchableOpacity onPress={onCancel}>
+            <Icon name="close-outline" type="ionicon" size={30} />
           </TouchableOpacity>
-        </ScrollView>
+          <Text style={styles.headerText}>Tag People</Text>
+          <View />
+        </View>
 
-        <Button
-          title={tags.length ? `Done${tags.length}` : 'Done'}
-          containerStyle={styles.btn}
-          buttonStyle={{paddingVertical: 15, borderColor: '#001433'}}
-          color="#001433"
+        <SearchBar
+          placeholder="Who's in this video?"
+          value={searchText}
+          onChangeText={handleSearchText}
+          platform={Platform.OS === 'ios' ? 'ios' : 'android'}
         />
+
+        <Users title="All Users" />
+
+        <View style={styles.tagsContainer}>
+          <ScrollView
+            contentContainerStyle={styles.selectedUsersContainer}
+            horizontal>
+            <TouchableOpacity style={{alignSelf: 'flex-start'}}>
+              <Avatar
+                source={require('../../../assets/images/profile_picture.webp')}
+                rounded
+                size="medium"
+              />
+
+              <View style={styles.avatarCancelIcon}>
+                <Icon name="close-circle" type="ionicon" size={20} />
+              </View>
+            </TouchableOpacity>
+          </ScrollView>
+
+          <Button
+            title={tags.length ? `Done${tags.length}` : 'Done'}
+            containerStyle={styles.btn}
+            buttonStyle={{paddingVertical: 15, borderColor: '#001433'}}
+            color="#001433"
+          />
+        </View>
       </View>
-    </View>
+    </BottomSheet>
   );
 };
 

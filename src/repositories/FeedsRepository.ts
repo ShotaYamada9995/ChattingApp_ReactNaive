@@ -13,10 +13,9 @@ class FeedsRepository {
 
     const inspiringVideos = [];
 
-    for (let i = 0; i < videos; i++) {
+    for (let i = 0; i < videos.length; i++) {
       try {
         const {data: user} = await UsersRepository.getUser(videos[i].userSlug);
-        console.log(`User ${i + 1}: `, user);
         inspiringVideos.push({
           ...videos[i],
           userProfile: {...user.profile, image: user.profileImage},
@@ -25,8 +24,6 @@ class FeedsRepository {
         continue;
       }
     }
-
-    console.log('Inspiring: ', inspiringVideos);
 
     return inspiringVideos;
   }
