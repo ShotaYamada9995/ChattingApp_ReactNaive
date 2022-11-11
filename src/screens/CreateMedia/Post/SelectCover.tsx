@@ -56,7 +56,7 @@ export default ({defaultCoverImage, onCancel}: SelectCoverProps) => {
         </View>
       )}
 
-      <Slider
+      {/* <Slider
         disableRange
         style={styles.slider}
         min={0}
@@ -67,7 +67,7 @@ export default ({defaultCoverImage, onCancel}: SelectCoverProps) => {
         renderRailSelected={renderRailSelected}
         // onValueChanged
         // onSliderTouchEnd={handleOnSlideTouchEnd}
-      />
+      /> */}
     </View>
   );
 };
