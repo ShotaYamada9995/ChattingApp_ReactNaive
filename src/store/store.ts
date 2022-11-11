@@ -22,7 +22,7 @@ const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  blacklist: ['auth', 'inspiringVideos'],
+  blacklist: ['auth', 'inspiringVideos', 'video'],
 };
 
 const reducers = combineReducers({

@@ -1,13 +1,39 @@
 import React, {memo} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Image} from 'react-native';
+import {WINDOW_WIDTH} from '../../../../../utils';
 
-const Rail = () => {
-  return <View style={styles.root} />;
+interface Frame {
+  time: number;
+  image: string;
+}
+interface RailProps {
+  frames: Frame[];
+}
+
+const Rail = ({frames}: RailProps) => {
+  return (
+    <View style={styles.container}>
+      {frames.map(frame => (
+        <Image
+          key={frame.time}
+          source={{uri: frame.image}}
+          style={{
+            width: 30,
+            aspectRatio: 3 / 4,
+          }}
+        />
+      ))}
+    </View>
+  );
 };
 
 export default Rail;
 
 const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   root: {
     flex: 1,
     height: 4,

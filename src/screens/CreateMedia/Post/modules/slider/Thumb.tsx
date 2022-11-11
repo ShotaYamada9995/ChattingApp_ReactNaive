@@ -18,7 +18,7 @@ const Thumb = ({image}: ThumbProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 30,
+    width: 40,
     aspectRatio: 3 / 4,
   },
   image: {

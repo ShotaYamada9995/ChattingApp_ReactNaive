@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import {Icon, Button, BottomSheet, CheckBox, Avatar} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {MentionInput} from 'react-native-controlled-mentions';
 import {Video as VideoCompressor} from 'react-native-compressor';
 
@@ -24,19 +24,20 @@ import globalStyles from '../../../styles/globalStyles';
 
 import {genFirstFrame} from '../../../utils/videoProcessor';
 
+import {addThumbnail} from '../../../store/reducers/Video';
+
 import TagPeople from './TagPeople';
-import SelectCover from './SelectCover';
 
 type Viewer = 'Everyone' | 'Friends' | 'Only me';
 
 const PostMedia = () => {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
   const {user, video} = useSelector((state: any) => ({
     user: state.user,
     video: state.video,
   }));
 
-  const [coverImage, setCoverImage] = useState<string>('');
   const [config, setConfig] = useState({
     allowComments: true,
     allowDuet: true,
@@ -116,7 +117,7 @@ const PostMedia = () => {
       const response = await MediaRepository.uploadMedia({
         token: user.token,
         file: compressedVideo,
-        thumbnail: coverImage,
+        thumbnail: video.thumbnail,
         community: 'music',
         tags,
         text: caption,
@@ -132,10 +133,10 @@ const PostMedia = () => {
 
   useEffect(() => {
     // TO-DO: Remove conditional
-    if (!coverImage) {
+    if (!video.thumbnail) {
       (async () => {
         const frame: string = await genFirstFrame(video.path);
-        setCoverImage(frame);
+        dispatch(addThumbnail({thumbnail: frame}));
       })();
     }
   }, []);
@@ -177,15 +178,15 @@ const PostMedia = () => {
         </View>
 
         <View style={styles.coverContainer}>
-          {coverImage ? (
+          {video.thumbnail ? (
             <Image
-              source={{uri: coverImage}}
+              source={{uri: video.thumbnail}}
               style={{width: '100%', height: '100%'}}
               resizeMode="contain"
             />
           ) : null}
 
-          {!coverImage ? (
+          {!video.thumbnail ? (
             <View
               style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
               <ActivityIndicator color="white" />
@@ -194,17 +195,13 @@ const PostMedia = () => {
 
           <TouchableOpacity
             style={styles.selectCoverBtn}
-            onPress={() => (coverImage ? setShowSelectCoverImage(true) : null)}>
+            onPress={() =>
+              video.thumbnail ? navigation.navigate('SelectThumbnail') : null
+            }>
             <Text style={styles.selectCoverText}>Select cover</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
-
-      <SelectCover
-        show={showSelectCoverImage}
-        defaultCoverImage={coverImage}
-        onCancel={() => setShowSelectCoverImage(false)}
-      />
 
       {showMentions ? (
         <KeyboardAvoidingView style={{flex: 1}} behavior="position">
@@ -386,7 +383,7 @@ const PostMedia = () => {
         containerStyle={styles.btn}
         buttonStyle={{paddingVertical: 10, borderColor: '#001433'}}
         color="#001433"
-        disabled={coverImage ? false : true}
+        disabled={video.thumbnail ? false : true}
         onPress={postMedia}
       />
     </View>
