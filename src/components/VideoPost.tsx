@@ -217,7 +217,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
         styles.container,
         {height: videoPostHeight + (WINDOW_WIDTH * 0.15) / 2},
       ]}>
-      {isFocused && (
+      {/* {isFocused && (
         <Video
           poster={videoItem.thumbnail[0].cdnUrl}
           posterResizeMode="cover"
@@ -240,7 +240,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             style={{width: '100%', height: '100%'}}
           />
         </View>
-      )}
+      )} */}
 
       <View style={styles.bottomSection}>
         <View style={styles.bottomLeftSection}>
@@ -253,7 +253,9 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
                 style={styles.userPic}
               />
             </Pressable>
-            <Text style={styles.username}>Valentine Orga</Text>
+            <Text style={styles.username}>
+              {videoItem.userProfile.firstName} {videoItem.userProfile.lastName}
+            </Text>
             <Pressable onPress={toggleFollow}>
               {isFollowing ? (
                 <Text style={styles.followingTag}>following</Text>

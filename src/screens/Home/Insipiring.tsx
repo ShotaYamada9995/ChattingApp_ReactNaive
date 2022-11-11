@@ -87,7 +87,7 @@ const Home = () => {
 
     try {
       const videos = await FeedsRepository.getInspiringVideos(page);
-      dispatch(addVideos(videos.data));
+      dispatch(addVideos(videos));
 
       setLoadingStatus('success');
 

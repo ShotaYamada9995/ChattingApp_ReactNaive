@@ -54,7 +54,7 @@ class MediaRepository {
     const response = await axios.post(endpoint, mediaData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        Authorization: `Bearer ${token.substring(4, token.length)}`,
+        Authorization: `Bearer ${token}`,
       },
       onUploadProgress: (progressEvent: any) => {
         const percent = Math.round(
