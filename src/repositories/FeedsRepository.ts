@@ -16,9 +16,18 @@ class FeedsRepository {
     for (let i = 0; i < videos.length; i++) {
       try {
         const {data: user} = await UsersRepository.getUser(videos[i].userSlug);
+
+        const {data: followers} = await UsersRepository.getFollowers(
+          videos[i].userSlug,
+        );
+
         inspiringVideos.push({
           ...videos[i],
-          userProfile: {...user.profile, image: user.profileImage},
+          user: {
+            ...user.profile,
+            image: user.profileImage,
+            followers,
+          },
         });
       } catch (error) {
         continue;

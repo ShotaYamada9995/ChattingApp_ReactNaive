@@ -20,7 +20,12 @@ import {useNavigation, useIsFocused} from '@react-navigation/native';
 import {useIsForeground} from '../hooks/useIsForeground';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
-import {likeVideo, unlikeVideo} from '../store/reducers/InspiringVideos';
+import {
+  likeVideo,
+  unlikeVideo,
+  followUser,
+  unfollowUser,
+} from '../store/reducers/InspiringVideos';
 import {addBookmark, removeBookmark} from '../store/reducers/Bookmarks';
 
 import {useDispatch, useSelector} from 'react-redux';
@@ -66,10 +71,6 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
 
   const togglePause = () => {
     setVideo(video => ({...video, isPaused: !video.isPaused}));
-  };
-
-  const toggleFollow = () => {
-    setIsFollowing(!isFollowing);
   };
 
   const like = async () => {
@@ -122,6 +123,19 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
         return;
       })
       .finally(() => togglePause());
+  };
+
+  const follow = async () => {
+    dispatch(
+      followUser({
+        id: videoItem._id,
+        userData: {userSlug: user.slug, _id: user._id, type: 'expert'},
+      }),
+    );
+  };
+
+  const unfollow = async () => {
+    dispatch(unfollowUser({id: videoItem._id, userSlug: user.slug}));
   };
 
   // const getVideoUrl = (url: string, filename: string) => {
@@ -248,9 +262,9 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             <Pressable
               style={styles.videoInfoContainer}
               onPress={() => navigation.navigate('MiniProfile')}>
-              {videoItem.userProfile.profileImage ? (
+              {videoItem.user.profileImage ? (
                 <Image
-                  source={{uri: videoItem.userProfile.profileImage}}
+                  source={{uri: videoItem.user.profileImage}}
                   style={styles.userPic}
                 />
               ) : (
@@ -262,17 +276,22 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             </Pressable>
             <Pressable onPress={() => navigation.navigate('MiniProfile')}>
               <Text style={styles.username}>
-                {videoItem.userProfile.firstName}{' '}
-                {videoItem.userProfile.lastName}
+                {videoItem.user.firstName} {videoItem.user.lastName}
               </Text>
             </Pressable>
-            <Pressable onPress={toggleFollow}>
-              {isFollowing ? (
-                <Text style={styles.followingTag}>following</Text>
+            {user.isLoggedIn ? (
+              videoItem.user.followers.some(
+                (follower: any) => follower.userSlug === user?.slug,
+              ) ? (
+                <Text style={styles.followingTag} onPress={unfollow}>
+                  following
+                </Text>
               ) : (
-                <Text style={styles.followTag}>follow</Text>
-              )}
-            </Pressable>
+                <Text style={styles.followTag} onPress={follow}>
+                  follow
+                </Text>
+              )
+            ) : null}
           </View>
           <Text style={styles.caption}>{videoItem.text}</Text>
           <Text>#cute #dog</Text>
@@ -421,7 +440,7 @@ const styles = StyleSheet.create({
   },
   followTag: {
     paddingHorizontal: 5,
-    backgroundColor: 'blue',
+    backgroundColor: '#001433',
     color: 'white',
   },
   viewsCount: {color: 'white'},

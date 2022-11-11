@@ -38,9 +38,47 @@ export const userSlice = createSlice({
 
       return newState;
     },
+    followUser: (state, action) => {
+      const newState = state.map(video => {
+        if (video._id === action.payload.id) {
+          return {
+            ...video,
+            user: {
+              ...video.user,
+              followers: [...video.user.followers, action.payload.userData],
+            },
+          };
+        } else {
+          return video;
+        }
+      });
+
+      return newState;
+    },
+    unfollowUser: (state, action) => {
+      const newState = state.map(video => {
+        if (video._id === action.payload.id) {
+          return {
+            ...video,
+            user: {
+              ...video.user,
+              followers: video.user.followers.filter(
+                (follower: any) =>
+                  follower.userSlug !== action.payload.userSlug,
+              ),
+            },
+          };
+        } else {
+          return video;
+        }
+      });
+
+      return newState;
+    },
   },
 });
 
-export const {addVideos, likeVideo, unlikeVideo} = userSlice.actions;
+export const {addVideos, likeVideo, unlikeVideo, followUser, unfollowUser} =
+  userSlice.actions;
 
 export default userSlice.reducer;

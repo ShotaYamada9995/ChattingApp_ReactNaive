@@ -11,7 +11,15 @@ class FeedsRepository {
     return response;
   }
 
-  async getUsersFollowing(userSlug: string) {
+  async getFollowers(userSlug: string) {
+    const endpoint = `${DOMAIN}/follwers/${userSlug}`;
+
+    const response = await axios.get(endpoint);
+
+    return response;
+  }
+
+  async getFollowing(userSlug: string) {
     const endpoint = `${DOMAIN}/following/${userSlug}`;
 
     const response = await axios.get(endpoint);
