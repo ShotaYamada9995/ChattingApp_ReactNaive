@@ -16,6 +16,12 @@ interface UploadMediaProps {
   text: string;
   userSlug: string;
 }
+interface CommentProps {
+  mediaId: string;
+  text: string;
+  userSlug: string;
+  mediaCommentId: string;
+}
 class MediaRepository {
   async getVideos(page: number) {
     const endpoint = `${DOMAIN}/media/fetchVideos?page=${page}`;
@@ -66,6 +72,12 @@ class MediaRepository {
     });
 
     return response;
+  }
+
+  async addComment(payload: CommentProps) {
+    const endpoint = `${DOMAIN}/media/comment/create`;
+
+    await axios.post(endpoint, payload);
   }
 }
 
