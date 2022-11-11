@@ -113,7 +113,7 @@ const PostMedia = () => {
         .filter(word => word[0] === '#')
         .map(tag => tag.substring(1, tag.length));
 
-      const upload = await MediaRepository.uploadMedia({
+      const response = await MediaRepository.uploadMedia({
         token: user.token,
         file: compressedVideo,
         thumbnail: coverImage,
@@ -123,7 +123,7 @@ const PostMedia = () => {
         userSlug: user.slug,
       });
 
-      console.log('Upload: ', upload);
+      console.log('Upload: ', response.data);
     } catch (error) {
       console.log('Error posting video');
       console.error(error);
@@ -131,10 +131,13 @@ const PostMedia = () => {
   };
 
   useEffect(() => {
-    (async () => {
-      const frame: string = await genFirstFrame(video.path);
-      setCoverImage(frame);
-    })();
+    // TO-DO: Remove conditional
+    if (!coverImage) {
+      (async () => {
+        const frame: string = await genFirstFrame(video.path);
+        setCoverImage(frame);
+      })();
+    }
   }, []);
 
   return (

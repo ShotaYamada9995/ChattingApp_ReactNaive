@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {BottomSheet} from '@rneui/themed';
-import Slider from 'rn-range-slider';
+import {Slider} from '@miblanchard/react-native-slider';
 
 import {genFrames} from '../../../utils/videoProcessor';
 
@@ -17,6 +17,7 @@ import Notch from '../../../components/slider/Notch';
 import RailSelected from '../../../components/slider/RailSelected';
 import Thumb from './modules/slider/Thumb';
 import Rail from './modules/slider/Rail';
+import {WINDOW_HEIGHT} from '../../../utils';
 
 interface SelectCoverProps {
   show: boolean;
@@ -26,11 +27,20 @@ interface SelectCoverProps {
 
 export default ({show, defaultCoverImage, onCancel}: SelectCoverProps) => {
   const video = useSelector((state: any) => state.video);
-  const [coverImage, setCoverImage] = useState(defaultCoverImage);
+  const [coverImage, setCoverImage] = useState('');
   const [frames, setFrames] = useState([]);
 
   const renderThumb = useCallback(
-    () => <Thumb image={`${coverImage}`} />,
+    () => (
+      <View
+        style={{
+          width: 50,
+          height: 50,
+          borderRadius: 25,
+          backgroundColor: 'cyan',
+        }}
+      />
+    ),
     [coverImage],
   );
   const renderRail = useCallback(() => <Rail />, []);
@@ -49,28 +59,19 @@ export default ({show, defaultCoverImage, onCancel}: SelectCoverProps) => {
           </TouchableOpacity>
         </View>
 
-        {!!coverImage && (
-          <View style={styles.coverImageContainer}>
-            <Image
-              source={{uri: coverImage}}
-              style={styles.coverImage}
-              resizeMode="contain"
-            />
-          </View>
-        )}
+        <View style={styles.coverImageContainer}>
+          <Image
+            source={{uri: defaultCoverImage}}
+            style={styles.coverImage}
+            resizeMode="contain"
+          />
+        </View>
 
-        {/* <Slider
-        disableRange
-        style={styles.slider}
-        min={0}
-        max={100}
-        step={1}
-        renderThumb={renderThumb}
-        renderRail={renderRail}
-        renderRailSelected={renderRailSelected}
-        // onValueChanged
-        // onSliderTouchEnd={handleOnSlideTouchEnd}
-      /> */}
+        <Slider
+          minimumValue={0}
+          maximumValue={100}
+          onValueChange={value => console.log(value)}
+        />
       </View>
     </BottomSheet>
   );
@@ -79,7 +80,7 @@ export default ({show, defaultCoverImage, onCancel}: SelectCoverProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: Dimensions.get('window').height,
+    height: WINDOW_HEIGHT,
     backgroundColor: 'white',
     padding: 10,
   },

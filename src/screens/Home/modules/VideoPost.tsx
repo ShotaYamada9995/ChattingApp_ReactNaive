@@ -313,7 +313,6 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             ) : null}
           </View>
           <Text style={styles.caption}>{videoItem.text}</Text>
-          <Text>#cute #dog</Text>
           <View style={styles.videoInfoContainer}>
             <Icon
               name={video.isPaused ? 'play' : 'pause'}

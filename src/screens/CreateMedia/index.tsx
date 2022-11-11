@@ -100,8 +100,8 @@ const VideoCapture = () => {
       mediaType: 'video',
     })
       .then(video => {
-        const duration = video.duration / 1000;
         if (video.mime.includes('video')) {
+          const duration = video.duration / 1000;
           dispatch(
             update({
               duration,
@@ -162,13 +162,13 @@ const VideoCapture = () => {
     })();
   }, []);
 
-  if (!isCameraPermitted)
-    return (
-      <View style={styles.defaultContainer}>
-        <Text>Camera permission not yet granted</Text>
-        <Button title="Grant permission" />
-      </View>
-    );
+  // if (!isCameraPermitted)
+  //   return (
+  //     <View style={styles.defaultContainer}>
+  //       <Text>Camera permission not yet granted</Text>
+  //       <Button title="Grant permission" />
+  //     </View>
+  //   );
 
   if (device == null)
     return (
