@@ -1,6 +1,6 @@
 import React, {memo, useCallback} from 'react';
 import {View, StyleSheet, Image} from 'react-native';
-import {Frame} from '../../screens/CreateMedia/Editor/types';
+import {Frame} from '../../types';
 
 interface RailProps {
   frames: Frame[];

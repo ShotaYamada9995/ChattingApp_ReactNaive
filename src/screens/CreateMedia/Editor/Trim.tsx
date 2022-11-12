@@ -27,11 +27,11 @@ import {trim, genFrames} from '../../../utils/videoProcessor';
 import {mmssTimeFormat, hhmmssTimeFormat} from '../../../utils/helpers';
 import {Frame} from './types';
 
-import Label from '../../../components/slider/Label';
-import Notch from '../../../components/slider/Notch';
-import Rail from '../../../components/slider/Rail';
-import RailSelected from '../../../components/slider/RailSelected';
-import Thumb from '../../../components/slider/Thumb';
+import Label from './modules/slider/Label';
+import Notch from './modules/slider/Notch';
+import Rail from './modules/slider/Rail';
+import RailSelected from './modules/slider/RailSelected';
+import Thumb from './modules/slider/Thumb';
 
 import {update} from '../../../store/reducers/Video';
 

@@ -1,9 +1,5 @@
 import React, {memo} from 'react';
 import {View, StyleSheet, Image} from 'react-native';
-
-const THUMB_RADIUS_LOW = 12;
-const THUMB_RADIUS_HIGH = 16;
-
 interface ThumbProps {
   image: string;
 }
@@ -20,6 +16,7 @@ const styles = StyleSheet.create({
   container: {
     width: 40,
     aspectRatio: 3 / 4,
+    left: 20,
   },
   image: {
     width: '100%',

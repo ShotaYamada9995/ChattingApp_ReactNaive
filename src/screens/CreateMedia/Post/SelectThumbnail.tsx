@@ -15,8 +15,8 @@ import Slider from 'rn-range-slider';
 
 import {genFrames} from '../../../utils/videoProcessor';
 
-import Notch from '../../../components/slider/Notch';
-import RailSelected from '../../../components/slider/RailSelected';
+import Notch from '../Editor/modules/slider/Notch';
+import RailSelected from '../Editor/modules/slider/RailSelected';
 import Thumb from './modules/slider/Thumb';
 import Rail from './modules/slider/Rail';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
@@ -44,16 +44,15 @@ export default () => {
   const renderRail = useCallback(() => <Rail frames={frames} />, [frames]);
   const renderRailSelected = useCallback(() => <RailSelected />, []);
 
-  const handleSlideChange = (low, high, byUser) => {
+  const handleSlideChange = (low: number, high: number, byUser: boolean) => {
     if (byUser) {
       const frame = frames.find(frame => frame.time === low);
       setCoverImage(frame.image);
     }
   };
 
-  const handleSlideEnd = (low, high) => {
-    const frame = frames.find(frame => frame.time === low);
-    setThumbImage(frame.image);
+  const handleSlideEnd = () => {
+    setThumbImage(coverImage);
   };
 
   const save = () => {
@@ -63,7 +62,7 @@ export default () => {
 
   useEffect(() => {
     (async () => {
-      const frames: Frame[] | undefined = await genFrames(video);
+      const frames: Frame[] = await genFrames(video);
       setFrames(frames);
     })();
   }, []);
