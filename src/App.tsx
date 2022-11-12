@@ -6,6 +6,7 @@ import {SafeAreaProvider} from 'react-native-safe-area-context';
 import RNBootSplash from 'react-native-bootsplash';
 import {useSelector} from 'react-redux';
 import {ToastProvider} from 'react-native-toast-notifications';
+import {MenuProvider} from 'react-native-popup-menu';
 
 import RegisterOptions from './screens/Authentication/RegisterOptions';
 import RegisterEmail from './screens/Authentication/RegisterEmail';
@@ -66,61 +67,69 @@ export default () => {
 
   return (
     <ToastProvider>
-      <SafeAreaProvider>
-        <SafeAreaView style={{flex: 1}}>
-          <StatusBar barStyle="dark-content" backgroundColor="white" />
-          <NavigationContainer>
-            <AppStack.Navigator
-              screenOptions={{
-                headerShown: false,
-                animation: 'slide_from_right',
-              }}>
-              <AppStack.Screen name="Main" component={Main} />
-              <AppStack.Screen
-                name="VideoEditor"
-                component={VideoEditor}
-                options={{animation: 'slide_from_bottom'}}
-              />
-              <AppStack.Screen
-                name="Trim"
-                component={Trim}
-                options={{animation: 'slide_from_bottom'}}
-              />
-              <AppStack.Screen name="PostMedia" component={PostMedia} />
-              <AppStack.Screen name="MiniProfile" component={MiniProfile} />
-              <AppStack.Screen
-                name="SelectThumbnail"
-                component={SelectThumbnail}
-                options={{animation: 'slide_from_bottom'}}
-              />
-              {!user.isLoggedIn ? (
-                <>
-                  <AppStack.Screen
-                    name="RegisterOptions"
-                    component={RegisterOptions}
-                  />
-                  <AppStack.Screen
-                    name="RegisterEmail"
-                    component={RegisterEmail}
-                  />
-                  <AppStack.Screen
-                    name="RegisterPassword"
-                    component={RegisterPassword}
-                  />
-                  <AppStack.Screen name="VerifyEmail" component={VerifyEmail} />
-                  <AppStack.Screen name="RegisterBio" component={RegisterBio} />
-                  <AppStack.Screen name="ConfirmBio" component={ConfirmBio} />
-                  <AppStack.Screen
-                    name="LoginOptions"
-                    component={LoginOptions}
-                  />
-                  <AppStack.Screen name="LoginForm" component={LoginForm} />
-                </>
-              ) : null}
-            </AppStack.Navigator>
-          </NavigationContainer>
-        </SafeAreaView>
-      </SafeAreaProvider>
+      <MenuProvider>
+        <SafeAreaProvider>
+          <SafeAreaView style={{flex: 1}}>
+            <StatusBar barStyle="dark-content" backgroundColor="white" />
+            <NavigationContainer>
+              <AppStack.Navigator
+                screenOptions={{
+                  headerShown: false,
+                  animation: 'slide_from_right',
+                }}>
+                <AppStack.Screen name="Main" component={Main} />
+                <AppStack.Screen
+                  name="VideoEditor"
+                  component={VideoEditor}
+                  options={{animation: 'slide_from_bottom'}}
+                />
+                <AppStack.Screen
+                  name="Trim"
+                  component={Trim}
+                  options={{animation: 'slide_from_bottom'}}
+                />
+                <AppStack.Screen name="PostMedia" component={PostMedia} />
+                <AppStack.Screen name="MiniProfile" component={MiniProfile} />
+                <AppStack.Screen
+                  name="SelectThumbnail"
+                  component={SelectThumbnail}
+                  options={{animation: 'slide_from_bottom'}}
+                />
+                {!user.isLoggedIn ? (
+                  <>
+                    <AppStack.Screen
+                      name="RegisterOptions"
+                      component={RegisterOptions}
+                    />
+                    <AppStack.Screen
+                      name="RegisterEmail"
+                      component={RegisterEmail}
+                    />
+                    <AppStack.Screen
+                      name="RegisterPassword"
+                      component={RegisterPassword}
+                    />
+                    <AppStack.Screen
+                      name="VerifyEmail"
+                      component={VerifyEmail}
+                    />
+                    <AppStack.Screen
+                      name="RegisterBio"
+                      component={RegisterBio}
+                    />
+                    <AppStack.Screen name="ConfirmBio" component={ConfirmBio} />
+                    <AppStack.Screen
+                      name="LoginOptions"
+                      component={LoginOptions}
+                    />
+                    <AppStack.Screen name="LoginForm" component={LoginForm} />
+                  </>
+                ) : null}
+              </AppStack.Navigator>
+            </NavigationContainer>
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </MenuProvider>
     </ToastProvider>
   );
 };
