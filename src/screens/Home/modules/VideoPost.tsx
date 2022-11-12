@@ -310,9 +310,9 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
               />
             </MenuTrigger>
             <MenuOptions>
-              <MenuOption>
+              {/* <MenuOption>
                 <Text style={styles.menuOption}>Download</Text>
-              </MenuOption>
+              </MenuOption> */}
               <MenuOption onSelect={() => setShowPlaybackSpeed(true)}>
                 <Text style={styles.menuOption}>Playback speed</Text>
               </MenuOption>

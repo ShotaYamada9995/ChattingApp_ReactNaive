@@ -8,25 +8,80 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {Icon} from '@rneui/themed';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {WINDOW_WIDTH} from '../../../utils';
 import MediaRepository from '../../../repositories/MediaRepository';
+import {useSelector} from 'react-redux';
+import {MentionInput} from 'react-native-controlled-mentions';
+import {useToast} from 'react-native-toast-notifications';
 
 export default () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const toast = useToast();
+
+  const accountUser = useSelector((state: any) => state.user);
 
   const {videoId, user} = route.params;
 
   const [comments, setComments] = useState<any[]>([]);
   const [isLoadingComments, setIsLoadingComments] = useState(true);
   const [isAddingComments, setIsAddingComments] = useState(false);
+  const [comment, setComment] = useState('');
 
   const currentPage = useRef(0);
 
-  const addComment = async () => {};
+  const handleOnChangeCaption = (comment: string) => {
+    if (accountUser.isLoggedIn) {
+      // if (comment[comment.length - 1] === '@') {
+      //   setShowMentions(true);
+      // } else if (showMentions) {
+      //   setShowMentions(false);
+      // }
+
+      // if (comment[comment.length - 1] === '#') {
+      //   setShowHashtags(true);
+      // } else if (showHashtags) {
+      //   setShowHashtags(false);
+      // }
+
+      setComment(comment);
+    } else {
+      navigation.navigate('LoginOptions');
+    }
+  };
+
+  const addComment = async () => {
+    if (accountUser.isLoggedIn) {
+      setIsAddingComments(true);
+
+      try {
+        const payload = {
+          mediaId: videoId,
+          text: comment,
+          userSlug: accountUser.slug,
+          mediaCommentId: '',
+        };
+        const response = await MediaRepository.addComment(payload);
+
+        console.log(response.data);
+      } catch (error) {
+        console.log('Error adding comment');
+        console.error(error);
+        toast.show('Failed to add comment', {
+          type: 'danger',
+          duration: 2000,
+        });
+      } finally {
+        setIsAddingComments(false);
+      }
+    } else {
+      navigation.navigate('LoginOptions');
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -65,7 +120,7 @@ export default () => {
             <Text style={styles.username}>
               {user.firstName} {user.lastName}
             </Text>
-            <Text style={styles.userExpertise}>expert</Text>
+            {/* <Text style={styles.userExpertise}>expert</Text> */}
           </View>
         </TouchableOpacity>
 
@@ -92,9 +147,9 @@ export default () => {
                 {comment.user[0].profile.firstName}{' '}
                 {comment.user[0].profile.lastName}
               </Text>
-              <Text style={styles.userExpertise}>
+              {/* <Text style={styles.userExpertise}>
                 expert in Software Engineering
-              </Text>
+              </Text> */}
               <Text style={styles.comment}>{comment.text}</Text>
             </View>
           </View>
@@ -109,7 +164,7 @@ export default () => {
       </ScrollView>
 
       <View style={styles.footer}>
-        <View style={styles.footerActions}>
+        {/* <View style={styles.footerActions}>
           <View style={styles.footerActions}>
             <Icon
               name="bulb-outline"
@@ -129,25 +184,42 @@ export default () => {
             />
             <Text style={styles.footerActionText}>6</Text>
           </View>
-        </View>
-        <View style={styles.inputFieldContainer}>
-          <TextInput
-            placeholder="Add a comment"
-            placeholderTextColor="grey"
-            style={styles.inputField}
-          />
-          {isAddingComments ? (
-            <ActivityIndicator />
-          ) : (
-            <Icon
-              name="paper-plane-outline"
-              type="ionicon"
-              color="#888"
-              size={WINDOW_WIDTH * 0.08}
-              iconStyle={styles.addCommentIcon}
+        </View> */}
+        <KeyboardAvoidingView behavior="position">
+          <View style={styles.inputFieldContainer}>
+            <MentionInput
+              multiline
+              placeholder="Add a comment"
+              placeholderTextColor="grey"
+              value={comment}
+              onChange={handleOnChangeCaption}
+              containerStyle={{flex: 1}}
+              style={styles.inputField}
+              partTypes={[
+                {
+                  pattern: /(?<=#).*?(?=( |$))/g,
+                  textStyle: {fontWeight: 'bold'},
+                },
+                {
+                  pattern: /(?<=@).*?(?=( |$))/g,
+                  textStyle: {fontWeight: 'bold'},
+                },
+              ]}
             />
-          )}
-        </View>
+            {isAddingComments ? (
+              <ActivityIndicator size="large" style={{margin: 10}} />
+            ) : (
+              <Icon
+                name="paper-plane-outline"
+                type="ionicon"
+                color="#888"
+                size={WINDOW_WIDTH * 0.08}
+                iconStyle={styles.addCommentIcon}
+                onPress={addComment}
+              />
+            )}
+          </View>
+        </KeyboardAvoidingView>
       </View>
     </View>
   );
@@ -189,8 +261,9 @@ const styles = StyleSheet.create({
     fontSize: WINDOW_WIDTH * 0.035,
   },
   footer: {
-    borderTopWidth: 0.5,
-    borderTopColor: '#ccc',
+    width: '100%',
+    // borderTopWidth: 0.5,
+    // borderTopColor: '#ccc',
   },
   footerActions: {
     flexDirection: 'row',
@@ -202,17 +275,17 @@ const styles = StyleSheet.create({
     fontSize: WINDOW_WIDTH * 0.04,
     marginLeft: 5,
   },
+  inputFieldContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+  },
   inputField: {
-    flex: 1,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
     paddingHorizontal: 10,
     color: 'black',
-  },
-  inputFieldContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
   },
   commentsScrollView: {
     flex: 1,

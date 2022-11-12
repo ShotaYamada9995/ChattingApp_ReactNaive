@@ -1,5 +1,4 @@
 import axios from 'axios';
-import RNFetchBlob from 'rn-fetch-blob';
 import * as mime from 'react-native-mime-types';
 
 import {DOMAIN} from './repository';
@@ -55,33 +54,33 @@ class MediaRepository {
 
     const endpoint = `${DOMAIN}/media/create`;
 
-    const response = await RNFetchBlob.fetch(
-      'POST',
-      endpoint,
-      {
+    const mediaData = new FormData();
+
+    mediaData.append('file', {
+      uri: file,
+      type: mime.lookup(file),
+      name: file.substring(file.lastIndexOf('/') + 1),
+    });
+    mediaData.append('thumbnail', {
+      uri: thumbnail,
+      type: mime.lookup(thumbnail),
+      name: thumbnail.substring(thumbnail.lastIndexOf('/') + 1),
+    });
+    mediaData.append('community', community);
+    mediaData.append('tags', tags);
+    mediaData.append('text', text);
+    mediaData.append('userSlug', userSlug);
+
+    const response = await axios.post(endpoint, mediaData, {
+      headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: `${token}`,
       },
-      [
-        {
-          name: 'file',
-          filename: file.substring(file.lastIndexOf('/') + 1),
-          type: mime.lookup(file),
-          data: RNFetchBlob.wrap(file),
-        },
-        {
-          name: 'thumbnail',
-          filename: thumbnail.substring(thumbnail.lastIndexOf('/') + 1),
-          type: mime.lookup(thumbnail),
-          data: RNFetchBlob.wrap(thumbnail),
-        },
-        {name: 'community', data: community},
-        {name: 'tags', data: tags},
-        {name: 'text', data: text},
-        {name: 'userSlug', data: userSlug},
-      ],
-    ).uploadProgress((written, total) => {
-      console.log('Upload progress: ', written / total);
+      onUploadProgress: progressEvent => {
+        const percent = Math.round(progressEvent.loaded / progressEvent.total);
+
+        console.log('Progress: ', percent);
+      },
     });
 
     return response;
@@ -98,7 +97,9 @@ class MediaRepository {
   async addComment(payload: AddCommentProps) {
     const endpoint = `${DOMAIN}/media/comment/create`;
 
-    await axios.post(endpoint, payload);
+    const response = await axios.post(endpoint, payload);
+
+    return response;
   }
 }
 

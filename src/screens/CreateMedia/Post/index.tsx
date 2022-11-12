@@ -27,12 +27,14 @@ import {genFirstFrame} from '../../../utils/videoProcessor';
 import {addThumbnail} from '../../../store/reducers/Video';
 
 import TagPeople from './TagPeople';
+import {useToast} from 'react-native-toast-notifications';
 
 type Viewer = 'Everyone' | 'Friends' | 'Only me';
 
 const PostMedia = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const toast = useToast();
   const {user, video} = useSelector((state: any) => ({
     user: state.user,
     video: state.video,
@@ -48,6 +50,7 @@ const PostMedia = () => {
   const [showTagScreen, setShowTagScreen] = useState(false);
   const [showHashtags, setShowHashtags] = useState(false);
   const [showMentions, setShowMentions] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
 
   const [viewer, setViewer] = useState<Viewer>('Everyone');
   const [caption, setCaption] = useState('');
@@ -114,6 +117,7 @@ const PostMedia = () => {
         .filter(word => word[0] === '#')
         .map(tag => tag.substring(1, tag.length));
 
+      setIsPosting(true);
       const response = await MediaRepository.uploadMedia({
         token: user.token,
         file: compressedVideo,
@@ -124,10 +128,17 @@ const PostMedia = () => {
         userSlug: user.slug,
       });
 
+      toast.show('Upload Successful', {
+        type: 'success',
+        duration: 2000,
+      });
+
       console.log('Upload: ', response.data);
     } catch (error) {
       console.log('Error posting video');
       console.error(error);
+    } finally {
+      setIsPosting(false);
     }
   };
 
@@ -383,7 +394,8 @@ const PostMedia = () => {
         containerStyle={styles.btn}
         buttonStyle={{paddingVertical: 10, borderColor: '#001433'}}
         color="#001433"
-        disabled={video.thumbnail ? false : true}
+        loading={isPosting}
+        disabled={isPosting || (video.thumbnail ? false : true)}
         onPress={postMedia}
       />
     </View>
