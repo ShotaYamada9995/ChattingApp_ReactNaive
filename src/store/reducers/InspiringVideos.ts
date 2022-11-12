@@ -15,6 +15,7 @@ export const userSlice = createSlice({
           return {
             ...video,
             inspired: [...video.inspired, action.payload.username],
+            inspired_count: video.inspired_count + 1,
           };
         } else {
           return video;
@@ -30,6 +31,7 @@ export const userSlice = createSlice({
             inspired: video.inspired.filter(
               (username: string) => action.payload.username !== username,
             ),
+            inspired_count: video.inspired_count - 1,
           };
         } else {
           return video;

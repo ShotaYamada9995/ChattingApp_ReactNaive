@@ -120,7 +120,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
     dispatch(
       followUser({
         following: videoItem.userSlug,
-        _id: videoItem.user.id,
+        _id: videoItem?.user?.id,
         type: 'expert',
       }),
     );
@@ -198,9 +198,9 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             <Pressable
               style={styles.videoInfoContainer}
               onPress={() => navigation.navigate('MiniProfile')}>
-              {videoItem.user.image ? (
+              {videoItem?.user?.image ? (
                 <Image
-                  source={{uri: videoItem.user.image}}
+                  source={{uri: videoItem?.user?.image}}
                   style={styles.userPic}
                 />
               ) : (
@@ -212,7 +212,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             </Pressable>
             <Pressable onPress={() => navigation.navigate('MiniProfile')}>
               <Text style={styles.username}>
-                {videoItem.user.firstName} {videoItem.user.lastName}
+                {videoItem?.user?.firstName} {videoItem?.user?.lastName}
               </Text>
             </Pressable>
             {user.isLoggedIn ? (
