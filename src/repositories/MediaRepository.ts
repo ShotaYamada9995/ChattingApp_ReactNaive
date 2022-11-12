@@ -1,5 +1,6 @@
 import axios from 'axios';
 import RNFetchBlob from 'rn-fetch-blob';
+import * as mime from 'react-native-mime-types';
 
 import {DOMAIN} from './repository';
 
@@ -17,7 +18,12 @@ interface UploadMediaProps {
   text: string;
   userSlug: string;
 }
-interface CommentProps {
+
+interface GetCommentProps {
+  id: string;
+  page: number;
+}
+interface AddCommentProps {
   mediaId: string;
   text: string;
   userSlug: string;
@@ -27,7 +33,9 @@ class MediaRepository {
   async getVideos(page: number) {
     const endpoint = `${DOMAIN}/media/fetchVideos?page=${page}`;
 
-    await axios.get(endpoint);
+    const response = await axios.get(endpoint);
+
+    return response;
   }
 
   async likeVideo(payload: LikeUnlikePayload) {
@@ -58,11 +66,13 @@ class MediaRepository {
         {
           name: 'file',
           filename: file.substring(file.lastIndexOf('/') + 1),
+          type: mime.lookup(file),
           data: RNFetchBlob.wrap(file),
         },
         {
           name: 'thumbnail',
           filename: thumbnail.substring(thumbnail.lastIndexOf('/') + 1),
+          type: mime.lookup(thumbnail),
           data: RNFetchBlob.wrap(thumbnail),
         },
         {name: 'community', data: community},
@@ -75,34 +85,17 @@ class MediaRepository {
     });
 
     return response;
-
-    // let mediaData = new FormData();
-
-    // mediaData.append('file', file);
-    // mediaData.append('thumbnail', thumbnail);
-    // mediaData.append('community', community);
-    // mediaData.append('tags', tags);
-    // mediaData.append('text', text);
-    // mediaData.append('userSlug', userSlug);
-
-    // const response = await axios.post(endpoint, mediaData, {
-    //   headers: {
-    //     'Content-Type': 'multipart/form-data',
-    //     Authorization: `${token}`,
-    //   },
-    //   onUploadProgress: (progressEvent: any) => {
-    //     const percent = Math.round(
-    //       (progressEvent.loaded * 100) / progressEvent.total,
-    //     );
-
-    //     console.log('Upload progress: ', percent);
-    //   },
-    // });
-
-    // return response;
   }
 
-  async addComment(payload: CommentProps) {
+  async getComments(payload: GetCommentProps) {
+    const endpoint = `${DOMAIN}/media/page/comment/${payload.id}?page=${payload.page}`;
+
+    const response = await axios.get(endpoint);
+
+    return response;
+  }
+
+  async addComment(payload: AddCommentProps) {
     const endpoint = `${DOMAIN}/media/comment/create`;
 
     await axios.post(endpoint, payload);

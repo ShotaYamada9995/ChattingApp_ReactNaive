@@ -1,20 +1,9 @@
-import {useBottomTabBarHeight} from '@react-navigation/bottom-tabs';
 import React, {useState, useEffect, memo} from 'react';
-import {
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  ActivityIndicator,
-  Platform,
-} from 'react-native';
+import {Image, Pressable, StyleSheet, Text, View, Platform} from 'react-native';
 import Video from 'react-native-video';
-import RNFS from 'react-native-fs';
-import {Icon, BottomSheet} from '@rneui/themed';
+import {Icon} from '@rneui/themed';
 import Share from 'react-native-share';
 
-import {VideoModel} from '../../../videosData';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
 import {useIsForeground} from '../../../hooks/useIsForeground';
@@ -33,7 +22,6 @@ import {useDispatch, useSelector} from 'react-redux';
 
 import MediaRepository from '../../../repositories/MediaRepository';
 import UsersRepository from '../../../repositories/UsersRepository';
-import Comments from './Comments';
 import PlaybackSpeed from './PlaybackSpeed';
 
 interface VideoPostProps {
@@ -57,7 +45,6 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
     speed: 1,
   });
 
-  const [showComments, setShowComments] = useState(false);
   const [showPlaybackSpeed, setShowPlaybackSpeed] = useState(false);
 
   const isForeGround = useIsForeground();
@@ -165,85 +152,6 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
     }
   };
 
-  // const getVideoUrl = (url: string, filename: string) => {
-  //   return new Promise((resolve, reject) => {
-  //     RNFS.readDir(RNFS.DocumentDirectoryPath)
-  //       .then(result => {
-  //         result.forEach(element => {
-  //           if (element.name == filename.replace(/%20/g, '_')) {
-  //             resolve(element.path);
-  //           }
-  //         });
-  //       })
-  //       .catch(err => {
-  //         reject(url);
-  //       });
-  //   });
-  // };
-
-  // const setVideoUrl = () => {
-  //   const filename: string = encodeURIComponent(
-  //     videoItem.file[0].cdnUrl,
-  //   ).substring(
-  //     encodeURIComponent(videoItem.file[0].cdnUrl)
-  //       .replace(/%3A/g, ':')
-  //       .replace(/%2F/g, '/')
-  //       .lastIndexOf('/') + 1,
-  //     encodeURIComponent(videoItem.file[0].cdnUrl)
-  //       .replace(/%3A/g, ':')
-  //       .replace(/%2F/g, '/').length,
-  //   );
-  //   const path_name = RNFS.DocumentDirectoryPath + '/' + filename;
-
-  //   // download video
-  //   RNFS.exists(path_name).then(exists => {
-  //     if (exists) {
-  //       getVideoUrl(
-  //         encodeURIComponent(videoItem.file[0].cdnUrl)
-  //           .replace(/%3A/g, ':')
-  //           .replace(/%2F/g, '/'),
-  //         filename,
-  //       )
-  //         .then(res => {
-  //           setVideo(video => ({...video, url: res}));
-  //         })
-  //         .catch(url => {
-  //           setVideo(video => ({...video, url: url}));
-  //         });
-  //     } else {
-  //       RNFS.downloadFile({
-  //         fromUrl: encodeURIComponent(videoItem.file[0].cdnUrl)
-  //           .replace(/%3A/g, ':')
-  //           .replace(/%2F/g, '/'),
-  //         toFile: path_name.replace(/%20/g, '_'),
-  //         background: true,
-  //       })
-  //         .promise.then(res => {
-  //           getVideoUrl(
-  //             encodeURIComponent(videoItem.file[0].cdnUrl)
-  //               .replace(/%3A/g, ':')
-  //               .replace(/%2F/g, '/'),
-  //             filename,
-  //           )
-  //             .then(res => {
-  //               setVideo(video => ({...video, url: res}));
-  //             })
-  //             .catch(url => {
-  //               setVideo(video => ({...video, url: url}));
-  //             });
-  //         })
-  //         .catch(err => {
-  //           setVideo(video => ({
-  //             ...video,
-  //             url: encodeURIComponent(videoItem.file[0].cdnUrl)
-  //               .replace(/%3A/g, ':')
-  //               .replace(/%2F/g, '/'),
-  //           }));
-  //         });
-  //     }
-  //   });
-  // };
-
   useEffect(() => {
     if (isActive) {
       setVideo(video => ({...video, isPaused: false}));
@@ -275,14 +183,14 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
         />
       )} */}
 
-      {!video.isLoaded && (
+      {/* {!video.isLoaded && (
         <View style={{position: 'absolute', width: '100%', height: '100%'}}>
           <Image
             source={{uri: videoItem.thumbnail[0].cdnUrl}}
             style={{width: '100%', height: '100%'}}
           />
         </View>
-      )}
+      )} */}
 
       <View style={styles.bottomSection}>
         <View style={styles.bottomLeftSection}>
@@ -376,14 +284,12 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             type="ionicon"
             color="white"
             style={styles.verticalBarIcon}
-            onPress={() => setShowComments(true)}
-          />
-
-          <Comments
-            isVisible={showComments}
-            onClose={() => setShowComments(false)}
-            videoId={videoItem._id}
-            user={videoItem.user}
+            onPress={() =>
+              navigation.navigate('Comments', {
+                videoId: videoItem._id,
+                user: videoItem.user,
+              })
+            }
           />
 
           <Icon

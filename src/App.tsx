@@ -22,6 +22,7 @@ import Trim from './screens/CreateMedia/Editor/Trim';
 import PostMedia from './screens/CreateMedia/Post';
 import MiniProfile from './screens/Profiles/MiniProfile';
 import SelectThumbnail from './screens/CreateMedia/Post/SelectThumbnail';
+import Comments from './screens/Home/modules/Comments';
 
 type AppStackParamsList = {
   RegisterOptions: undefined;
@@ -38,6 +39,10 @@ type AppStackParamsList = {
   PostMedia: undefined;
   MiniProfile: undefined;
   SelectThumbnail: undefined;
+  Comments: {
+    videoId: string;
+    user: {firstName: string; lastName: string; image: string};
+  };
 };
 
 const AppStack = createNativeStackNavigator<AppStackParamsList>();
@@ -93,6 +98,11 @@ export default () => {
                 <AppStack.Screen
                   name="SelectThumbnail"
                   component={SelectThumbnail}
+                  options={{animation: 'slide_from_bottom'}}
+                />
+                <AppStack.Screen
+                  name="Comments"
+                  component={Comments}
                   options={{animation: 'slide_from_bottom'}}
                 />
                 {!user.isLoggedIn ? (

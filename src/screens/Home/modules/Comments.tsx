@@ -1,116 +1,144 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ActivityIndicator,
   TextInput,
-  Pressable,
   Image,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import {BottomSheet, Icon} from '@rneui/themed';
-import {useNavigation} from '@react-navigation/native';
-import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
+import {Icon} from '@rneui/themed';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {WINDOW_WIDTH} from '../../../utils';
+import MediaRepository from '../../../repositories/MediaRepository';
 
-interface CommentsProps {
-  isVisible: boolean;
-  onClose: any;
-  videoId: string;
-  user: {firstName: string; lastName: string; image: string};
-}
-
-export default ({isVisible, onClose, videoId, user}: CommentsProps) => {
+export default () => {
   const navigation = useNavigation();
+  const route = useRoute();
 
-  const [comments, setComments] = useState<any[]>([
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-  ]);
+  const {videoId, user} = route.params;
+
+  const [comments, setComments] = useState<any[]>([]);
+  const [isLoadingComments, setIsLoadingComments] = useState(true);
+  const [isAddingComments, setIsAddingComments] = useState(false);
+
+  const currentPage = useRef(0);
+
+  const addComment = async () => {};
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const {data: comments} = await MediaRepository.getComments({
+          id: videoId,
+          page: currentPage.current,
+        });
+
+        setIsLoadingComments(false);
+        setComments(comments);
+        currentPage.current++;
+      } catch (error) {
+        console.log('Error getting comments');
+        console.error(error);
+      }
+    })();
+  }, []);
 
   return (
-    <BottomSheet isVisible={isVisible}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.headerInfoContainer}
-            onPress={() => navigation.navigate('MiniProfile')}>
-            {user.image ? (
-              <Image source={{uri: user.image}} style={styles.userPic} />
-            ) : (
-              <Image
-                source={require('../../../assets/images/default_profile_image.jpeg')}
-                style={styles.userPic}
-              />
-            )}
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.headerInfoContainer}
+          onPress={() => navigation.navigate('MiniProfile')}>
+          {user.image ? (
+            <Image source={{uri: user.image}} style={styles.userPic} />
+          ) : (
+            <Image
+              source={require('../../../assets/images/default_profile_image.jpeg')}
+              style={styles.userPic}
+            />
+          )}
+
+          <View>
+            <Text style={styles.username}>
+              {user.firstName} {user.lastName}
+            </Text>
+            <Text style={styles.userExpertise}>expert</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon
+            name="close-outline"
+            type="ionicon"
+            color="grey"
+            size={WINDOW_WIDTH * 0.1}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {comments.map(comment => (
+          <View key={comment._id} style={styles.commentContainer}>
+            <Image
+              source={{uri: comment.user[0].imageUrl.cdnUrl}}
+              style={styles.userPic}
+            />
 
             <View>
               <Text style={styles.username}>
-                {user.firstName} {user.lastName}
+                {comment.user[0].profile.firstName}{' '}
+                {comment.user[0].profile.lastName}
               </Text>
               <Text style={styles.userExpertise}>
-                expert in web-development
+                expert in Software Engineering
               </Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={onClose}>
-            <Icon
-              name="close-outline"
-              type="ionicon"
-              color="grey"
-              size={WINDOW_WIDTH * 0.1}
-            />
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {comments.map(comment => (
-            <View key={comment} style={styles.commentContainer}>
-              <Image
-                source={require('../../../assets/images/default_profile_image.jpeg')}
-                style={styles.userPic}
-              />
-
-              <View>
-                <Text style={styles.username}>Valentine Orga</Text>
-                <Text style={styles.userExpertise}>
-                  expert in Software Engineering
-                </Text>
-                <Text style={styles.comment}>Great video</Text>
-              </View>
-            </View>
-          ))}
-        </ScrollView>
-
-        <View style={styles.footer}>
-          <View style={styles.footerActions}>
-            <View style={styles.footerActions}>
-              <Icon
-                name="bulb-outline"
-                type="ionicon"
-                color="#888"
-                size={WINDOW_WIDTH * 0.07}
-              />
-              <Text style={styles.footerActionText}>21</Text>
-            </View>
-
-            <View style={[styles.footerActions, {marginLeft: 15}]}>
-              <Icon
-                name="arrow-redo-outline"
-                type="ionicon"
-                color="#888"
-                size={WINDOW_WIDTH * 0.07}
-              />
-              <Text style={styles.footerActionText}>6</Text>
+              <Text style={styles.comment}>{comment.text}</Text>
             </View>
           </View>
-          <View style={styles.inputFieldContainer}>
-            <TextInput
-              placeholder="Add a comment"
-              placeholderTextColor="grey"
-              style={styles.inputField}
+        ))}
+
+        {isLoadingComments && (
+          <ActivityIndicator
+            size="large"
+            style={{alignSelf: 'center', marginVertical: 10}}
+          />
+        )}
+      </ScrollView>
+
+      <View style={styles.footer}>
+        <View style={styles.footerActions}>
+          <View style={styles.footerActions}>
+            <Icon
+              name="bulb-outline"
+              type="ionicon"
+              color="#888"
+              size={WINDOW_WIDTH * 0.07}
             />
+            <Text style={styles.footerActionText}>21</Text>
+          </View>
+
+          <View style={[styles.footerActions, {marginLeft: 15}]}>
+            <Icon
+              name="arrow-redo-outline"
+              type="ionicon"
+              color="#888"
+              size={WINDOW_WIDTH * 0.07}
+            />
+            <Text style={styles.footerActionText}>6</Text>
+          </View>
+        </View>
+        <View style={styles.inputFieldContainer}>
+          <TextInput
+            placeholder="Add a comment"
+            placeholderTextColor="grey"
+            style={styles.inputField}
+          />
+          {isAddingComments ? (
+            <ActivityIndicator />
+          ) : (
             <Icon
               name="paper-plane-outline"
               type="ionicon"
@@ -118,16 +146,16 @@ export default ({isVisible, onClose, videoId, user}: CommentsProps) => {
               size={WINDOW_WIDTH * 0.08}
               iconStyle={styles.addCommentIcon}
             />
-          </View>
+          )}
         </View>
       </View>
-    </BottomSheet>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    height: WINDOW_HEIGHT,
+    flex: 1,
     backgroundColor: 'white',
     padding: 10,
   },
@@ -193,6 +221,7 @@ const styles = StyleSheet.create({
   commentContainer: {
     flexDirection: 'row',
     paddingVertical: 10,
+    width: '90%',
   },
   comment: {
     color: 'black',

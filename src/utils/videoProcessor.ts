@@ -22,13 +22,18 @@ export const trim = async (video: Video) => {
 
   const returnCode = await session.getReturnCode();
 
+  console.log('Trim');
   if (ReturnCode.isSuccess(returnCode)) {
     // SUCCESS
+    console.log('Success');
+    console.log(trimmedVideoPath);
     return trimmedVideoPath;
   } else if (ReturnCode.isCancel(returnCode)) {
     // CANCEL
+    console.log('Cancelled');
   } else {
     // ERROR
+    console.log('Error');
   }
 };
 
