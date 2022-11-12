@@ -18,7 +18,12 @@ import {VideoModel} from '../../../videosData';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
 import {useIsForeground} from '../../../hooks/useIsForeground';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {
+  Menu,
+  MenuOptions,
+  MenuOption,
+  MenuTrigger,
+} from 'react-native-popup-menu';
 
 import {likeVideo, unlikeVideo} from '../../../store/reducers/InspiringVideos';
 import {followUser, unfollowUser} from '../../../store/reducers/User';
@@ -29,6 +34,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import MediaRepository from '../../../repositories/MediaRepository';
 import UsersRepository from '../../../repositories/UsersRepository';
 import Comments from './Comments';
+import PlaybackSpeed from './PlaybackSpeed';
 
 interface VideoPostProps {
   videoItem: any;
@@ -48,9 +54,11 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
     isBuffering: false,
     isPaused: true,
     isLoaded: false,
+    speed: 1,
   });
 
   const [showComments, setShowComments] = useState(false);
+  const [showPlaybackSpeed, setShowPlaybackSpeed] = useState(false);
 
   const isForeGround = useIsForeground();
   const isFocused = useIsFocused();
@@ -261,10 +269,11 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
           resizeMode="cover"
           paused={video.isPaused || !canPlayVideo}
           playInBackground={false}
+          rate={video.speed}
           onLoad={() => setVideo(video => ({...video, isLoaded: true}))}
           repeat
         />
-      )}
+      )} */}
 
       {!video.isLoaded && (
         <View style={{position: 'absolute', width: '100%', height: '100%'}}>
@@ -273,7 +282,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             style={{width: '100%', height: '100%'}}
           />
         </View>
-      )} */}
+      )}
 
       <View style={styles.bottomSection}>
         <View style={styles.bottomLeftSection}>
@@ -385,11 +394,32 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             onPress={share}
           />
 
-          <Icon
-            name="ellipsis-horizontal"
-            type="ionicon"
-            color="white"
-            style={styles.verticalBarIcon}
+          <Menu>
+            <MenuTrigger>
+              <Icon
+                name="ellipsis-horizontal"
+                type="ionicon"
+                color="white"
+                style={styles.verticalBarIcon}
+              />
+            </MenuTrigger>
+            <MenuOptions>
+              <MenuOption>
+                <Text style={styles.menuOption}>Download</Text>
+              </MenuOption>
+              <MenuOption onSelect={() => setShowPlaybackSpeed(true)}>
+                <Text style={styles.menuOption}>Playback speed</Text>
+              </MenuOption>
+            </MenuOptions>
+          </Menu>
+
+          <PlaybackSpeed
+            isVisible={showPlaybackSpeed}
+            selectedRate={video.speed}
+            onSelect={(rate: number) =>
+              setVideo(current => ({...current, speed: rate}))
+            }
+            onClose={() => setShowPlaybackSpeed(false)}
           />
         </View>
       </View>
@@ -506,12 +536,8 @@ const styles = StyleSheet.create({
     width: 21,
     height: 21,
   },
-  floatingMusicNote: {
-    position: 'absolute',
-    right: 40,
-    bottom: 16,
-    width: 16,
-    height: 16,
-    tintColor: 'white',
+  menuOption: {
+    padding: 10,
+    color: 'black',
   },
 });
