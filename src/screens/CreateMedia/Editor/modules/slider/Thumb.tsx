@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     borderRadius: THUMB_RADIUS_HIGH,
     borderWidth: 2,
     borderColor: '#7f7f7f',
-    backgroundColor: '#ffffff',
+    backgroundColor: 'cyan',
   },
 });
 

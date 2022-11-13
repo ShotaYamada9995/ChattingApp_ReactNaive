@@ -270,10 +270,10 @@ const VideoCapture = () => {
               onPress={stopRecording}
             />
           ) : (
-            <TouchableOpacity
-              style={styles.galleryBtn}
-              onPress={selectVideoFromLib}
-            />
+            <TouchableOpacity onPress={selectVideoFromLib}>
+              <View style={styles.galleryBtn} />
+              <Text style={styles.uploadText}>Upload</Text>
+            </TouchableOpacity>
           )}
         </View>
       </View>
@@ -319,7 +319,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     width: 40,
     height: 40,
-    marginLeft: 10,
+  },
+  uploadText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 

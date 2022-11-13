@@ -62,7 +62,7 @@ export default () => {
 
   useEffect(() => {
     (async () => {
-      const frames: Frame[] = await genFrames(video);
+      const frames: Frame[] = await genFrames('1 / 1', video);
       setFrames(frames);
     })();
   }, []);
@@ -107,7 +107,7 @@ export default () => {
         </ScrollView>
       ) : frames?.length === 1 ? (
         <Text style={{color: 'black', textAlign: 'center', marginTop: 20}}>
-          No thumbnails to select from
+          No frames to select from
         </Text>
       ) : (
         <ActivityIndicator style={{marginTop: 20}} />
@@ -145,9 +145,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   sliderContainer: {
-    paddingHorizontal: 50,
-    paddingVertical: 0,
-    margin: 0,
+    paddingHorizontal: WINDOW_WIDTH * 0.3,
+    height: 100,
   },
   slider: {
     alignSelf: 'center',

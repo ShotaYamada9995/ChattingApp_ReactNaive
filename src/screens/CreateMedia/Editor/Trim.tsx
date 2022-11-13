@@ -34,6 +34,7 @@ import RailSelected from './modules/slider/RailSelected';
 import Thumb from './modules/slider/Thumb';
 
 import {update} from '../../../store/reducers/Video';
+import {WINDOW_WIDTH} from '../../../utils';
 
 interface Trim {
   startTime: number;
@@ -195,10 +196,11 @@ const Trim = () => {
 
   useEffect(() => {
     setTrims([{startTime: 0, endTime: Number(videoData.duration.toFixed(1))}]);
-    // (async () => {
-    //   const frames = await genFrames(videoData);
-    //   setFrames(frames);
-    // })();
+    (async () => {
+      const frames = await genFrames(`1/1`, videoData);
+      console.log('Frames: ', frames?.length, frames);
+      setFrames(frames);
+    })();
   }, []);
 
   return (
@@ -269,33 +271,31 @@ const Trim = () => {
         )}
       </View>
 
-      {/* {frames.length > 0 ? (
+      {frames.length > 0 ? (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.sliderContainer}> */}
-      <Slider
-        style={styles.slider}
-        min={0}
-        max={videoData.duration}
-        low={slider.low}
-        high={slider.high}
-        step={0.1}
-        floatingLabel
-        renderThumb={renderThumb}
-        renderRail={renderRail}
-        renderRailSelected={renderRailSelected}
-        renderLabel={renderLabel}
-        renderNotch={renderNotch}
-        onValueChanged={handleDurationChange}
-        onSliderTouchEnd={handleOnSlideTouchEnd}
-      />
-      {/* </ScrollView>
+          contentContainerStyle={styles.sliderContainer}>
+          <Slider
+            style={[styles.slider, {width: 30 * frames.length}]}
+            min={0}
+            max={videoData.duration}
+            low={slider.low}
+            high={slider.high}
+            step={0.1}
+            floatingLabel
+            renderThumb={renderThumb}
+            renderRail={renderRail}
+            renderRailSelected={renderRailSelected}
+            renderLabel={renderLabel}
+            renderNotch={renderNotch}
+            onValueChanged={handleDurationChange}
+            onSliderTouchEnd={handleOnSlideTouchEnd}
+          />
+        </ScrollView>
       ) : (
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <ActivityIndicator size="large" />
-        </View>
-      )} */}
+        <ActivityIndicator style={{marginVertical: 40, alignSelf: 'center'}} />
+      )}
     </View>
   );
 };
@@ -337,7 +337,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sliderContainer: {
-    paddingHorizontal: 50,
+    paddingHorizontal: WINDOW_WIDTH * 0.3,
+    height: 100,
   },
   slider: {
     alignSelf: 'center',

@@ -1,7 +1,5 @@
-import React, {memo} from 'react';
+import React from 'react';
 import {View, StyleSheet, Image} from 'react-native';
-import {WINDOW_WIDTH} from '../../../../../utils';
-
 interface Frame {
   time: number;
   image: string;

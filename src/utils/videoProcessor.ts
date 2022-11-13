@@ -22,29 +22,26 @@ export const trim = async (video: Video) => {
 
   const returnCode = await session.getReturnCode();
 
-  console.log('Trim');
   if (ReturnCode.isSuccess(returnCode)) {
     // SUCCESS
-    console.log('Success');
     console.log(trimmedVideoPath);
     return trimmedVideoPath;
   } else if (ReturnCode.isCancel(returnCode)) {
     // CANCEL
-    console.log('Cancelled');
   } else {
     // ERROR
-    console.log('Error');
   }
 };
 
-export const genFrames = async video => {
+export const genFrames = async (fps, video) => {
+  console.log('fps: ', fps);
   const name = video.path.substring(0, video.path.lastIndexOf('.'));
   const ext = 'png';
 
-  const framePath = `${name}_frame_%4d.${ext}`;
+  const framePath = `${name}_frame_%3d.${ext}`;
 
   const session = await FFmpegKit.execute(
-    `-i ${video.path} -preset ultrafast -r 1/1 ${framePath}`,
+    `-i ${video.path} -preset ultrafast -r ${fps} ${framePath}`,
   );
 
   const returnCode = await session.getReturnCode();
