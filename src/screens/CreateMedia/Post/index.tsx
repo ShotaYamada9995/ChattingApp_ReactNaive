@@ -128,6 +128,8 @@ const PostMedia = () => {
         userSlug: user.slug,
       });
 
+      dispatch(addThumbnail(''));
+
       toast.show('Upload Successful', {
         type: 'success',
         duration: 2000,
@@ -135,6 +137,13 @@ const PostMedia = () => {
 
       console.log('Upload: ', response.data);
     } catch (error) {
+      toast.show(
+        "Couldn't complete the upload. Ensure you have a good connection before trying again",
+        {
+          type: 'danger',
+          duration: 2000,
+        },
+      );
       console.log('Error posting video');
       console.error(error);
     } finally {
@@ -143,15 +152,16 @@ const PostMedia = () => {
   };
 
   useEffect(() => {
-    // TO-DO: Remove conditional
-    (async () => {
-      const frame: string = await genFrameAt(
-        0,
-        video.path,
-        'default_thumbnail',
-      );
-      dispatch(addThumbnail(frame));
-    })();
+    if (!video.thumbnail) {
+      (async () => {
+        const frame: string = await genFrameAt(
+          0,
+          video.path,
+          'default_thumbnail',
+        );
+        dispatch(addThumbnail(frame));
+      })();
+    }
   }, []);
 
   return (
@@ -274,24 +284,24 @@ const PostMedia = () => {
             <Icon name="chevron-right" color="black" />
           </TouchableOpacity>
 
-          <TagPeople
+          {/* <TagPeople
             show={showTagScreen}
             tags={tags}
             setTags={setTags}
             onCancel={() => setShowTagScreen(false)}
-          />
+          /> */}
 
-          {user.isLoggedIn && (
+          {/* {user.isLoggedIn && (
             <TouchableOpacity
               style={[styles.configLayout, globalStyles.rowLayout]}>
-              <View style={styles.configEdgeLayout}>
-                {/* <Icon name="location-outline" type="ionicon" /> */}
-                <Text style={styles.label}>Location</Text>
+              <View style={styles.configEdgeLayout}> */}
+          {/* <Icon name="location-outline" type="ionicon" /> */}
+          {/* <Text style={styles.label}>Location</Text>
               </View>
 
               <Icon name="chevron-right" color="black" />
             </TouchableOpacity>
-          )}
+          )} */}
 
           <TouchableOpacity
             style={[styles.configLayout, globalStyles.rowLayout]}
