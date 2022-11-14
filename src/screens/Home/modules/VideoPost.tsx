@@ -265,7 +265,7 @@ const VideoPost = ({
         </View>
 
         <View style={styles.bottomRightSection}>
-          {bookmarks.some((video: any) => video._id === id) ? (
+          {bookmarks.some((video: any) => video.id === id) ? (
             <Icon
               name="bookmark"
               type="ionicon"

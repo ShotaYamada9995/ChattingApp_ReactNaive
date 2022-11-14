@@ -4,7 +4,6 @@ const initialState = {
   duration: 0,
   path: '',
   thumbnail: '',
-  mime: '',
 };
 
 export const userSlice = createSlice({
@@ -12,7 +11,7 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     update: (state, action) => {
-      return {...action.payload};
+      return {...action.payload, thumbnail: ''};
     },
     addThumbnail: (state, action) => {
       return {...state, thumbnail: action.payload};
