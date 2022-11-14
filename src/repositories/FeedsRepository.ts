@@ -5,7 +5,7 @@ import UsersRepository from './UsersRepository';
 
 class FeedsRepository {
   async getInspiringVideos(page: number) {
-    const endpoint = `${DOMAIN}/feed/inspiring?page=${page}`;
+    const endpoint = `${DOMAIN}/feed/inspiring?page=${page}&itemSize=7`;
 
     const response = await axios.get(endpoint);
 

@@ -25,11 +25,36 @@ import UsersRepository from '../../../repositories/UsersRepository';
 import PlaybackSpeed from './PlaybackSpeed';
 
 interface VideoPostProps {
-  videoItem: any;
   isActive: boolean;
+  // videoItem: any;
+  id: string;
+  videoSource: string;
+  thumbnailSource: string;
+  caption: string;
+  inspiredCount: number;
+  isLiked: boolean;
+  userSlug: string;
+  userId: string;
+  userImage: string;
+  userFirstname: string;
+  userLastname: string;
 }
 
-const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
+const VideoPost = ({
+  isActive,
+  // videoItem,
+  id,
+  videoSource,
+  thumbnailSource,
+  caption,
+  inspiredCount,
+  isLiked,
+  userSlug,
+  userId,
+  userImage,
+  userFirstname,
+  userLastname,
+}: VideoPostProps) => {
   const {user, bookmarks} = useSelector((state: any) => ({
     user: state.user,
     bookmarks: state.bookmarks,
@@ -56,7 +81,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
       ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
       : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104;
 
-  const videoUrl = encodeURIComponent(videoItem.file[0].cdnUrl)
+  const videoUrl = encodeURIComponent(videoSource)
     .replace(/%3A/g, ':')
     .replace(/%2F/g, '/');
 
@@ -66,11 +91,11 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
 
   const like = async () => {
     if (user.isLoggedIn) {
-      dispatch(likeVideo({id: videoItem._id, username: user.slug}));
+      dispatch(likeVideo({id, username: user.slug}));
 
       try {
         await MediaRepository.likeVideo({
-          id: videoItem._id,
+          id,
           userSlug: user.slug,
         });
       } catch (error) {
@@ -83,11 +108,11 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
 
   const unlike = async () => {
     if (user.isLoggedIn) {
-      dispatch(unlikeVideo({id: videoItem._id, username: user.slug}));
+      dispatch(unlikeVideo({id, username: user.slug}));
 
       try {
         await MediaRepository.unlikeVideo({
-          id: videoItem._id,
+          id,
           userSlug: user.slug,
         });
       } catch (error) {
@@ -100,7 +125,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
 
   const share = async () => {
     const options = {
-      message: videoItem.text,
+      message: caption,
       url: videoUrl,
     };
 
@@ -119,8 +144,8 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
   const follow = async () => {
     dispatch(
       followUser({
-        following: videoItem.userSlug,
-        _id: videoItem?.user?.id,
+        following: userSlug,
+        _id: userId,
         type: 'expert',
       }),
     );
@@ -128,7 +153,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
     try {
       await UsersRepository.followUser({
         token: user.token,
-        slug: videoItem.userSlug,
+        slug: userSlug,
         userSlug: user.slug,
         type: 'expert',
       });
@@ -138,12 +163,12 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
   };
 
   const unfollow = async () => {
-    dispatch(unfollowUser({userSlug: videoItem.userSlug}));
+    dispatch(unfollowUser({userSlug: userSlug}));
 
     try {
       await UsersRepository.unfollowUser({
         token: user.token,
-        slug: videoItem.userSlug,
+        slug: userSlug,
         userSlug: user.slug,
         type: 'expert',
       });
@@ -168,7 +193,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
       ]}>
       {/* {isFocused && (
         <Video
-          poster={videoItem.thumbnail[0].cdnUrl}
+          poster={thumbnailSource}
           posterResizeMode="cover"
           source={{
             uri: videoUrl,
@@ -186,7 +211,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
       {/* {!video.isLoaded && (
         <View style={{position: 'absolute', width: '100%', height: '100%'}}>
           <Image
-            source={{uri: videoItem.thumbnail[0].cdnUrl}}
+            source={{uri: thumbnailSource}}
             style={{width: '100%', height: '100%'}}
           />
         </View>
@@ -198,11 +223,8 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             <Pressable
               style={styles.videoInfoContainer}
               onPress={() => navigation.navigate('MiniProfile')}>
-              {videoItem?.user?.image ? (
-                <Image
-                  source={{uri: videoItem?.user?.image}}
-                  style={styles.userPic}
-                />
+              {userImage ? (
+                <Image source={{uri: userImage}} style={styles.userPic} />
               ) : (
                 <Image
                   source={require('../../../assets/images/default_profile_image.jpeg')}
@@ -212,12 +234,12 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             </Pressable>
             <Pressable onPress={() => navigation.navigate('MiniProfile')}>
               <Text style={styles.username}>
-                {videoItem?.user?.firstName} {videoItem?.user?.lastName}
+                {userFirstname} {userLastname}
               </Text>
             </Pressable>
             {user.isLoggedIn ? (
               user.following.some(
-                (user: any) => user.following === videoItem.userSlug,
+                (user: any) => user.following === userSlug,
               ) ? (
                 <Text style={styles.followingTag} onPress={unfollow}>
                   following
@@ -229,7 +251,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
               )
             ) : null}
           </View>
-          <Text style={styles.caption}>{videoItem.text}</Text>
+          <Text style={styles.caption}>{caption}</Text>
           <View style={styles.videoInfoContainer}>
             <Icon
               name={video.isPaused ? 'play' : 'pause'}
@@ -238,18 +260,18 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
               size={20}
               onPress={togglePause}
             />
-            <Text style={styles.viewsCount}>{videoItem.inspired_count}</Text>
+            <Text style={styles.viewsCount}>{inspiredCount}</Text>
           </View>
         </View>
 
         <View style={styles.bottomRightSection}>
-          {bookmarks.some((video: any) => video._id === videoItem._id) ? (
+          {bookmarks.some((video: any) => video._id === id) ? (
             <Icon
               name="bookmark"
               type="ionicon"
               color="white"
               style={styles.verticalBarIcon}
-              onPress={() => dispatch(removeBookmark({id: videoItem._id}))}
+              onPress={() => dispatch(removeBookmark({id}))}
             />
           ) : (
             <Icon
@@ -257,11 +279,28 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
               type="ionicon"
               color="white"
               style={styles.verticalBarIcon}
-              onPress={() => dispatch(addBookmark(videoItem))}
+              onPress={() =>
+                dispatch(
+                  addBookmark({
+                    id,
+                    video: videoSource,
+                    thumbnail: thumbnailSource,
+                    caption,
+                    inspiredCount,
+                    user: {
+                      id: userId,
+                      slug: userSlug,
+                      image: userImage,
+                      firstname: userFirstname,
+                      lastname: userLastname,
+                    },
+                  }),
+                )
+              }
             />
           )}
 
-          {!user.isLoggedIn || !videoItem.inspired.includes(user?.slug) ? (
+          {isLiked ? (
             <Icon
               name="heart"
               type="ionicon"
@@ -286,8 +325,13 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
             style={styles.verticalBarIcon}
             onPress={() =>
               navigation.navigate('Comments', {
-                videoId: videoItem._id,
-                user: videoItem.user,
+                videoId: id,
+                user: {
+                  id: userId,
+                  image: userImage,
+                  firstName: userFirstname,
+                  lastName: userLastname,
+                },
               })
             }
           />

@@ -10,7 +10,7 @@ export const userSlice = createSlice({
       return [...state, action.payload];
     },
     removeBookmark: (state, action) => {
-      return state.filter(video => video._id !== action.payload.id);
+      return state.filter(video => video.id !== action.payload.id);
     },
   },
 });

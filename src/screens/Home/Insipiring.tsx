@@ -45,8 +45,22 @@ const Home = () => {
     [],
   );
 
-  const renderVideoPost = ({item, index}) => (
-    <VideoPost videoItem={item} isActive={activeVideoIndex === index} />
+  const renderVideoPost = ({item, index}: any) => (
+    <VideoPost
+      isActive={activeVideoIndex === index}
+      // videoItem={item}
+      id={item._id}
+      videoSource={item.file[0].cdnUrl}
+      thumbnailSource={item.thumbnail[0].cdnUrl}
+      caption={item.text}
+      inspiredCount={item.inspired_count}
+      isLiked={!user.isLoggedIn || !item.inspired.includes(user?.slug)}
+      userSlug={item.userSlug}
+      userId={item?.user?.id}
+      userImage={item?.user?.image}
+      userFirstname={item?.user?.firstName}
+      userLastname={item?.user?.lastName}
+    />
   );
 
   const loadMoreVideos = async () => {
