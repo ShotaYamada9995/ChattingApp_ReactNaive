@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
-  timestampContainer: {position: 'absolute', left: 5},
+  timestampContainer: {textAlign: 'left'},
   videoTimestamp: {
     color: '#888',
   },
@@ -329,12 +329,12 @@ const styles = StyleSheet.create({
   trimNavContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    position: 'absolute',
-    right: 5,
+    justifyContent: 'flex-end',
   },
   sliderContainer: {
     paddingHorizontal: WINDOW_WIDTH * 0.3,
     height: 100,
+    marginTop: 20,
   },
   slider: {
     alignSelf: 'center',
