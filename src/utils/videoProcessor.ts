@@ -38,10 +38,10 @@ export const genFrames = async (fps, video) => {
   const name = video.path.substring(0, video.path.lastIndexOf('.'));
   const ext = 'png';
 
-  const framePath = `${name}_frame_%3d.${ext}`;
+  const framePath = `${name}_frame_%2d.${ext}`;
 
   const session = await FFmpegKit.execute(
-    `-i ${video.path} -preset ultrafast -r ${fps} ${framePath}`,
+    `-i ${video.path} -preset ultrafast -vf fps=${fps} ${framePath}`,
   );
 
   const returnCode = await session.getReturnCode();
@@ -50,8 +50,8 @@ export const genFrames = async (fps, video) => {
     // SUCCESS
     let frames: Frame[] = [];
 
-    for (let time = 1; time <= video.duration; time++) {
-      let frameIndex = `${time}`.padStart(4, '0');
+    for (let time = 1; time <= 10; time++) {
+      let frameIndex = `${time}`.padStart(2, '0');
       let frame = {
         time,
         image: `${name}_frame_${frameIndex}.${ext}`,

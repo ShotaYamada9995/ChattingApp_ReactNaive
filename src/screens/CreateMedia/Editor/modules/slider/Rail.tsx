@@ -1,5 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, Image} from 'react-native';
+import {WINDOW_WIDTH} from '../../../../../utils';
 interface Frame {
   time: number;
   image: string;
@@ -16,8 +17,8 @@ const Rail = ({frames}: RailProps) => {
           key={frame.time}
           source={{uri: frame.image}}
           style={{
-            width: 15,
-            aspectRatio: 9 / 16,
+            width: WINDOW_WIDTH * 0.064,
+            height: 40,
           }}
         />
       ))}

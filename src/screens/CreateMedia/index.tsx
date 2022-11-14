@@ -323,6 +323,7 @@ const styles = StyleSheet.create({
   uploadText: {
     color: 'white',
     fontWeight: 'bold',
+    marginTop: 5,
   },
 });
 

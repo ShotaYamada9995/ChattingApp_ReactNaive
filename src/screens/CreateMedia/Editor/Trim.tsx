@@ -144,7 +144,7 @@ const Trim = () => {
     if (trims.length === 0) return;
 
     const trim = trims[activeTrimIndex];
-    const _time = mmssTimeFormat(time - trim.startTime);
+    const _time = mmssTimeFormat(Math.abs(time - trim.startTime));
     const _duration = mmssTimeFormat(trim.endTime - trim.startTime);
 
     return (
@@ -197,7 +197,7 @@ const Trim = () => {
   useEffect(() => {
     setTrims([{startTime: 0, endTime: Number(videoData.duration.toFixed(1))}]);
     (async () => {
-      const frames = await genFrames(`1/1`, videoData);
+      const frames = await genFrames(`10/${videoData.duration}`, videoData);
       console.log('Frames: ', frames?.length, frames);
       setFrames(frames);
     })();
@@ -272,28 +272,29 @@ const Trim = () => {
       </View>
 
       {frames.length > 0 ? (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.sliderContainer}>
-          <Slider
-            style={[styles.slider, {width: 30 * frames.length}]}
-            min={0}
-            max={videoData.duration}
-            low={slider.low}
-            high={slider.high}
-            step={0.1}
-            floatingLabel
-            renderThumb={renderThumb}
-            renderRail={renderRail}
-            renderRailSelected={renderRailSelected}
-            renderLabel={renderLabel}
-            renderNotch={renderNotch}
-            onValueChanged={handleDurationChange}
-            onSliderTouchEnd={handleOnSlideTouchEnd}
-          />
-        </ScrollView>
+        // <ScrollView
+        //   horizontal
+        //   showsHorizontalScrollIndicator={false}
+        //   contentContainerStyle={styles.sliderContainer}>
+
+        <Slider
+          style={[styles.slider, {width: WINDOW_WIDTH * 0.074 * frames.length}]}
+          min={0}
+          max={videoData.duration}
+          low={slider.low}
+          high={slider.high}
+          step={0.1}
+          floatingLabel
+          renderThumb={renderThumb}
+          renderRail={renderRail}
+          renderRailSelected={renderRailSelected}
+          renderLabel={renderLabel}
+          renderNotch={renderNotch}
+          onValueChanged={handleDurationChange}
+          onSliderTouchEnd={handleOnSlideTouchEnd}
+        />
       ) : (
+        // </ScrollView>
         <ActivityIndicator style={{marginVertical: 40, alignSelf: 'center'}} />
       )}
     </View>
@@ -343,7 +344,6 @@ const styles = StyleSheet.create({
   slider: {
     alignSelf: 'center',
     marginTop: 30,
-    width: '80%',
   },
 });
 
