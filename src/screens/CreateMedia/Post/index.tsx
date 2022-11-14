@@ -103,37 +103,39 @@ const PostMedia = () => {
   };
 
   const postMedia = async () => {
+    setIsPosting(true);
     try {
       const compressedVideo = await VideoCompressor.compress(
         video.path,
         {compressionMethod: 'auto'},
         progress => {
-          console.log('Compression Progress: ', progress);
+          console.log(`Compression Progress: ${Math.round(progress * 100)}%`);
         },
       );
 
-      const tags = caption
-        .split(' ')
-        .filter(word => word[0] === '#')
-        .map(tag => tag.substring(1, tag.length));
+      console.log('compressed video: ', compressedVideo);
 
-      setIsPosting(true);
-      const response = await MediaRepository.uploadMedia({
-        token: user.token,
-        file: compressedVideo,
-        thumbnail: video.thumbnail,
-        community: 'music',
-        tags,
-        text: caption,
-        userSlug: user.slug,
-      });
+      // const tags = caption
+      //   .split(' ')
+      //   .filter(word => word[0] === '#')
+      //   .map(tag => tag.substring(1, tag.length));
 
-      toast.show('Upload Successful', {
-        type: 'success',
-        duration: 2000,
-      });
+      // const response = await MediaRepository.uploadMedia({
+      //   token: user.token,
+      //   file: compressedVideo,
+      //   thumbnail: video.thumbnail,
+      //   community: 'music',
+      //   tags,
+      //   text: caption,
+      //   userSlug: user.slug,
+      // });
 
-      console.log('Upload: ', response.data);
+      // toast.show('Upload Successful', {
+      //   type: 'success',
+      //   duration: 2000,
+      // });
+
+      // console.log('Upload: ', response.data);
     } catch (error) {
       console.log('Error posting video');
       console.error(error);

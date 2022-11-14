@@ -166,7 +166,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
         styles.container,
         {height: videoPostHeight + (WINDOW_WIDTH * 0.15) / 2},
       ]}>
-      {isFocused && (
+      {/* {isFocused && (
         <Video
           poster={videoItem.thumbnail[0].cdnUrl}
           posterResizeMode="cover"
@@ -181,7 +181,7 @@ const VideoPost = ({videoItem, isActive}: VideoPostProps) => {
           onLoad={() => setVideo(video => ({...video, isLoaded: true}))}
           repeat
         />
-      )}
+      )} */}
 
       {/* {!video.isLoaded && (
         <View style={{position: 'absolute', width: '100%', height: '100%'}}>

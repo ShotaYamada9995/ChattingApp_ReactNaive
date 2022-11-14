@@ -65,7 +65,10 @@ export default () => {
           userSlug: accountUser.slug,
           mediaCommentId: '',
         };
-        const response = await MediaRepository.addComment(payload);
+        const response = await MediaRepository.addComment(
+          accountUser.token,
+          payload,
+        );
 
         console.log(response.data);
       } catch (error) {

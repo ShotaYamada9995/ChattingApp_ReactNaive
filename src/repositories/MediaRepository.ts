@@ -77,7 +77,9 @@ class MediaRepository {
         Authorization: `${token}`,
       },
       onUploadProgress: progressEvent => {
-        const percent = Math.round(progressEvent.loaded / progressEvent.total);
+        const percent = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total,
+        );
 
         console.log('Progress: ', percent);
       },
@@ -94,10 +96,14 @@ class MediaRepository {
     return response;
   }
 
-  async addComment(payload: AddCommentProps) {
+  async addComment(token: string, payload: AddCommentProps) {
     const endpoint = `${DOMAIN}/media/comment/create`;
 
-    const response = await axios.post(endpoint, payload);
+    const response = await axios.post(endpoint, payload, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
 
     return response;
   }
