@@ -1,26 +1,23 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useRef} from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-  Image,
-  Dimensions,
   ActivityIndicator,
-  ScrollView,
+  Image,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
-
 import Slider from 'rn-range-slider';
+import Video from 'react-native-video';
 
-import {genFrames} from '../../../utils/videoProcessor';
+import {genFrameAt, genFrames} from '../../../utils/videoProcessor';
 
-import Notch from '../Editor/modules/slider/Notch';
 import RailSelected from '../Editor/modules/slider/RailSelected';
 import Thumb from './modules/slider/Thumb';
-import Rail from './modules/slider/Rail';
-import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
-import {useNavigation} from '@react-navigation/native';
+import Rail from '../Editor/modules/slider/Rail';
+import {WINDOW_WIDTH} from '../../../utils';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {addThumbnail} from '../../../store/reducers/Video';
 
 interface Frame {
@@ -31,38 +28,51 @@ interface Frame {
 export default () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-
+  const isFocused = useIsFocused();
   const video = useSelector((state: any) => state.video);
-  const [coverImage, setCoverImage] = useState('');
-  const [thumbImage, setThumbImage] = useState('');
-  const [frames, setFrames] = useState<Frame[] | undefined>([]);
+  const videoRef = useRef(null);
 
-  const renderThumb = useCallback(
-    () => <Thumb image={thumbImage || video.thumbnail} />,
-    [thumbImage],
-  );
+  const [frames, setFrames] = useState<Frame[]>([]);
+  const [frameTime, setFrameTime] = useState<number | null>(null);
+  const [isCreatingFrame, setIsCreatingFrame] = useState(false);
+
+  const renderThumb = useCallback(() => <Thumb />, []);
   const renderRail = useCallback(() => <Rail frames={frames} />, [frames]);
   const renderRailSelected = useCallback(() => <RailSelected />, []);
 
-  const handleSlideChange = (low: number, high: number, byUser: boolean) => {
+  const handleDurationChange = (low: number, high: number, byUser: boolean) => {
     if (byUser) {
-      const frame = frames.find(frame => frame.time === low);
-      setCoverImage(frame.image);
+      const time = Number(low.toFixed(1));
+      videoRef.current?.seek(time);
     }
   };
 
-  const handleSlideEnd = () => {
-    setThumbImage(coverImage);
+  const handleSlideEnd = (low: number) => {
+    const time = Number(low.toFixed(1));
+    setFrameTime(time);
   };
 
-  const save = () => {
-    dispatch(addThumbnail({thumbnail: coverImage}));
-    navigation.goBack();
+  const save = async () => {
+    if (frameTime !== null) {
+      setIsCreatingFrame(true);
+
+      const frame: string = await genFrameAt(
+        frameTime,
+        video.path,
+        `thumbnail_${Date.now()}`,
+      );
+
+      dispatch(addThumbnail(frame));
+
+      navigation.goBack();
+
+      setIsCreatingFrame(false);
+    }
   };
 
   useEffect(() => {
     (async () => {
-      const frames: Frame[] = await genFrames('1 / 1', video);
+      const frames: Frame[] = await genFrames(`10/${video.duration}`, video);
       setFrames(frames);
     })();
   }, []);
@@ -74,44 +84,42 @@ export default () => {
           <Text style={styles.navBarText}>Cancel</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={save}>
-          <Text style={styles.navBarText}>Save</Text>
-        </TouchableOpacity>
+        {isCreatingFrame ? (
+          <ActivityIndicator />
+        ) : (
+          <TouchableOpacity onPress={save}>
+            <Text
+              style={{
+                ...styles.navBarText,
+                color: frameTime !== null ? 'black' : 'grey',
+              }}>
+              Save
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
 
-      <View style={styles.coverImageContainer}>
-        <Image
-          source={{uri: coverImage || video.thumbnail}}
-          style={styles.coverImage}
-          resizeMode="contain"
+      {isFocused && (
+        <Video
+          ref={videoRef}
+          source={{uri: video.path}}
+          style={styles.video}
+          paused={true}
         />
-      </View>
-
-      {frames && frames.length > 1 ? (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.sliderContainer}>
-          <Slider
-            disableRange
-            style={[styles.slider, {width: 30 * frames.length}]}
-            min={1}
-            max={frames.length}
-            step={1}
-            renderThumb={renderThumb}
-            renderRail={renderRail}
-            renderRailSelected={renderRailSelected}
-            onValueChanged={handleSlideChange}
-            onSliderTouchEnd={handleSlideEnd}
-          />
-        </ScrollView>
-      ) : frames?.length === 1 ? (
-        <Text style={{color: 'black', textAlign: 'center', marginTop: 20}}>
-          No frames to select from
-        </Text>
-      ) : (
-        <ActivityIndicator style={{marginTop: 20}} />
       )}
+
+      <Slider
+        disableRange
+        style={styles.slider}
+        min={0}
+        max={video.duration}
+        step={0.1}
+        renderThumb={renderThumb}
+        renderRail={renderRail}
+        renderRailSelected={renderRailSelected}
+        onValueChanged={handleDurationChange}
+        onSliderTouchEnd={handleSlideEnd}
+      />
     </View>
   );
 };
@@ -151,9 +159,15 @@ const styles = StyleSheet.create({
   slider: {
     alignSelf: 'center',
     marginTop: 30,
-    width: '80%',
+    width: WINDOW_WIDTH * 0.74,
   },
   sliderThumb: {
     height: 50,
+  },
+  video: {
+    alignSelf: 'center',
+    width: '65%',
+    aspectRatio: 9 / 16,
+    marginTop: 10,
   },
 });

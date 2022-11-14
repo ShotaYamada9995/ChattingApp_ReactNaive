@@ -15,7 +15,7 @@ export const userSlice = createSlice({
       return {...action.payload};
     },
     addThumbnail: (state, action) => {
-      return {...state, thumbnail: action.payload.thumbnail};
+      return {...state, thumbnail: action.payload};
     },
   },
 });

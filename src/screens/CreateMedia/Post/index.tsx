@@ -22,7 +22,7 @@ import MediaRepository from '../../../repositories/MediaRepository';
 
 import globalStyles from '../../../styles/globalStyles';
 
-import {genFirstFrame} from '../../../utils/videoProcessor';
+import {genFrameAt} from '../../../utils/videoProcessor';
 
 import {addThumbnail} from '../../../store/reducers/Video';
 
@@ -144,12 +144,14 @@ const PostMedia = () => {
 
   useEffect(() => {
     // TO-DO: Remove conditional
-    if (!video.thumbnail) {
-      (async () => {
-        const frame: string = await genFirstFrame(video.path);
-        dispatch(addThumbnail({thumbnail: frame}));
-      })();
-    }
+    (async () => {
+      const frame: string = await genFrameAt(
+        0,
+        video.path,
+        'default_thumbnail',
+      );
+      dispatch(addThumbnail(frame));
+    })();
   }, []);
 
   return (

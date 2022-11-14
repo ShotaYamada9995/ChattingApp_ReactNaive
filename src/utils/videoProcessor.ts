@@ -34,7 +34,6 @@ export const trim = async (video: Video) => {
 };
 
 export const genFrames = async (fps, video) => {
-  console.log('fps: ', fps);
   const name = video.path.substring(0, video.path.lastIndexOf('.'));
   const ext = 'png';
 
@@ -71,14 +70,18 @@ export const genFrames = async (fps, video) => {
   // }
 };
 
-export const genFirstFrame = async (videoPath: string) => {
+export const genFrameAt = async (
+  second: number,
+  videoPath: string,
+  id: string,
+) => {
   const name = videoPath.substring(0, videoPath.lastIndexOf('.'));
   const ext = 'png';
 
-  const framePath = `${name}_default_thumbnail.${ext}`;
+  const framePath = `${name}_${id}.${ext}`;
 
   const session = await FFmpegKit.execute(
-    `-ss 1 -y -i ${videoPath} -preset ultrafast -vframes 1 ${framePath}`,
+    `-ss ${second} -i ${videoPath} -preset ultrafast -vframes 1 -y ${framePath}`,
   );
 
   const returnCode = await session.getReturnCode();
