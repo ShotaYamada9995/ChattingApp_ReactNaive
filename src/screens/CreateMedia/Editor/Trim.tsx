@@ -148,7 +148,7 @@ const Trim = () => {
     const _duration = mmssTimeFormat(trim.endTime - trim.startTime);
 
     return (
-      <Text>
+      <Text style={styles.timeStampContainer}>
         {_time}/<Text style={styles.videoTimestamp}>{_duration}</Text>
       </Text>
     );
@@ -239,17 +239,16 @@ const Trim = () => {
       <View style={styles.videoControls}>
         {renderDuration()}
 
-        <TouchableOpacity onPress={togglePlay}>
+        <TouchableOpacity onPress={togglePlay} style={styles.playBtn}>
           <Icon
             name={isPaused ? 'play' : 'pause'}
             type="ionicon"
             color="white"
             size={25}
-            style={{marginRight: 30}}
           />
         </TouchableOpacity>
         {trims.length > 1 ? (
-          <View style={styles.videoNavIconContainer}>
+          <View style={styles.trimNavContainer}>
             <TouchableOpacity onPress={selectPrevTrim}>
               <Icon
                 name="arrow-back"
@@ -270,32 +269,22 @@ const Trim = () => {
         )}
       </View>
 
-      {frames.length > 0 ? (
-        // <ScrollView
-        //   horizontal
-        //   showsHorizontalScrollIndicator={false}
-        //   contentContainerStyle={styles.sliderContainer}>
-
-        <Slider
-          style={[styles.slider, {width: WINDOW_WIDTH * 0.074 * frames.length}]}
-          min={0}
-          max={videoData.duration}
-          low={slider.low}
-          high={slider.high}
-          step={0.1}
-          floatingLabel
-          renderThumb={renderThumb}
-          renderRail={renderRail}
-          renderRailSelected={renderRailSelected}
-          renderLabel={renderLabel}
-          renderNotch={renderNotch}
-          onValueChanged={handleDurationChange}
-          onSliderTouchEnd={handleOnSlideTouchEnd}
-        />
-      ) : (
-        // </ScrollView>
-        <ActivityIndicator style={{marginVertical: 40, alignSelf: 'center'}} />
-      )}
+      <Slider
+        style={styles.slider}
+        min={0}
+        max={videoData.duration}
+        low={slider.low}
+        high={slider.high}
+        step={0.1}
+        floatingLabel
+        renderThumb={renderThumb}
+        renderRail={renderRail}
+        renderRailSelected={renderRailSelected}
+        renderLabel={renderLabel}
+        renderNotch={renderNotch}
+        onValueChanged={handleDurationChange}
+        onSliderTouchEnd={handleOnSlideTouchEnd}
+      />
     </View>
   );
 };
@@ -329,12 +318,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
+  timestampContainer: {position: 'absolute', left: 5},
   videoTimestamp: {
     color: '#888',
   },
-  videoNavIconContainer: {
+  playBtn: {
+    position: 'absolute',
+    right: '48%',
+  },
+  trimNavContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    position: 'absolute',
+    right: 5,
   },
   sliderContainer: {
     paddingHorizontal: WINDOW_WIDTH * 0.3,
@@ -343,6 +339,7 @@ const styles = StyleSheet.create({
   slider: {
     alignSelf: 'center',
     marginTop: 30,
+    width: WINDOW_WIDTH * 0.74,
   },
 });
 

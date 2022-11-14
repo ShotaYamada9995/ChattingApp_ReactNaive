@@ -113,29 +113,27 @@ const PostMedia = () => {
         },
       );
 
-      console.log('compressed video: ', compressedVideo);
+      const tags = caption
+        .split(' ')
+        .filter(word => word[0] === '#')
+        .map(tag => tag.substring(1, tag.length));
 
-      // const tags = caption
-      //   .split(' ')
-      //   .filter(word => word[0] === '#')
-      //   .map(tag => tag.substring(1, tag.length));
+      const response = await MediaRepository.uploadMedia({
+        token: user.token,
+        file: compressedVideo,
+        thumbnail: video.thumbnail,
+        community: 'music',
+        tags,
+        text: caption,
+        userSlug: user.slug,
+      });
 
-      // const response = await MediaRepository.uploadMedia({
-      //   token: user.token,
-      //   file: compressedVideo,
-      //   thumbnail: video.thumbnail,
-      //   community: 'music',
-      //   tags,
-      //   text: caption,
-      //   userSlug: user.slug,
-      // });
+      toast.show('Upload Successful', {
+        type: 'success',
+        duration: 2000,
+      });
 
-      // toast.show('Upload Successful', {
-      //   type: 'success',
-      //   duration: 2000,
-      // });
-
-      // console.log('Upload: ', response.data);
+      console.log('Upload: ', response.data);
     } catch (error) {
       console.log('Error posting video');
       console.error(error);

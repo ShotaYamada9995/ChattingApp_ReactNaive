@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, Image} from 'react-native';
+import {View, StyleSheet, Image, ActivityIndicator} from 'react-native';
 import {WINDOW_WIDTH} from '../../../../../utils';
 interface Frame {
   time: number;
@@ -12,16 +12,22 @@ interface RailProps {
 const Rail = ({frames}: RailProps) => {
   return (
     <View style={styles.container}>
-      {frames.map(frame => (
-        <Image
-          key={frame.time}
-          source={{uri: frame.image}}
-          style={{
-            width: WINDOW_WIDTH * 0.064,
-            height: 40,
-          }}
-        />
-      ))}
+      {frames.length > 0
+        ? frames.map(frame => (
+            <Image
+              key={frame.time}
+              source={{uri: frame.image}}
+              style={{
+                width: WINDOW_WIDTH * 0.064,
+                height: 40,
+              }}
+            />
+          ))
+        : Array(10)
+            .fill(' ')
+            .map((_, index) => (
+              <View key={index} style={styles.imagePlaceholder} />
+            ))}
     </View>
   );
 };
@@ -33,10 +39,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  root: {
-    flex: 1,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#7f7f7f',
+  imagePlaceholder: {
+    width: WINDOW_WIDTH * 0.064,
+    height: 40,
+    backgroundColor: 'rgba(100,100,100,0.5)',
+    borderRightWidth: 1,
+    borderRightColor: 'grey',
   },
 });
