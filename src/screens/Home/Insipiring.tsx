@@ -45,42 +45,32 @@ const Home = () => {
     [],
   );
 
-  const renderVideoPost = ({item, index}: any) => (
-    <VideoPost
-      isActive={activeVideoIndex === index}
-      // videoItem={item}
-      id={item._id}
-      videoSource={item.file[0].cdnUrl}
-      thumbnailSource={item.thumbnail[0].cdnUrl}
-      caption={item.text}
-      inspiredCount={item.inspired_count}
-      isLiked={!user.isLoggedIn || !item.inspired.includes(user?.slug)}
-      userSlug={item.userSlug}
-      userId={item?.user?.id}
-      userImage={item?.user?.image}
-      userFirstname={item?.user?.firstName}
-      userLastname={item?.user?.lastName}
-    />
-  );
-
   const loadMoreVideos = async () => {
-    setIsLoadingMore(true);
+    if (!isLoadingMore) {
+      console.log('Loading more videos...');
+      setIsLoadingMore(true);
+      try {
+        const videos = await FeedsRepository.getInspiringVideos(
+          currentPage.current,
+        );
 
-    // try {
-    console.log(currentPage.current);
-    //   const videos = await FeedsRepository.getInspiringVideos(
-    //     currentPage.current,
-    //   );
+        const newVideos = videos.filter(
+          (newVideo: any) =>
+            !inspiringVideos.some(
+              (inspiringVideo: any) => inspiringVideo._id === newVideo._id,
+            ),
+        );
 
-    //  dispatch(addVideos(videos.data));
+        dispatch(addVideos(newVideos));
 
-    currentPage.current++;
-    // } catch (error) {
-    //   console.log('Error loading more videos: ');
-    //   console.error(error);
-    // } finally {
-    //   setIsLoadingMore(false);
-    // }
+        currentPage.current++;
+      } catch (error) {
+        console.log('Error loading more videos: ');
+        console.error(error);
+      } finally {
+        setIsLoadingMore(false);
+      }
+    }
   };
 
   const handleOnScroll = e => {
@@ -90,19 +80,44 @@ const Home = () => {
     setActiveVideoIndex(index);
   };
 
-  const renderScrollLoader = () => {
+  const renderScrollLoader = useCallback(() => {
     return isLoadingMore ? (
-      <ActivityIndicator size="large" style={styles.scrollLoader} />
+      <ActivityIndicator
+        size="large"
+        style={{position: 'absolute', bottom: 30, left: '45%'}}
+      />
     ) : null;
-  };
+  }, [isLoadingMore]);
 
-  const getVideos = async (page: number) => {
+  const renderVideoPost = ({item, index}: any) => (
+    <VideoPost
+      isActive={activeVideoIndex === index}
+      // videoItem={item}
+      id={item._id}
+      videoSource={item.file[0].cdnUrl}
+      thumbnailSource={item.thumbnail[0].cdnUrl}
+      caption={item.text}
+      inspiredCount={item.inspired_count}
+      isLiked={
+        !user.isLoggedIn || !Array.from(item.inspired).includes(user?.slug)
+      }
+      userSlug={item.userSlug}
+      userId={item?.user?.id}
+      userImage={item?.user?.image}
+      userFirstname={item?.user?.firstName}
+      userLastname={item?.user?.lastName}
+    />
+  );
+
+  const getVideos = async () => {
     if (loadingStatus !== 'pending') {
       setLoadingStatus('pending');
     }
 
     try {
-      const videos = await FeedsRepository.getInspiringVideos(page);
+      const videos = await FeedsRepository.getInspiringVideos(
+        currentPage.current,
+      );
 
       if (user.isLoggedIn) {
         const {data: following} = await UsersRepository.getFollowing(user.slug);
@@ -122,7 +137,7 @@ const Home = () => {
 
   useEffect(() => {
     if (inspiringVideos.length === 0) {
-      getVideos(currentPage.current);
+      getVideos();
     }
   }, []);
 
@@ -140,9 +155,8 @@ const Home = () => {
           maxToRenderPerBatch={3}
           getItemLayout={getItemLayout}
           style={styles.videoContainer}
-          // ListFooterComponent={renderScrollLoader}
-          // onEndReached={loadMoreVideos}
-          // onEndReachedThreshold={0.001}
+          onEndReached={loadMoreVideos}
+          onEndReachedThreshold={0}
         />
       ) : loadingStatus === 'pending' ? (
         <VideoLoadingIndicator />
@@ -162,14 +176,14 @@ const Home = () => {
               maxWidth: '90%',
             }}>
             Failed to load videos. Check your network connection and{' '}
-            <Text
-              style={globalStyles.link}
-              onPress={() => getVideos(currentPage.current)}>
+            <Text style={globalStyles.link} onPress={() => getVideos()}>
               try again
             </Text>
           </Text>
         </View>
       )}
+
+      {renderScrollLoader()}
 
       <BottomSheet
         onBackdropPress={() => setShowAuthModal(false)}
