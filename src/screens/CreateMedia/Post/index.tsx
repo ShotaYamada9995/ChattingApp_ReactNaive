@@ -12,11 +12,19 @@ import {
   ActivityIndicator,
   FlatList,
 } from 'react-native';
-import {Icon, Button, BottomSheet, CheckBox, Avatar} from '@rneui/themed';
+import {
+  Icon,
+  Button,
+  BottomSheet,
+  CheckBox,
+  Avatar,
+  LinearProgress,
+} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {MentionInput} from 'react-native-controlled-mentions';
 import {Video as VideoCompressor} from 'react-native-compressor';
+import CircularProgress from 'react-native-circular-progress-indicator';
 
 import MediaRepository from '../../../repositories/MediaRepository';
 
@@ -28,6 +36,7 @@ import {addThumbnail} from '../../../store/reducers/Video';
 
 import TagPeople from './TagPeople';
 import {useToast} from 'react-native-toast-notifications';
+import {WINDOW_WIDTH} from '../../../utils';
 
 type Viewer = 'Everyone' | 'Friends' | 'Only me';
 
@@ -45,13 +54,13 @@ const PostMedia = () => {
     allowDuet: true,
     allowShare: true,
   });
-  const [showSelectCoverImage, setShowSelectCoverImage] = useState(false);
   const [showViewers, setShowViewers] = useState(false);
   const [showTagScreen, setShowTagScreen] = useState(false);
   const [showHashtags, setShowHashtags] = useState(false);
   const [showMentions, setShowMentions] = useState(false);
-  const [isPosting, setIsPosting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [viewer, setViewer] = useState<Viewer>('Everyone');
   const [caption, setCaption] = useState('');
   const [tags, setTags] = useState([]);
@@ -103,32 +112,33 @@ const PostMedia = () => {
   };
 
   const postMedia = async () => {
-    setIsPosting(true);
+    setIsUploading(true);
     try {
-      const compressedVideo = await VideoCompressor.compress(
-        video.path,
-        {compressionMethod: 'auto'},
-        progress => {
-          console.log(`Compression Progress: ${Math.round(progress * 100)}%`);
-        },
-      );
+      // const compressedVideo = await VideoCompressor.compress(
+      //   video.path,
+      //   {compressionMethod: 'auto'},
+      //   progress => {
+      //     console.log(`Compression Progress: ${Math.round(progress * 100)}%`);
+      //   },
+      // );
 
       const tags = caption
         .split(' ')
         .filter(word => word[0] === '#')
         .map(tag => tag.substring(1, tag.length));
 
-      const response = await MediaRepository.uploadMedia({
-        token: user.token,
-        file: compressedVideo,
-        thumbnail: video.thumbnail,
-        community: 'music',
-        tags,
-        text: caption,
-        userSlug: user.slug,
-      });
-
-      dispatch(addThumbnail(''));
+      const response = await MediaRepository.uploadMedia(
+        {
+          token: user.token,
+          file: video.path,
+          thumbnail: video.thumbnail,
+          community: 'music',
+          tags,
+          text: caption,
+          userSlug: user.slug,
+        },
+        setUploadProgress,
+      );
 
       toast.show('Upload Successful', {
         type: 'success',
@@ -138,16 +148,15 @@ const PostMedia = () => {
       console.log('Upload: ', response.data);
     } catch (error) {
       toast.show(
-        "Couldn't complete the upload. Ensure you have a good connection before trying again",
+        'Upload could not be completed. Ensure you have a good connection before trying again',
         {
           type: 'danger',
           duration: 2000,
         },
       );
-      console.log('Error posting video');
-      console.error(error);
     } finally {
-      setIsPosting(false);
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -406,10 +415,38 @@ const PostMedia = () => {
         containerStyle={styles.btn}
         buttonStyle={{paddingVertical: 10, borderColor: '#001433'}}
         color="#001433"
-        loading={isPosting}
-        disabled={isPosting || (video.thumbnail ? false : true)}
+        loading={isUploading}
+        disabled={isUploading || (video.thumbnail ? false : true)}
         onPress={postMedia}
       />
+
+      <BottomSheet
+        isVisible={isUploading}
+        containerStyle={{
+          justifyContent: 'center',
+        }}>
+        <View style={{alignSelf: 'center'}}>
+          <CircularProgress
+            value={uploadProgress}
+            radius={WINDOW_WIDTH * 0.2}
+            inActiveStrokeOpacity={0.5}
+            activeStrokeWidth={15}
+            inActiveStrokeWidth={20}
+            valueSuffix="%"
+            progressValueStyle={{
+              fontWeight: 'bold',
+              fontSize: WINDOW_WIDTH * 0.1,
+              color: 'black',
+            }}
+            activeStrokeSecondaryColor="yellow"
+            inActiveStrokeColor="black"
+            dashedStrokeConfig={{
+              count: 50,
+              width: 4,
+            }}
+          />
+        </View>
+      </BottomSheet>
     </View>
   );
 };

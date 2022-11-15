@@ -49,7 +49,7 @@ class MediaRepository {
     await axios.post(endpoint, payload);
   }
 
-  async uploadMedia(payload: UploadMediaProps) {
+  async uploadMedia(payload: UploadMediaProps, setUploadProgress: any) {
     const {token, file, thumbnail, community, tags, text, userSlug} = payload;
 
     const endpoint = `${DOMAIN}/media/create`;
@@ -77,11 +77,11 @@ class MediaRepository {
         Authorization: `${token}`,
       },
       onUploadProgress: progressEvent => {
-        const percent = Math.round(
+        const progress = Math.round(
           (progressEvent.loaded * 100) / progressEvent.total,
         );
 
-        console.log('Progress: ', percent);
+        setUploadProgress(progress);
       },
     });
 
