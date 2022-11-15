@@ -1,4 +1,4 @@
-import React, {useState, useEffect, memo} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Image, Pressable, StyleSheet, Text, View, Platform} from 'react-native';
 import Video from 'react-native-video';
 import {Icon} from '@rneui/themed';
@@ -69,7 +69,6 @@ const VideoPost = ({
     isLoaded: false,
     speed: 1,
   });
-
   const [showPlaybackSpeed, setShowPlaybackSpeed] = useState(false);
 
   const isForeGround = useIsForeground();
@@ -377,7 +376,7 @@ const VideoPost = ({
   );
 };
 
-export default memo(VideoPost);
+export default VideoPost;
 
 const styles = StyleSheet.create({
   container: {

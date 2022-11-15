@@ -63,14 +63,22 @@ export default () => {
           mediaId: videoId,
           text: comment,
           userSlug: accountUser.slug,
-          mediaCommentId: '',
+          mediaCommentId: 'uuid()',
         };
-        const response = await MediaRepository.addComment(
-          accountUser.token,
-          payload,
-        );
+        await MediaRepository.addComment(accountUser.token, payload);
 
-        console.log(response.data);
+        const {data: comments} = await MediaRepository.getComments({
+          id: videoId,
+          page: currentPage.current,
+        });
+
+        toast.show('Comment Added', {
+          type: 'normal',
+          duration: 2000,
+        });
+
+        setComments(comments);
+        setComment('');
       } catch (error) {
         console.log('Error adding comment');
         console.error(error);
@@ -96,7 +104,6 @@ export default () => {
 
         setIsLoadingComments(false);
         setComments(comments);
-        currentPage.current++;
       } catch (error) {
         console.log('Error getting comments');
         console.error(error);
@@ -140,10 +147,17 @@ export default () => {
       <ScrollView showsVerticalScrollIndicator={false}>
         {comments.map(comment => (
           <View key={comment._id} style={styles.commentContainer}>
-            <Image
-              source={{uri: comment.user[0].imageUrl.cdnUrl}}
-              style={styles.userPic}
-            />
+            {comment.user[0]?.imageUrl?.cdnUrl ? (
+              <Image
+                source={{uri: comment.user[0].imageUrl.cdnUrl}}
+                style={styles.userPic}
+              />
+            ) : (
+              <Image
+                source={require('../../../assets/images/default_profile_image.jpeg')}
+                style={styles.userPic}
+              />
+            )}
 
             <View>
               <Text style={styles.username}>
