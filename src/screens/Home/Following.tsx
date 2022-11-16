@@ -1,18 +1,18 @@
 import React from 'react';
-import {View, Text, ActivityIndicator} from 'react-native';
+import {View, Text, ActivityIndicator, StyleSheet} from 'react-native';
+import VideoPostSkeleton from '../../components/skeleton/VideoPostSkeleton';
 
-const Following = () => {
+export default () => {
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: 'black',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      <ActivityIndicator size="large" />
+    <View style={styles.container}>
+      <VideoPostSkeleton />
     </View>
   );
 };
 
-export default Following;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+});

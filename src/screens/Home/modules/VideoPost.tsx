@@ -219,9 +219,7 @@ const VideoPost = ({
       <View style={styles.bottomSection}>
         <View style={styles.bottomLeftSection}>
           <View style={styles.videoInfoContainer}>
-            <Pressable
-              style={styles.videoInfoContainer}
-              onPress={() => navigation.navigate('MiniProfile')}>
+            <Pressable onPress={() => navigation.navigate('MiniProfile')}>
               {userImage ? (
                 <Image source={{uri: userImage}} style={styles.userPic} />
               ) : (

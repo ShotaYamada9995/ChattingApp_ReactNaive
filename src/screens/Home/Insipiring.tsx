@@ -18,6 +18,7 @@ import {addVideos} from '../../store/reducers/InspiringVideos';
 import globalStyles from '../../styles/globalStyles';
 import UsersRepository from '../../repositories/UsersRepository';
 import {addFollowers} from '../../store/reducers/User';
+import VideoPostSkeleton from '../../components/skeleton/VideoPostSkeleton';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -29,8 +30,8 @@ const Home = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const [loadingStatus, setLoadingStatus] = useState<
-    'pending' | 'success' | 'error'
-  >('pending');
+    'loading' | 'success' | 'error'
+  >('loading');
 
   const currentPage = useRef(0);
 
@@ -110,8 +111,8 @@ const Home = () => {
   );
 
   const getVideos = async () => {
-    if (loadingStatus !== 'pending') {
-      setLoadingStatus('pending');
+    if (loadingStatus !== 'loading') {
+      setLoadingStatus('loading');
     }
 
     try {
@@ -158,8 +159,8 @@ const Home = () => {
           onEndReached={loadMoreVideos}
           onEndReachedThreshold={0}
         />
-      ) : loadingStatus === 'pending' ? (
-        <VideoLoadingIndicator />
+      ) : loadingStatus === 'loading' ? (
+        <VideoPostSkeleton />
       ) : (
         <View
           style={{
@@ -198,6 +199,7 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'black',
   },
   scrollLoader: {
     alignSelf: 'center',
