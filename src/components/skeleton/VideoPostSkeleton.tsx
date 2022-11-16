@@ -127,13 +127,13 @@ const styles = StyleSheet.create({
   username: {
     marginRight: 5,
     width: 50,
-    height: 20,
+    height: 15,
     backgroundColor: SKELETON_COLOR_SECONDARY,
   },
   followStatus: {
     marginRight: 5,
     width: 50,
-    height: 15,
+    height: 30,
     backgroundColor: SKELETON_COLOR_SECONDARY,
   },
   caption: {

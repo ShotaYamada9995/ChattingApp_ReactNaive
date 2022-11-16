@@ -1,59 +1,58 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {Image, Pressable, StyleSheet, Text, View, Platform} from 'react-native';
 import Video from 'react-native-video';
 import {Icon} from '@rneui/themed';
 import Share from 'react-native-share';
-
-import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
-import {useNavigation, useIsFocused} from '@react-navigation/native';
-import {useIsForeground} from '../../../hooks/useIsForeground';
 import {
   Menu,
   MenuOptions,
   MenuOption,
   MenuTrigger,
 } from 'react-native-popup-menu';
+import {useDispatch, useSelector} from 'react-redux';
+import {useNavigation, useIsFocused} from '@react-navigation/native';
+
+import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
+
+import {useIsForeground} from '../../../hooks/useIsForeground';
 
 import {likeVideo, unlikeVideo} from '../../../store/reducers/InspiringVideos';
 import {followUser, unfollowUser} from '../../../store/reducers/User';
 import {addBookmark, removeBookmark} from '../../../store/reducers/Bookmarks';
 
-import {useDispatch, useSelector} from 'react-redux';
-
 import MediaRepository from '../../../repositories/MediaRepository';
 import UsersRepository from '../../../repositories/UsersRepository';
-import PlaybackSpeed from './PlaybackSpeed';
+
+import PlaybackSpeedModal from './PlaybackSpeedModal';
 
 interface VideoPostProps {
-  isActive: boolean;
-  // videoItem: any;
   id: string;
   videoSource: string;
   thumbnailSource: string;
   caption: string;
   inspiredCount: number;
-  isLiked: boolean;
   userSlug: string;
   userId: string;
   userImage: string;
   userFirstname: string;
   userLastname: string;
+  isLiked: boolean;
+  isPlaying: boolean;
 }
 
 const VideoPost = ({
-  isActive,
-  // videoItem,
   id,
   videoSource,
   thumbnailSource,
   caption,
   inspiredCount,
-  isLiked,
   userSlug,
   userId,
   userImage,
   userFirstname,
   userLastname,
+  isLiked,
+  isPlaying,
 }: VideoPostProps) => {
   const {user, bookmarks} = useSelector((state: any) => ({
     user: state.user,
@@ -69,7 +68,7 @@ const VideoPost = ({
     isLoaded: false,
     speed: 1,
   });
-  const [showPlaybackSpeed, setShowPlaybackSpeed] = useState(false);
+  const [showPlaybackSpeedModal, setShowPlaybackSpeedModal] = useState(false);
 
   const isForeGround = useIsForeground();
   const isFocused = useIsFocused();
@@ -107,7 +106,7 @@ const VideoPost = ({
 
   const unlike = async () => {
     if (user.isLoggedIn) {
-      dispatch(unlikeVideo({id, username: user.slug}));
+      // dispatch(unlikeVideo({id, username: user.slug}));
 
       try {
         await MediaRepository.unlikeVideo({
@@ -176,13 +175,102 @@ const VideoPost = ({
     }
   };
 
+  const BookmarkIcon = useMemo(
+    () =>
+      bookmarks.some((video: any) => video.id === id) ? (
+        <Icon
+          name="bookmark"
+          type="ionicon"
+          color="white"
+          style={styles.verticalBarIcon}
+          onPress={() => dispatch(removeBookmark({id}))}
+        />
+      ) : (
+        <Icon
+          name="bookmark-outline"
+          type="ionicon"
+          color="white"
+          style={styles.verticalBarIcon}
+          onPress={() =>
+            dispatch(
+              addBookmark({
+                id,
+                video: videoSource,
+                thumbnail: thumbnailSource,
+                caption,
+                inspiredCount,
+                user: {
+                  id: userId,
+                  slug: userSlug,
+                  image: userImage,
+                  firstname: userFirstname,
+                  lastname: userLastname,
+                },
+              }),
+            )
+          }
+        />
+      ),
+    [bookmarks],
+  );
+
+  const LikeIcon = () =>
+    useMemo(
+      () =>
+        isLiked ? (
+          <Icon
+            name="heart"
+            type="ionicon"
+            color="white"
+            style={styles.verticalBarIcon}
+            onPress={like}
+          />
+        ) : (
+          <Icon
+            name="heart"
+            type="ionicon"
+            color="red"
+            style={styles.verticalBarIcon}
+            onPress={unlike}
+          />
+        ),
+      [isLiked],
+    );
+
+  const UserImage = useMemo(
+    () =>
+      userImage ? (
+        <Image source={{uri: userImage}} style={styles.userPic} />
+      ) : (
+        <Image
+          source={require('../../../assets/images/default_profile_image.jpeg')}
+          style={styles.userPic}
+        />
+      ),
+    [userImage],
+  );
+
+  const PlaybackSpeedModalComp = useMemo(
+    () => (
+      <PlaybackSpeedModal
+        isVisible={showPlaybackSpeedModal}
+        selectedRate={video.speed}
+        onSelect={(rate: number) =>
+          setVideo(current => ({...current, speed: rate}))
+        }
+        onClose={() => setShowPlaybackSpeedModal(false)}
+      />
+    ),
+    [showPlaybackSpeedModal, video.speed],
+  );
+
   useEffect(() => {
-    if (isActive) {
+    if (isPlaying) {
       setVideo(video => ({...video, isPaused: false}));
     } else {
       setVideo(video => ({...video, isPaused: true}));
     }
-  }, [isActive]);
+  }, [isPlaying]);
 
   return (
     <View
@@ -220,33 +308,23 @@ const VideoPost = ({
         <View style={styles.bottomLeftSection}>
           <View style={styles.videoInfoContainer}>
             <Pressable onPress={() => navigation.navigate('MiniProfile')}>
-              {userImage ? (
-                <Image source={{uri: userImage}} style={styles.userPic} />
-              ) : (
-                <Image
-                  source={require('../../../assets/images/default_profile_image.jpeg')}
-                  style={styles.userPic}
-                />
-              )}
+              {UserImage}
             </Pressable>
             <Pressable onPress={() => navigation.navigate('MiniProfile')}>
               <Text style={styles.username}>
                 {userFirstname} {userLastname}
               </Text>
             </Pressable>
-            {user.isLoggedIn ? (
-              user.following.some(
-                (user: any) => user.following === userSlug,
-              ) ? (
-                <Text style={styles.followingTag} onPress={unfollow}>
-                  following
-                </Text>
-              ) : (
-                <Text style={styles.followTag} onPress={follow}>
-                  follow
-                </Text>
-              )
-            ) : null}
+            {user.isLoggedIn &&
+            user.following.some((user: any) => user.following === userSlug) ? (
+              <Text style={styles.followingTag} onPress={unfollow}>
+                following
+              </Text>
+            ) : (
+              <Text style={styles.followTag} onPress={follow}>
+                follow
+              </Text>
+            )}
           </View>
           <Text style={styles.caption}>{caption}</Text>
           <View style={styles.videoInfoContainer}>
@@ -262,58 +340,9 @@ const VideoPost = ({
         </View>
 
         <View style={styles.bottomRightSection}>
-          {bookmarks.some((video: any) => video.id === id) ? (
-            <Icon
-              name="bookmark"
-              type="ionicon"
-              color="white"
-              style={styles.verticalBarIcon}
-              onPress={() => dispatch(removeBookmark({id}))}
-            />
-          ) : (
-            <Icon
-              name="bookmark-outline"
-              type="ionicon"
-              color="white"
-              style={styles.verticalBarIcon}
-              onPress={() =>
-                dispatch(
-                  addBookmark({
-                    id,
-                    video: videoSource,
-                    thumbnail: thumbnailSource,
-                    caption,
-                    inspiredCount,
-                    user: {
-                      id: userId,
-                      slug: userSlug,
-                      image: userImage,
-                      firstname: userFirstname,
-                      lastname: userLastname,
-                    },
-                  }),
-                )
-              }
-            />
-          )}
+          {BookmarkIcon}
 
-          {isLiked ? (
-            <Icon
-              name="heart"
-              type="ionicon"
-              color="white"
-              style={styles.verticalBarIcon}
-              onPress={like}
-            />
-          ) : (
-            <Icon
-              name="heart"
-              type="ionicon"
-              color="red"
-              style={styles.verticalBarIcon}
-              onPress={unlike}
-            />
-          )}
+          {LikeIcon}
 
           <Icon
             name="chatbubbles"
@@ -354,20 +383,13 @@ const VideoPost = ({
               {/* <MenuOption>
                 <Text style={styles.menuOption}>Download</Text>
               </MenuOption> */}
-              <MenuOption onSelect={() => setShowPlaybackSpeed(true)}>
+              <MenuOption onSelect={() => setShowPlaybackSpeedModal(true)}>
                 <Text style={styles.menuOption}>Playback speed</Text>
               </MenuOption>
             </MenuOptions>
           </Menu>
 
-          <PlaybackSpeed
-            isVisible={showPlaybackSpeed}
-            selectedRate={video.speed}
-            onSelect={(rate: number) =>
-              setVideo(current => ({...current, speed: rate}))
-            }
-            onClose={() => setShowPlaybackSpeed(false)}
-          />
+          {PlaybackSpeedModalComp}
         </View>
       </View>
     </View>

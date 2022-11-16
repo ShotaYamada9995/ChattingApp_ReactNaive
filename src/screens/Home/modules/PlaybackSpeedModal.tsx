@@ -13,7 +13,7 @@ import {
 import {BottomSheet, Icon} from '@rneui/themed';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
 
-interface PlaybackSpeedProps {
+interface PlaybackSpeedModalProps {
   isVisible: boolean;
   selectedRate: number;
   onSelect: (rate: number) => void;
@@ -25,7 +25,7 @@ export default ({
   selectedRate,
   onSelect,
   onClose,
-}: PlaybackSpeedProps) => {
+}: PlaybackSpeedModalProps) => {
   const rates = [0.25, 0.5, 1, 1.25, 1.5, 1.75, 2];
 
   const handleOnSelect = (rate: number) => {

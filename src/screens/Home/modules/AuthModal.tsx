@@ -1,48 +1,57 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {View, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import {Button, Text, Icon} from '@rneui/themed';
-
-import {WINDOW_WIDTH} from '../../../utils';
+import {Button, Text, Icon, BottomSheet} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
 
+import {WINDOW_WIDTH} from '../../../utils';
+
 interface AuthModalProps {
-  onCancel: () => void;
+  isVisible: boolean;
+  onClose: () => void;
 }
 
-export default ({onCancel}: AuthModalProps) => {
+export default ({isVisible, onClose}: AuthModalProps) => {
   const navigation = useNavigation();
   return (
-    <View style={styles.container}>
-      <Image
-        source={require('../../../assets/images/logo4x.png')}
-        style={styles.logo}
-      />
-      <Text style={styles.title}>
-        Log in to follow accounts and like or comment on videos
-      </Text>
-      <Text style={styles.caption}>
-        WhatIDo is more fun when you sign up so we can make more moneyyyyyyy!!!
-      </Text>
-      <Button
-        title="Log in or sign up"
-        titleStyle={{fontSize: WINDOW_WIDTH * 0.04}}
-        containerStyle={styles.btn}
-        buttonStyle={{paddingVertical: 15}}
-        color="#001433"
-        onPress={() => {
-          navigation.navigate('LoginOptions');
-          onCancel();
-        }}
-      />
+    <BottomSheet
+      onBackdropPress={onClose}
+      isVisible={isVisible}
+      containerStyle={styles.authModalContainer}>
+      <View style={styles.container}>
+        <Image
+          source={require('../../../assets/images/logo4x.png')}
+          style={styles.logo}
+        />
+        <Text style={styles.title}>
+          Log in to follow accounts and like or comment on videos
+        </Text>
+        <Text style={styles.caption}>
+          WhatIDo is more fun when you're in it
+        </Text>
+        <Button
+          title="Log in or sign up"
+          titleStyle={{fontSize: WINDOW_WIDTH * 0.04}}
+          containerStyle={styles.btn}
+          buttonStyle={{paddingVertical: 15}}
+          color="#001433"
+          onPress={() => {
+            navigation.navigate('LoginOptions');
+            onClose();
+          }}
+        />
 
-      <TouchableOpacity style={styles.closeModalIcon} onPress={onCancel}>
-        <Icon name="close-outline" type="ionicon" color="black" />
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={styles.closeModalIcon} onPress={onClose}>
+          <Icon name="close-outline" type="ionicon" color="black" />
+        </TouchableOpacity>
+      </View>
+    </BottomSheet>
   );
 };
 
 const styles = StyleSheet.create({
+  authModalContainer: {
+    justifyContent: 'center',
+  },
   container: {
     width: '90%',
     backgroundColor: 'white',
