@@ -201,10 +201,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
   },
-  scrollLoader: {
-    alignSelf: 'center',
-    marginVertical: 10,
-  },
   loadMoreVideosIndicator: {position: 'absolute', bottom: 30, left: '45%'},
   videoContainer: {flexGrow: 0},
   failedLoadingContainer: {
