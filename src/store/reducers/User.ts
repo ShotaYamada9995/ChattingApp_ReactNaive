@@ -17,13 +17,16 @@ export const userSlice = createSlice({
       return {...state, following: action.payload};
     },
     followUser: (state, action) => {
-      return {...state, following: [...state.following, action.payload]};
+      return {
+        ...state,
+        following: [...state.following, action.payload.userSlug],
+      };
     },
     unfollowUser: (state, action) => {
       return {
         ...state,
         following: state.following.filter(
-          user => user.following !== action.payload.userSlug,
+          userSlug => userSlug !== action.payload.userSlug,
         ),
       };
     },

@@ -37,16 +37,24 @@ class MediaRepository {
     return response;
   }
 
-  async likeVideo(payload: LikeUnlikePayload) {
+  async likeVideo(token: string, payload: LikeUnlikePayload) {
     const endpoint = `${DOMAIN}/media/likeVideo`;
 
-    await axios.post(endpoint, payload);
+    await axios.post(endpoint, payload, {
+      headers: {
+        Authorization: token,
+      },
+    });
   }
 
-  async unlikeVideo(payload: LikeUnlikePayload) {
+  async unlikeVideo(token: string, payload: LikeUnlikePayload) {
     const endpoint = `${DOMAIN}/media/unlikeVideo`;
 
-    await axios.post(endpoint, payload);
+    await axios.post(endpoint, payload, {
+      headers: {
+        Authorization: token,
+      },
+    });
   }
 
   async uploadMedia(payload: UploadMediaProps, setUploadProgress: any) {
@@ -74,7 +82,7 @@ class MediaRepository {
     const response = await axios.post(endpoint, mediaData, {
       headers: {
         'Content-Type': 'multipart/form-data',
-        Authorization: `${token}`,
+        Authorization: token,
       },
       onUploadProgress: progressEvent => {
         const progress = Math.round(
@@ -101,7 +109,7 @@ class MediaRepository {
 
     const response = await axios.post(endpoint, payload, {
       headers: {
-        Authorization: `${token}`,
+        Authorization: token,
       },
     });
 

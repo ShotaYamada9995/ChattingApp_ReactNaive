@@ -7,7 +7,7 @@ const SKELETON_COLOR_PRIMARY = 'rgba(60,60,60,0.5)';
 const SKELETON_COLOR_SECONDARY = '#888';
 
 export default () => {
-  const videoPostHeight =
+  const VIDEO_POST_HEIGHT =
     Platform.OS === 'ios'
       ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
       : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104;
@@ -21,7 +21,7 @@ export default () => {
             key={index}
             style={[
               styles.container,
-              {height: videoPostHeight + (WINDOW_WIDTH * 0.15) / 2},
+              {height: VIDEO_POST_HEIGHT + (WINDOW_WIDTH * 0.15) / 2},
             ]}>
             <View style={styles.bottomSection}>
               <View style={styles.bottomLeftSection}>
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   followStatus: {
     marginRight: 5,
     width: 50,
-    height: 30,
+    height: 22,
     backgroundColor: SKELETON_COLOR_SECONDARY,
   },
   caption: {

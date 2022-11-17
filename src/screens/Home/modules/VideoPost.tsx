@@ -32,7 +32,6 @@ interface VideoPostProps {
   caption: string;
   inspiredCount: number;
   userSlug: string;
-  userId: string;
   userImage: string;
   userFirstname: string;
   userLastname: string;
@@ -40,14 +39,13 @@ interface VideoPostProps {
   isPlaying: boolean;
 }
 
-const VideoPost = ({
+export default ({
   id,
   videoSource,
   thumbnailSource,
   caption,
   inspiredCount,
   userSlug,
-  userId,
   userImage,
   userFirstname,
   userLastname,
@@ -74,11 +72,6 @@ const VideoPost = ({
   const isFocused = useIsFocused();
   const canPlayVideo = isForeGround && isFocused;
 
-  const videoPostHeight =
-    Platform.OS === 'ios'
-      ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
-      : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104;
-
   const videoUrl = encodeURIComponent(videoSource)
     .replace(/%3A/g, ':')
     .replace(/%2F/g, '/');
@@ -92,7 +85,7 @@ const VideoPost = ({
       dispatch(likeVideo({id, username: user.slug}));
 
       try {
-        await MediaRepository.likeVideo({
+        await MediaRepository.likeVideo(user.token, {
           id,
           userSlug: user.slug,
         });
@@ -106,10 +99,10 @@ const VideoPost = ({
 
   const unlike = async () => {
     if (user.isLoggedIn) {
-      // dispatch(unlikeVideo({id, username: user.slug}));
+      dispatch(unlikeVideo({id, username: user.slug}));
 
       try {
-        await MediaRepository.unlikeVideo({
+        await MediaRepository.unlikeVideo(user.token, {
           id,
           userSlug: user.slug,
         });
@@ -140,13 +133,7 @@ const VideoPost = ({
   };
 
   const follow = async () => {
-    dispatch(
-      followUser({
-        following: userSlug,
-        _id: userId,
-        type: 'expert',
-      }),
-    );
+    dispatch(followUser({userSlug}));
 
     try {
       await UsersRepository.followUser({
@@ -200,7 +187,6 @@ const VideoPost = ({
                 caption,
                 inspiredCount,
                 user: {
-                  id: userId,
                   slug: userSlug,
                   image: userImage,
                   firstname: userFirstname,
@@ -214,28 +200,27 @@ const VideoPost = ({
     [bookmarks],
   );
 
-  const LikeIcon = () =>
-    useMemo(
-      () =>
-        isLiked ? (
-          <Icon
-            name="heart"
-            type="ionicon"
-            color="white"
-            style={styles.verticalBarIcon}
-            onPress={like}
-          />
-        ) : (
-          <Icon
-            name="heart"
-            type="ionicon"
-            color="red"
-            style={styles.verticalBarIcon}
-            onPress={unlike}
-          />
-        ),
-      [isLiked],
-    );
+  const LikeIcon = useMemo(
+    () =>
+      isLiked ? (
+        <Icon
+          name="heart"
+          type="ionicon"
+          color="red"
+          style={styles.verticalBarIcon}
+          onPress={unlike}
+        />
+      ) : (
+        <Icon
+          name="heart"
+          type="ionicon"
+          color="white"
+          style={styles.verticalBarIcon}
+          onPress={like}
+        />
+      ),
+    [isLiked],
+  );
 
   const UserImage = useMemo(
     () =>
@@ -273,11 +258,7 @@ const VideoPost = ({
   }, [isPlaying]);
 
   return (
-    <View
-      style={[
-        styles.container,
-        {height: videoPostHeight + (WINDOW_WIDTH * 0.15) / 2},
-      ]}>
+    <View style={styles.container}>
       {/* {isFocused && (
         <Video
           poster={thumbnailSource}
@@ -294,7 +275,6 @@ const VideoPost = ({
           repeat
         />
       )} */}
-
       {/* {!video.isLoaded && (
         <View style={{position: 'absolute', width: '100%', height: '100%'}}>
           <Image
@@ -316,15 +296,15 @@ const VideoPost = ({
               </Text>
             </Pressable>
             {user.isLoggedIn &&
-            user.following.some((user: any) => user.following === userSlug) ? (
-              <Text style={styles.followingTag} onPress={unfollow}>
-                following
-              </Text>
-            ) : (
-              <Text style={styles.followTag} onPress={follow}>
-                follow
-              </Text>
-            )}
+              (user.following.includes(userSlug) ? (
+                <Text style={styles.followingTag} onPress={unfollow}>
+                  following
+                </Text>
+              ) : (
+                <Text style={styles.followTag} onPress={follow}>
+                  follow
+                </Text>
+              ))}
           </View>
           <Text style={styles.caption}>{caption}</Text>
           <View style={styles.videoInfoContainer}>
@@ -353,7 +333,6 @@ const VideoPost = ({
               navigation.navigate('Comments', {
                 videoId: id,
                 user: {
-                  id: userId,
                   image: userImage,
                   firstName: userFirstname,
                   lastName: userLastname,
@@ -396,11 +375,8 @@ const VideoPost = ({
   );
 };
 
-export default VideoPost;
-
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
     backgroundColor: 'black',
   },
   thumbnail: {

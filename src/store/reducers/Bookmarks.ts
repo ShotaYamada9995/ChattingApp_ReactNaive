@@ -1,6 +1,21 @@
 import {createSlice} from '@reduxjs/toolkit';
 
-const initialState: any[] = [];
+interface BookmarkProps {
+  id: string;
+  video: string;
+  thumbnail: string;
+  caption: string;
+  inspiredCount: number;
+  user: {
+    id: string;
+    slug: string;
+    image: string;
+    firstname: string;
+    lastname: string;
+  };
+}
+
+const initialState: BookmarkProps[] = [];
 
 export const userSlice = createSlice({
   name: 'BOOKMARKS',

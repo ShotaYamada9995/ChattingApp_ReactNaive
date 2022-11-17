@@ -5,32 +5,11 @@ import UsersRepository from './UsersRepository';
 
 class FeedsRepository {
   async getInspiringVideos(page: number) {
-    const endpoint = `${DOMAIN}/feed/inspiring?page=${page}&itemSize=7`;
+    const endpoint = `${DOMAIN}/feed/inspiring?page=${page}&itemSize=6`;
 
     const response = await axios.get(endpoint);
 
-    const videos = response.data;
-
-    const inspiringVideos = [];
-
-    for (let i = 0; i < videos.length; i++) {
-      try {
-        const {data: user} = await UsersRepository.getUser(videos[i].userSlug);
-
-        inspiringVideos.push({
-          ...videos[i],
-          user: {
-            id: user._id,
-            ...user.profile,
-            image: user.imageUrl.cdnUrl,
-          },
-        });
-      } catch (error) {
-        continue;
-      }
-    }
-
-    return inspiringVideos;
+    return response.data;
   }
 }
 
