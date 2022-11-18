@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 10,
+    width: '100%',
   },
   rate: {
     color: 'black',

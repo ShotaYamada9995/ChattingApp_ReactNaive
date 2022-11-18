@@ -7,10 +7,12 @@ import {
   Text,
   Platform,
 } from 'react-native';
-import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
+import {RecyclerListView} from 'recyclerlistview';
 import {useDispatch, useSelector} from 'react-redux';
+import {BottomSheet, Button} from '@rneui/themed';
+import {FlashList} from '@shopify/flash-list';
 
-import VideoPost from './modules/VideoPost';
+import VideoPost, {VIDEO_POST_HEIGHT} from './modules/VideoPost';
 import AuthModal from './modules/AuthModal';
 
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../utils';
@@ -27,10 +29,6 @@ import globalStyles from '../../styles/globalStyles';
 
 type LoadingStatusProps = 'loading' | 'success' | 'error';
 
-const createDataProvider = () => {
-  return new DataProvider((r1, r2) => r1 !== r2);
-};
-
 const Home = () => {
   const dispatch = useDispatch();
 
@@ -42,34 +40,47 @@ const Home = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingStatus, setLoadingStatus] =
     useState<LoadingStatusProps>('loading');
-  const [dataProvider, setdataProvider] = useState(null);
 
   const currentPage = useRef(0);
 
-  const VIDEO_POST_HEIGHT =
-    Platform.OS === 'ios'
-      ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
-      : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104;
-
-  const layoutProvider = new LayoutProvider(
-    index => 0,
-    (type, dim) => {
-      dim.width = WINDOW_WIDTH;
-      dim.height = VIDEO_POST_HEIGHT + (WINDOW_WIDTH * 0.15) / 2;
-    },
+  const LoadMoreVideosIndicator = useMemo(
+    () =>
+      isLoadingMoreVideos && (
+        <ActivityIndicator
+          size="large"
+          style={styles.loadMoreVideosIndicator}
+        />
+      ),
+    [isLoadingMoreVideos],
   );
 
-  const handleOnVideoListScroll = e => {
-    const index = Math.round(
-      e.nativeEvent.contentOffset.y / (WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104),
-    );
-    setActiveVideoIndex(index);
-  };
+  const VideoPostComp = ({item, index}: any) => (
+    <VideoPost
+      id={item._id}
+      videoSource={item.file[0].cdnUrl}
+      thumbnailSource={item.thumbnail[0].cdnUrl}
+      caption={item.text}
+      inspiredCount={item.inspired_count}
+      userSlug={item.userSlug}
+      userImage={item.user[0]?.imageUrl?.cdnUrl}
+      userFirstname={item.user[0].profile.firstName}
+      userLastname={item.user[0].profile.lastName}
+      isLiked={
+        user.isLoggedIn && item.inspired && item.inspired.includes(user?.slug)
+      }
+      isPlaying={activeVideoIndex === index}
+    />
+  );
 
-  const handleRecylerListScroll = (_, offsetX: number, offsetY: number) => {
-    const index = Math.round(offsetY / (WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104));
-    setActiveVideoIndex(index);
-  };
+  const AuthModalComp = useMemo(
+    () => (
+      <AuthModal
+        isVisible={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+      />
+    ),
+    [showAuthModal],
+  );
 
   const loadMoreVideos = async () => {
     // Multicall fix
@@ -99,47 +110,6 @@ const Home = () => {
     }
   };
 
-  const LoadMoreVideosIndicator = useMemo(
-    () =>
-      isLoadingMoreVideos && (
-        <ActivityIndicator
-          size="large"
-          style={styles.loadMoreVideosIndicator}
-        />
-      ),
-    [isLoadingMoreVideos],
-  );
-
-  const VideoPostComp = (type, videoPost, index: number) => {
-    return (
-      <VideoPost
-        id={videoPost._id}
-        videoSource={videoPost.file[0].cdnUrl}
-        thumbnailSource={videoPost.thumbnail[0].cdnUrl}
-        caption={videoPost.text}
-        inspiredCount={videoPost.inspired_count}
-        userSlug={videoPost.userSlug}
-        userImage={videoPost.user[0].imageUrl.cdnUrl}
-        userFirstname={videoPost.user[0].profile.firstName}
-        userLastname={videoPost.user[0].profile.lastName}
-        isLiked={
-          user.isLoggedIn && Array.from(videoPost.inspired).includes(user?.slug)
-        }
-        isPlaying={activeVideoIndex === index}
-      />
-    );
-  };
-
-  const AuthModalComp = useMemo(
-    () => (
-      <AuthModal
-        isVisible={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-      />
-    ),
-    [showAuthModal],
-  );
-
   const getVideos = async () => {
     if (loadingStatus !== 'loading') {
       setLoadingStatus('loading');
@@ -156,7 +126,6 @@ const Home = () => {
         dispatch(addFollowers(followedUsers));
       }
       dispatch(addVideos(videos));
-      setdataProvider(createDataProvider().cloneWithRows(videos));
 
       setLoadingStatus('success');
 
@@ -174,23 +143,29 @@ const Home = () => {
     }
   }, []);
 
+  const keyExtractor = (item: any, index: number) => item._id;
+
+  const handleOnVideoListScroll = e => {
+    const index = Math.round(
+      e.nativeEvent.contentOffset.y / e.nativeEvent.layoutMeasurement.height,
+    );
+    setActiveVideoIndex(index);
+  };
+
   return (
     <View style={styles.container}>
-      {loadingStatus === 'success' && dataProvider ? (
-        <RecyclerListView
-          dataProvider={dataProvider}
-          layoutProvider={layoutProvider}
-          rowRenderer={VideoPostComp}
-          initialRenderIndex={0}
-          renderAheadOffset={VIDEO_POST_HEIGHT}
-          // onVisibleIndicesChanged={(all: number[], now: number[]) => {
-          //   setActiveVideoIndex(all.pop() || 0);
-          // }}
-          // onEndReached={loadMoreVideos}
-          // onEndReachedThreshold={0}
-          showsVerticalScrollIndicator={false}
+      {loadingStatus === 'success' || inspiringVideos.length > 0 ? (
+        <FlashList
+          keyExtractor={keyExtractor}
+          data={inspiringVideos}
+          extraData={activeVideoIndex}
+          estimatedItemSize={VIDEO_POST_HEIGHT}
           pagingEnabled
-          style={styles.videoContainer}
+          renderItem={VideoPostComp}
+          onScroll={handleOnVideoListScroll}
+          showsVerticalScrollIndicator={false}
+          onEndReached={loadMoreVideos}
+          onEndReachedThreshold={0}
         />
       ) : loadingStatus === 'loading' ? (
         <VideoPostSkeleton />
@@ -205,7 +180,7 @@ const Home = () => {
         </View>
       )}
 
-      {LoadMoreVideosIndicator}
+      {/* {LoadMoreVideosIndicator} */}
 
       {AuthModalComp}
     </View>
@@ -217,8 +192,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
   },
+  scrollLoader: {
+    alignSelf: 'center',
+    marginVertical: 10,
+  },
   loadMoreVideosIndicator: {position: 'absolute', bottom: 30, left: '45%'},
-  videoContainer: {flex: 1},
+  videoContainer: {flexGrow: 0},
   failedLoadingContainer: {
     flex: 1,
     backgroundColor: 'black',

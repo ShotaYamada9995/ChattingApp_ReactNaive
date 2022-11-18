@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect, useMemo, memo, useCallback} from 'react';
 import {Image, Pressable, StyleSheet, Text, View, Platform} from 'react-native';
 import Video from 'react-native-video';
 import {Icon} from '@rneui/themed';
@@ -39,7 +39,13 @@ interface VideoPostProps {
   isPlaying: boolean;
 }
 
-export default ({
+export const VIDEO_POST_HEIGHT =
+  (Platform.OS === 'ios'
+    ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
+    : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104) +
+  (WINDOW_WIDTH * 0.15) / 2;
+
+const VideoPost = ({
   id,
   videoSource,
   thumbnailSource,
@@ -60,10 +66,7 @@ export default ({
   const dispatch = useDispatch();
 
   const [video, setVideo] = useState({
-    url: '',
-    isBuffering: false,
     isPaused: true,
-    isLoaded: false,
     speed: 1,
   });
   const [showPlaybackSpeedModal, setShowPlaybackSpeedModal] = useState(false);
@@ -71,6 +74,7 @@ export default ({
   const isForeGround = useIsForeground();
   const isFocused = useIsFocused();
   const canPlayVideo = isForeGround && isFocused;
+  const isVideoPaused = video.isPaused || !canPlayVideo;
 
   const videoUrl = encodeURIComponent(videoSource)
     .replace(/%3A/g, ':')
@@ -200,27 +204,24 @@ export default ({
     [bookmarks],
   );
 
-  const LikeIcon = useMemo(
-    () =>
-      isLiked ? (
-        <Icon
-          name="heart"
-          type="ionicon"
-          color="red"
-          style={styles.verticalBarIcon}
-          onPress={unlike}
-        />
-      ) : (
-        <Icon
-          name="heart"
-          type="ionicon"
-          color="white"
-          style={styles.verticalBarIcon}
-          onPress={like}
-        />
-      ),
-    [isLiked],
-  );
+  const LikeIcon = () =>
+    isLiked ? (
+      <Icon
+        name="heart"
+        type="ionicon"
+        color="red"
+        style={styles.verticalBarIcon}
+        onPress={unlike}
+      />
+    ) : (
+      <Icon
+        name="heart"
+        type="ionicon"
+        color="white"
+        style={styles.verticalBarIcon}
+        onPress={like}
+      />
+    );
 
   const UserImage = useMemo(
     () =>
@@ -249,6 +250,26 @@ export default ({
     [showPlaybackSpeedModal, video.speed],
   );
 
+  const VideoPlayer = useMemo(
+    () =>
+      isFocused && (
+        <Video
+          poster={thumbnailSource}
+          posterResizeMode="cover"
+          source={{
+            uri: videoUrl,
+          }}
+          style={styles.video}
+          resizeMode="cover"
+          paused={isVideoPaused}
+          playInBackground={false}
+          rate={video.speed}
+          repeat
+        />
+      ),
+    [video.speed, isVideoPaused, isFocused, videoUrl, thumbnailSource],
+  );
+
   useEffect(() => {
     if (isPlaying) {
       setVideo(video => ({...video, isPaused: false}));
@@ -258,31 +279,8 @@ export default ({
   }, [isPlaying]);
 
   return (
-    <View style={styles.container}>
-      {/* {isFocused && (
-        <Video
-          poster={thumbnailSource}
-          posterResizeMode="cover"
-          source={{
-            uri: videoUrl,
-          }}
-          style={styles.video}
-          resizeMode="cover"
-          paused={video.isPaused || !canPlayVideo}
-          playInBackground={false}
-          rate={video.speed}
-          // onLoad={() => setVideo(video => ({...video, isLoaded: true}))}
-          repeat
-        />
-      )} */}
-      {/* {!video.isLoaded && (
-        <View style={{position: 'absolute', width: '100%', height: '100%'}}>
-          <Image
-            source={{uri: thumbnailSource}}
-            style={{width: '100%', height: '100%'}}
-          />
-        </View>
-      )} */}
+    <View style={[styles.container, {height: VIDEO_POST_HEIGHT}]}>
+      {VideoPlayer}
 
       <View style={styles.bottomSection}>
         <View style={styles.bottomLeftSection}>
@@ -296,6 +294,7 @@ export default ({
               </Text>
             </Pressable>
             {user.isLoggedIn &&
+              user.slug !== userSlug &&
               (user.following.includes(userSlug) ? (
                 <Text style={styles.followingTag} onPress={unfollow}>
                   following
@@ -322,7 +321,7 @@ export default ({
         <View style={styles.bottomRightSection}>
           {BookmarkIcon}
 
-          {LikeIcon}
+          {LikeIcon()}
 
           <Icon
             name="chatbubbles"
@@ -375,8 +374,11 @@ export default ({
   );
 };
 
+export default memo(VideoPost);
+
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     backgroundColor: 'black',
   },
   thumbnail: {
@@ -401,6 +403,7 @@ const styles = StyleSheet.create({
   },
   bottomLeftSection: {
     flex: 4,
+    paddingBottom: 15,
   },
   bottomRightSection: {
     flex: 1,
