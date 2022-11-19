@@ -8,7 +8,7 @@ import Home from '../screens/Home';
 import ExploreScreen from '../screens/ExploreScreen';
 import AudioRoomScreen from '../screens/AudioRoomScreen';
 import ChatScreen from '../screens/Chats';
-import VideoCapture from '../screens/CreateMedia';
+import VideoPicker from '../screens/CreateMedia/VideoPicker';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../utils';
 
 const MainTab = createBottomTabNavigator();
@@ -54,8 +54,8 @@ const Main = () => {
         }}
       />
       <MainTab.Screen
-        name="VideoCapture"
-        component={VideoCapture}
+        name="VideoPicker"
+        component={VideoPicker}
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({focused}) => (

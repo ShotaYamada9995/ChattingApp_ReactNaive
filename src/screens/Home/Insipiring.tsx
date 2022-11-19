@@ -1,21 +1,13 @@
-import React, {useState, useCallback, useEffect, useRef, useMemo} from 'react';
-import {
-  View,
-  FlatList,
-  StyleSheet,
-  ActivityIndicator,
-  Text,
-  Platform,
-} from 'react-native';
-import {RecyclerListView} from 'recyclerlistview';
+import React, {useState, useEffect, useRef, useMemo} from 'react';
+import {View, StyleSheet, Text} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
-import {BottomSheet, Button} from '@rneui/themed';
 import {FlashList} from '@shopify/flash-list';
+import {Button} from '@rneui/themed';
 
-import VideoPost, {VIDEO_POST_HEIGHT} from './modules/VideoPost';
+import VideoPost, {VIDEO_POST_HEIGHT} from './modules/InspiringVideoPost';
 import AuthModal from './modules/AuthModal';
 
-import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../utils';
+import {WINDOW_WIDTH} from '../../utils';
 
 import FeedsRepository from '../../repositories/FeedsRepository';
 import UsersRepository from '../../repositories/UsersRepository';
@@ -32,8 +24,10 @@ type LoadingStatusProps = 'loading' | 'success' | 'error';
 const Home = () => {
   const dispatch = useDispatch();
 
-  const user = useSelector((state: any) => state.user);
-  const inspiringVideos = useSelector((state: any) => state.inspiringVideos);
+  const {user, inspiringVideos} = useSelector((state: any) => ({
+    user: state.user,
+    inspiringVideos: state.inspiringVideos,
+  }));
 
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [isLoadingMoreVideos, setisLoadingMoreVideos] = useState(false);
@@ -43,16 +37,16 @@ const Home = () => {
 
   const currentPage = useRef(0);
 
-  const LoadMoreVideosIndicator = useMemo(
-    () =>
-      isLoadingMoreVideos && (
-        <ActivityIndicator
-          size="large"
-          style={styles.loadMoreVideosIndicator}
-        />
-      ),
-    [isLoadingMoreVideos],
-  );
+  // const LoadMoreVideosIndicator = useMemo(
+  //   () =>
+  //     isLoadingMoreVideos && (
+  //       <ActivityIndicator
+  //         size="large"
+  //         style={styles.loadMoreVideosIndicator}
+  //       />
+  //     ),
+  //   [isLoadingMoreVideos],
+  // );
 
   const VideoPostComp = ({item, index}: any) => (
     <VideoPost
@@ -172,11 +166,16 @@ const Home = () => {
       ) : (
         <View style={styles.failedLoadingContainer}>
           <Text style={styles.failedLoadingMessage}>
-            Failed to load videos. Check your network connection and{' '}
-            <Text style={globalStyles.link} onPress={getVideos}>
-              try again
-            </Text>
+            Failed to load videos. Must be your network connection
           </Text>
+
+          <Button
+            title="Retry"
+            containerStyle={styles.retryBtn}
+            buttonStyle={{paddingVertical: 10}}
+            color="#001433"
+            onPress={getVideos}
+          />
         </View>
       )}
 
@@ -207,8 +206,14 @@ const styles = StyleSheet.create({
   failedLoadingMessage: {
     color: 'white',
     fontSize: WINDOW_WIDTH * 0.05,
+    fontWeight: 'bold',
     textAlign: 'center',
     maxWidth: '90%',
+  },
+  retryBtn: {
+    width: '48%',
+    marginTop: 10,
+    alignSelf: 'center',
   },
 });
 

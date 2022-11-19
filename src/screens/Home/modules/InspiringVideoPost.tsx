@@ -169,19 +169,16 @@ const VideoPost = ({
   const BookmarkIcon = useMemo(
     () =>
       bookmarks.some((video: any) => video.id === id) ? (
-        <Icon
-          name="bookmark"
-          type="ionicon"
-          color="white"
-          style={styles.verticalBarIcon}
-          onPress={() => dispatch(removeBookmark({id}))}
-        />
+        <Pressable onPress={() => dispatch(removeBookmark({id}))}>
+          <Icon
+            name="bookmark"
+            type="ionicon"
+            color="white"
+            style={styles.verticalBarIcon}
+          />
+        </Pressable>
       ) : (
-        <Icon
-          name="bookmark-outline"
-          type="ionicon"
-          color="white"
-          style={styles.verticalBarIcon}
+        <Pressable
           onPress={() =>
             dispatch(
               addBookmark({
@@ -198,29 +195,37 @@ const VideoPost = ({
                 },
               }),
             )
-          }
-        />
+          }>
+          <Icon
+            name="bookmark-outline"
+            type="ionicon"
+            color="white"
+            style={styles.verticalBarIcon}
+          />
+        </Pressable>
       ),
     [bookmarks],
   );
 
   const LikeIcon = () =>
     isLiked ? (
-      <Icon
-        name="heart"
-        type="ionicon"
-        color="red"
-        style={styles.verticalBarIcon}
-        onPress={unlike}
-      />
+      <Pressable onPress={unlike}>
+        <Icon
+          name="heart"
+          type="ionicon"
+          color="red"
+          style={styles.verticalBarIcon}
+        />
+      </Pressable>
     ) : (
-      <Icon
-        name="heart"
-        type="ionicon"
-        color="white"
-        style={styles.verticalBarIcon}
-        onPress={like}
-      />
+      <Pressable onPress={like}>
+        <Icon
+          name="heart"
+          type="ionicon"
+          color="white"
+          style={styles.verticalBarIcon}
+        />
+      </Pressable>
     );
 
   const UserImage = useMemo(
@@ -379,7 +384,7 @@ export default memo(VideoPost);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: 'rgba(60,60,60,0.5)',
   },
   thumbnail: {
     position: 'absolute',
@@ -390,7 +395,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    backgroundColor: 'black',
+    backgroundColor: 'rgba(60,60,60,0.5)',
   },
   bottomSection: {
     position: 'absolute',

@@ -38,7 +38,7 @@ const HomeTabNavigator = () => {
           tabBarInactiveTintColor: '#C7C6C7',
         }}>
         <HomeTab.Screen name="Inspiring" component={Inspiring} />
-        <HomeTab.Screen name="Following" component={Following} />
+        <HomeTab.Screen name="For You" component={Following} />
       </HomeTab.Navigator>
 
       <View style={{position: 'absolute', top: 20, left: 10}}>
