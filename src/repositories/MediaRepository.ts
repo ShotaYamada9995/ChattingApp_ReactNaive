@@ -79,7 +79,7 @@ class MediaRepository {
     mediaData.append('text', text);
     mediaData.append('userSlug', userSlug);
 
-    const response = await axios.post(endpoint, mediaData, {
+    await axios.post(endpoint, mediaData, {
       headers: {
         'Content-Type': 'multipart/form-data',
         Authorization: token,
@@ -92,8 +92,6 @@ class MediaRepository {
         setUploadProgress(progress);
       },
     });
-
-    return response;
   }
 
   async getComments(payload: GetCommentProps) {

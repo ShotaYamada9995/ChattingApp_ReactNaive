@@ -56,43 +56,45 @@ const PostMedia = () => {
   };
 
   const postMedia = async () => {
-    setIsUploading(true);
-    try {
-      const tags = caption
-        .split(' ')
-        .filter(word => word[0] === '#')
-        .map(tag => tag.substring(1, tag.length));
+    if (user.isLoggedIn) {
+      setIsUploading(true);
+      try {
+        const tags = caption
+          .split(' ')
+          .filter(word => word[0] === '#')
+          .map(tag => tag.substring(1, tag.length));
 
-      const response = await MediaRepository.uploadMedia(
-        {
-          token: user.token,
-          file: video.path,
-          thumbnail: video.thumbnail,
-          community: 'music',
-          tags,
-          text: caption,
-          userSlug: user.slug,
-        },
-        setUploadProgress,
-      );
+        await MediaRepository.uploadMedia(
+          {
+            token: user.token,
+            file: video.path,
+            thumbnail: video.thumbnail,
+            community: 'music',
+            tags,
+            text: caption,
+            userSlug: user.slug,
+          },
+          setUploadProgress,
+        );
 
-      toast.show('Upload Successful', {
-        type: 'success',
-        duration: 2000,
-      });
-
-      console.log('Upload: ', response.data);
-    } catch (error) {
-      toast.show(
-        'Upload could not be completed. Ensure you have a good connection before trying again',
-        {
-          type: 'danger',
+        toast.show('Upload Successful', {
+          type: 'success',
           duration: 2000,
-        },
-      );
-    } finally {
-      setIsUploading(false);
-      setUploadProgress(0);
+        });
+      } catch (error) {
+        toast.show(
+          'Upload could not be completed. Ensure you have a good connection before trying again',
+          {
+            type: 'danger',
+            duration: 2000,
+          },
+        );
+      } finally {
+        setIsUploading(false);
+        setUploadProgress(0);
+      }
+    } else {
+      navigation.navigate('LoginOptions');
     }
   };
 
@@ -194,12 +196,8 @@ const PostMedia = () => {
         onPress={postMedia}
       />
 
-      <BottomSheet
-        isVisible={isUploading}
-        containerStyle={{
-          justifyContent: 'center',
-        }}>
-        <View style={{alignSelf: 'center'}}>
+      <BottomSheet isVisible={isUploading}>
+        <View style={{alignSelf: 'center', marginBottom: 100}}>
           <CircularProgress
             value={uploadProgress}
             radius={WINDOW_WIDTH * 0.2}
@@ -228,6 +226,9 @@ const PostMedia = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    position: 'absolute',
+    width: WINDOW_WIDTH,
+    height: WINDOW_HEIGHT,
     padding: 10,
     backgroundColor: 'white',
   },

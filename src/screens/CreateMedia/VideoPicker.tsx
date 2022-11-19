@@ -18,7 +18,7 @@ import VideoPicker from 'react-native-image-crop-picker';
 import {update} from '../../store/reducers/Video';
 import {useIsForeground} from '../../hooks/useIsForeground';
 
-const VideoCapture = () => {
+export default () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [isCameraPermitted, setIsCameraPermitted] = useState(false);
@@ -326,5 +326,3 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 });
-
-export default VideoCapture;

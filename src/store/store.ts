@@ -16,13 +16,14 @@ import Auth from './reducers/Auth';
 import User from './reducers/User';
 import Video from './reducers/Video';
 import InspiringVideos from './reducers/InspiringVideos';
+import FollowingVideos from './reducers/FollowingVideos';
 import Bookmarks from './reducers/Bookmarks';
 
 const persistConfig = {
   key: 'root',
   version: 1,
   storage: AsyncStorage,
-  blacklist: ['auth', 'inspiringVideos', 'video'],
+  blacklist: ['auth', 'inspiringVideos', 'followingVideos', 'video'],
 };
 
 const reducers = combineReducers({
@@ -30,6 +31,7 @@ const reducers = combineReducers({
   user: User,
   video: Video,
   inspiringVideos: InspiringVideos,
+  followingVideos: FollowingVideos,
   bookmarks: Bookmarks,
 });
 const persistedReducer = persistReducer(persistConfig, reducers);
