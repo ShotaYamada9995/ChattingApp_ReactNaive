@@ -285,7 +285,7 @@ const VideoPost = ({
 
   return (
     <View style={styles.container}>
-      {VideoPlayer}
+      {/* {VideoPlayer} */}
 
       <View style={styles.bottomSection}>
         <View style={styles.bottomLeftSection}>
@@ -387,10 +387,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(60,60,60,0.5)',
     height: VIDEO_POST_HEIGHT,
-    // borderTopWidth: 1,
-    // borderTopColor: 'red',
-    // borderBottomWidth: 2,
-    // borderBottomColor: 'white',
   },
   thumbnail: {
     position: 'absolute',
