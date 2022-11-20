@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   videoContainer: {flexGrow: 0},
   failedLoadingContainer: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: 'rgba(60,60,60,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
