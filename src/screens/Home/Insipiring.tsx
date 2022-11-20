@@ -3,6 +3,7 @@ import {View, StyleSheet, Text} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {FlashList} from '@shopify/flash-list';
 import {Button} from '@rneui/themed';
+import {useToast} from 'react-native-toast-notifications';
 
 import VideoPost, {VIDEO_POST_HEIGHT} from './modules/InspiringVideoPost';
 import AuthModal from './modules/AuthModal';
@@ -17,12 +18,11 @@ import VideoPostSkeleton from '../../components/skeleton/VideoPostSkeleton';
 import {addVideos} from '../../store/reducers/InspiringVideos';
 import {addFollowers} from '../../store/reducers/User';
 
-import globalStyles from '../../styles/globalStyles';
-
 type LoadingStatusProps = 'loading' | 'success' | 'error';
 
 const Home = () => {
   const dispatch = useDispatch();
+  const toast = useToast();
 
   const {user, inspiringVideos} = useSelector((state: any) => ({
     user: state.user,
@@ -37,16 +37,10 @@ const Home = () => {
 
   const currentPage = useRef(0);
 
-  // const LoadMoreVideosIndicator = useMemo(
-  //   () =>
-  //     isLoadingMoreVideos && (
-  //       <ActivityIndicator
-  //         size="large"
-  //         style={styles.loadMoreVideosIndicator}
-  //       />
-  //     ),
-  //   [isLoadingMoreVideos],
-  // );
+  const LoadMoreVideosIndicator = useMemo(
+    () => (isLoadingMoreVideos ? <VideoPostSkeleton size={1} /> : null),
+    [isLoadingMoreVideos],
+  );
 
   const VideoPostComp = ({item, index}: any) => (
     <VideoPost
@@ -81,20 +75,27 @@ const Home = () => {
     if (!isLoadingMoreVideos) {
       setisLoadingMoreVideos(true);
       try {
-        const response = await FeedsRepository.getInspiringVideos(
+        const videos = await FeedsRepository.getInspiringVideos(
           currentPage.current,
         );
 
-        const newVideos = response.filter(
-          (newVideo: any) =>
+        const newVideos = videos.filter(
+          (video: any) =>
             !inspiringVideos.some(
-              (inspiringVideo: any) => inspiringVideo._id === newVideo._id,
+              (inspiringVideo: any) => inspiringVideo._id === video._id,
             ),
         );
 
-        dispatch(addVideos(newVideos));
+        if (newVideos.length > 0) {
+          dispatch(addVideos(newVideos));
 
-        currentPage.current++;
+          currentPage.current++;
+        } else {
+          toast.show('No more videos', {
+            type: 'normal',
+            duration: 3000,
+          });
+        }
       } catch (error) {
         console.log('Error loading more videos: ');
         console.error(error);
@@ -122,6 +123,8 @@ const Home = () => {
       dispatch(addVideos(videos));
 
       setLoadingStatus('success');
+
+      currentPage.current++;
 
       if (!user.isLoggedIn) {
         setShowAuthModal(true);
@@ -155,14 +158,20 @@ const Home = () => {
           extraData={activeVideoIndex}
           estimatedItemSize={VIDEO_POST_HEIGHT}
           pagingEnabled
+          snapToOffsets={[...Array(inspiringVideos.length)].map(
+            (x, i) => i * VIDEO_POST_HEIGHT,
+          )}
+          snapToAlignment="start"
+          decelerationRate="fast"
           renderItem={VideoPostComp}
           onScroll={handleOnVideoListScroll}
           showsVerticalScrollIndicator={false}
           onEndReached={loadMoreVideos}
-          onEndReachedThreshold={0}
+          onEndReachedThreshold={0.2}
+          ListFooterComponent={LoadMoreVideosIndicator}
         />
       ) : loadingStatus === 'loading' ? (
-        <VideoPostSkeleton />
+        <VideoPostSkeleton size={6} />
       ) : (
         <View style={styles.failedLoadingContainer}>
           <Text style={styles.failedLoadingMessage}>
@@ -179,8 +188,6 @@ const Home = () => {
         </View>
       )}
 
-      {/* {LoadMoreVideosIndicator} */}
-
       {AuthModalComp}
     </View>
   );
@@ -195,11 +202,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: 10,
   },
-  loadMoreVideosIndicator: {position: 'absolute', bottom: 30, left: '45%'},
   videoContainer: {flexGrow: 0},
   failedLoadingContainer: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: 'rgba(60,60,60,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -212,7 +218,7 @@ const styles = StyleSheet.create({
   },
   retryBtn: {
     width: '48%',
-    marginTop: 10,
+    marginTop: 30,
     alignSelf: 'center',
   },
 });

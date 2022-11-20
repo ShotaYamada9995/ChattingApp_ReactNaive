@@ -2,90 +2,85 @@ import React from 'react';
 import {View, StyleSheet, ScrollView, Platform} from 'react-native';
 import {Icon} from '@rneui/themed';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../utils';
+import {VIDEO_POST_HEIGHT} from '../../screens/Home/modules/InspiringVideoPost';
 
 const SKELETON_COLOR_PRIMARY = 'rgba(60,60,60,0.5)';
 const SKELETON_COLOR_SECONDARY = '#888';
 
-export default () => {
-  const VIDEO_POST_HEIGHT =
-    Platform.OS === 'ios'
-      ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
-      : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104;
+interface Props {
+  size: number;
+}
 
-  return (
-    <ScrollView pagingEnabled showsVerticalScrollIndicator={false}>
-      {Array(6)
-        .fill(null)
-        .map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.container,
-              {height: VIDEO_POST_HEIGHT + (WINDOW_WIDTH * 0.15) / 2},
-            ]}>
-            <View style={styles.bottomSection}>
-              <View style={styles.bottomLeftSection}>
-                <View style={styles.videoInfoContainer}>
-                  <View style={styles.userPic} />
-                  <View style={styles.username} />
-                  <View style={styles.username} />
-                  <View style={styles.followStatus} />
-                </View>
-
-                <View style={styles.caption} />
-                <View style={styles.videoInfoContainer}>
-                  <Icon
-                    name="play"
-                    type="ionicon"
-                    color={SKELETON_COLOR_SECONDARY}
-                    size={20}
-                  />
-                  <View style={styles.inspiredCount} />
-                </View>
+export default ({size}: Props) => (
+  <ScrollView pagingEnabled showsVerticalScrollIndicator={false}>
+    {Array(size)
+      .fill(null)
+      .map((_, index) => (
+        <View
+          key={index}
+          style={[styles.container, {height: VIDEO_POST_HEIGHT}]}>
+          <View style={styles.bottomSection}>
+            <View style={styles.bottomLeftSection}>
+              <View style={styles.videoInfoContainer}>
+                <View style={styles.userPic} />
+                <View style={styles.username} />
+                <View style={styles.username} />
+                <View style={styles.followStatus} />
               </View>
 
-              <View style={styles.bottomRightSection}>
+              <View style={styles.caption} />
+              <View style={styles.videoInfoContainer}>
                 <Icon
-                  name="bookmark"
+                  name="play"
                   type="ionicon"
                   color={SKELETON_COLOR_SECONDARY}
-                  style={styles.bottomRightIcon}
+                  size={20}
                 />
-
-                <Icon
-                  name="heart"
-                  type="ionicon"
-                  color={SKELETON_COLOR_SECONDARY}
-                  style={styles.bottomRightIcon}
-                />
-
-                <Icon
-                  name="chatbubbles"
-                  type="ionicon"
-                  color={SKELETON_COLOR_SECONDARY}
-                  style={styles.bottomRightIcon}
-                />
-
-                <Icon
-                  name="arrow-redo"
-                  type="ionicon"
-                  color={SKELETON_COLOR_SECONDARY}
-                  style={styles.bottomRightIcon}
-                />
-
-                <Icon
-                  name="ellipsis-horizontal"
-                  type="ionicon"
-                  color={SKELETON_COLOR_SECONDARY}
-                  style={styles.bottomRightIcon}
-                />
+                <View style={styles.inspiredCount} />
               </View>
             </View>
+
+            <View style={styles.bottomRightSection}>
+              <Icon
+                name="bookmark"
+                type="ionicon"
+                color={SKELETON_COLOR_SECONDARY}
+                style={styles.bottomRightIcon}
+              />
+
+              <Icon
+                name="heart"
+                type="ionicon"
+                color={SKELETON_COLOR_SECONDARY}
+                style={styles.bottomRightIcon}
+              />
+
+              <Icon
+                name="chatbubbles"
+                type="ionicon"
+                color={SKELETON_COLOR_SECONDARY}
+                style={styles.bottomRightIcon}
+              />
+
+              <Icon
+                name="arrow-redo"
+                type="ionicon"
+                color={SKELETON_COLOR_SECONDARY}
+                style={styles.bottomRightIcon}
+              />
+
+              <Icon
+                name="ellipsis-horizontal"
+                type="ionicon"
+                color={SKELETON_COLOR_SECONDARY}
+                style={styles.bottomRightIcon}
+              />
+            </View>
           </View>
-        ))}
-    </ScrollView>
-  );
-};
+        </View>
+      ))}
+  </ScrollView>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -103,6 +98,7 @@ const styles = StyleSheet.create({
   },
   bottomLeftSection: {
     flex: 4,
+    paddingBottom: 15,
   },
   bottomRightSection: {
     flex: 1,

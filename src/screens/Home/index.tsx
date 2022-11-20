@@ -22,13 +22,17 @@ const HomeTabNavigator = () => {
             right: 75,
             top: 0,
             height: 50,
-            width: 200,
+            width: 'auto',
             elevation: 0,
+          },
+          tabBarContentContainerStyle: {
+            alignItems: 'center',
+            justifyContent: 'center',
           },
           tabBarIndicatorStyle: {
             backgroundColor: 'white',
             width: 40,
-            marginLeft: 30,
+            marginLeft: 35,
           },
           tabBarLabelStyle: {
             textTransform: 'none',

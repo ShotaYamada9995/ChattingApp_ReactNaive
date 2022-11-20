@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ScrollView,
   KeyboardAvoidingView,
+  Pressable,
 } from 'react-native';
 import {Icon} from '@rneui/themed';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -55,42 +56,37 @@ export default () => {
   };
 
   const addComment = async () => {
-    if (accountUser.isLoggedIn) {
-      setIsAddingComments(true);
+    setIsAddingComments(true);
+    try {
+      const payload = {
+        mediaId: videoId,
+        text: comment,
+        userSlug: accountUser.slug,
+        mediaCommentId: 'uuid()',
+      };
+      await MediaRepository.addComment(accountUser.token, payload);
 
-      try {
-        const payload = {
-          mediaId: videoId,
-          text: comment,
-          userSlug: accountUser.slug,
-          mediaCommentId: 'uuid()',
-        };
-        await MediaRepository.addComment(accountUser.token, payload);
+      const {data: comments} = await MediaRepository.getComments({
+        id: videoId,
+        page: currentPage.current,
+      });
 
-        const {data: comments} = await MediaRepository.getComments({
-          id: videoId,
-          page: currentPage.current,
-        });
+      toast.show('Comment Added', {
+        type: 'normal',
+        duration: 3000,
+      });
 
-        toast.show('Comment Added', {
-          type: 'normal',
-          duration: 2000,
-        });
-
-        setComments(comments);
-        setComment('');
-      } catch (error) {
-        console.log('Error adding comment');
-        console.error(error);
-        toast.show('Failed to add comment', {
-          type: 'danger',
-          duration: 2000,
-        });
-      } finally {
-        setIsAddingComments(false);
-      }
-    } else {
-      navigation.navigate('LoginOptions');
+      setComments(comments);
+      setComment('');
+    } catch (error) {
+      console.log('Error adding comment');
+      console.error(error);
+      toast.show('Failed to add comment', {
+        type: 'danger',
+        duration: 3000,
+      });
+    } finally {
+      setIsAddingComments(false);
     }
   };
 
@@ -236,6 +232,17 @@ export default () => {
               />
             )}
           </View>
+
+          {user.isLoggedIn && (
+            <Pressable
+              style={{
+                position: 'absolute',
+                width: WINDOW_WIDTH,
+                height: 50,
+              }}
+              onPress={() => navigation.navigate('LoginOptions')}
+            />
+          )}
         </KeyboardAvoidingView>
       </View>
     </View>
@@ -279,8 +286,6 @@ const styles = StyleSheet.create({
   },
   footer: {
     width: '100%',
-    // borderTopWidth: 0.5,
-    // borderTopColor: '#ccc',
   },
   footerActions: {
     flexDirection: 'row',

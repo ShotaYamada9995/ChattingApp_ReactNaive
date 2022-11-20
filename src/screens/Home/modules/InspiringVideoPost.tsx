@@ -40,10 +40,10 @@ interface VideoPostProps {
 }
 
 export const VIDEO_POST_HEIGHT =
-  (Platform.OS === 'ios'
+  Platform.OS === 'ios'
     ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
-    : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104) +
-  (WINDOW_WIDTH * 0.15) / 2;
+    : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104;
+// (WINDOW_WIDTH * 0.15) / 2;
 
 const VideoPost = ({
   id,
@@ -284,7 +284,7 @@ const VideoPost = ({
   }, [isPlaying]);
 
   return (
-    <View style={[styles.container, {height: VIDEO_POST_HEIGHT}]}>
+    <View style={styles.container}>
       {VideoPlayer}
 
       <View style={styles.bottomSection}>
@@ -328,11 +328,7 @@ const VideoPost = ({
 
           {LikeIcon()}
 
-          <Icon
-            name="chatbubbles"
-            type="ionicon"
-            color="white"
-            style={styles.verticalBarIcon}
+          <Pressable
             onPress={() =>
               navigation.navigate('Comments', {
                 videoId: id,
@@ -342,16 +338,21 @@ const VideoPost = ({
                   lastName: userLastname,
                 },
               })
-            }
-          />
+            }>
+            <Image
+              style={styles.commentBtn}
+              source={require('../../../assets/icons/comment.png')}
+              resizeMode="cover"
+            />
+          </Pressable>
 
-          <Icon
-            name="arrow-redo"
-            type="ionicon"
-            color="white"
-            style={styles.verticalBarIcon}
-            onPress={share}
-          />
+          <Pressable onPress={share}>
+            <Image
+              style={styles.shareBtn}
+              source={require('../../../assets/icons/arrow-forward.png')}
+              resizeMode="cover"
+            />
+          </Pressable>
 
           <Menu>
             <MenuTrigger>
@@ -385,6 +386,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'rgba(60,60,60,0.5)',
+    height: VIDEO_POST_HEIGHT,
+    // borderTopWidth: 1,
+    // borderTopColor: 'red',
+    // borderBottomWidth: 2,
+    // borderBottomColor: 'white',
   },
   thumbnail: {
     position: 'absolute',
@@ -446,6 +452,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: 'white',
     paddingHorizontal: 5,
+    color: 'white',
   },
   followTag: {
     paddingHorizontal: 5,
@@ -492,5 +499,13 @@ const styles = StyleSheet.create({
   menuOption: {
     padding: 10,
     color: 'black',
+  },
+  commentBtn: {
+    transform: [{scale: WINDOW_WIDTH * 0.002}],
+    marginBottom: 20,
+  },
+  shareBtn: {
+    transform: [{scale: WINDOW_WIDTH * 0.003}],
+    marginBottom: 20,
   },
 });

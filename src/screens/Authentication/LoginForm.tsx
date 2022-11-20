@@ -63,7 +63,7 @@ const LoginForm = () => {
 
       toast.show('Login Successful', {
         type: 'success',
-        duration: 2000,
+        duration: 3000,
       });
     } catch (error: any) {
       if (error.status === undefined) {
@@ -71,13 +71,13 @@ const LoginForm = () => {
           'Login failed. Please check your network connection and try again',
           {
             type: 'danger',
-            duration: 2000,
+            duration: 3000,
           },
         );
       } else if (error.status === 401) {
         toast.show('Incorrect email or password', {
           type: 'danger',
-          duration: 2000,
+          duration: 3000,
         });
       }
 

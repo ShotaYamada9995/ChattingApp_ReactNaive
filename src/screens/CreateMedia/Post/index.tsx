@@ -79,14 +79,14 @@ const PostMedia = () => {
 
         toast.show('Upload Successful', {
           type: 'success',
-          duration: 2000,
+          duration: 3000,
         });
       } catch (error) {
         toast.show(
           'Upload could not be completed. Ensure you have a good connection before trying again',
           {
             type: 'danger',
-            duration: 2000,
+            duration: 3000,
           },
         );
       } finally {
