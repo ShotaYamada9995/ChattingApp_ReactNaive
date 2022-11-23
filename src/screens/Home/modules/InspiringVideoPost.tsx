@@ -285,7 +285,7 @@ const VideoPost = ({
 
   return (
     <View style={styles.container}>
-      {/* {VideoPlayer} */}
+      {VideoPlayer}
 
       <View style={styles.bottomSection}>
         <View style={styles.bottomLeftSection}>

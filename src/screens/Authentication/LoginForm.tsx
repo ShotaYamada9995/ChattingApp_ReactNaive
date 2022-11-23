@@ -97,7 +97,7 @@ const LoginForm = () => {
           validationSchema={schema}
           initialValues={{email: '', password: ''}}
           onSubmit={handleSubmit}>
-          {({handleChange, handleSubmit, values, errors}) => (
+          {({handleChange, handleSubmit, setFieldValue, values, errors}) => (
             <>
               <Input
                 label="Email"
@@ -112,7 +112,7 @@ const LoginForm = () => {
                   backgroundColor: '#F1F1F1',
                 }}
                 value={values.email}
-                onChangeText={handleChange('email')}
+                onChangeText={value => setFieldValue('email', value.trim())}
                 errorMessage={errors.email}
               />
 
@@ -122,7 +122,7 @@ const LoginForm = () => {
                 secureTextEntry
                 style={{...styles.inputField, marginBottom: -20}}
                 value={values.password}
-                onChangeText={handleChange('password')}
+                onChangeText={value => setFieldValue('password', value.trim())}
                 errorMessage={errors.password}
                 errorStyle={{marginTop: 20}}
               />

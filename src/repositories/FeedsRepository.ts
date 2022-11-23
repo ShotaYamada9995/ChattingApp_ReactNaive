@@ -8,7 +8,11 @@ class FeedsRepository {
 
     const response = await axios.get(endpoint);
 
-    return response.data;
+    const videos = response.data.filter(
+      (video: any) => video.file.length !== 0 && video.thumbnail.length !== 0,
+    );
+
+    return videos;
   }
 
   async getFollowingVideos(page: number) {
@@ -16,7 +20,11 @@ class FeedsRepository {
 
     const response = await axios.get(endpoint);
 
-    return response.data;
+    const videos = response.data.filter(
+      (video: any) => video.file.length !== 0 && video.thumbnail.length !== 0,
+    );
+
+    return videos;
   }
 }
 

@@ -10,7 +10,6 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
-    "@miblanchard/react-native-slider": "^2.1.0",
     "@react-native-async-storage/async-storage": "^1.17.10",
     "@react-navigation/bottom-tabs": "^6.4.0",
     "@react-navigation/material-top-tabs": "^6.3.0",
@@ -31,7 +30,6 @@
     "react-native-controlled-mentions": "^2.2.5",
     "react-native-countdown-circle-timer": "^3.0.9",
     "react-native-extra-dimensions-android": "1.2.5",
-    "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.8.0",
     "react-native-image-crop-picker": "^0.38.1",
     "react-native-linear-gradient": "^2.6.2",
