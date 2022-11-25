@@ -30,7 +30,7 @@ type AppStackParamsList = {
   RegisterPassword: undefined;
   VerifyEmail: undefined;
   RegisterBio: undefined;
-  ConfirmBio: undefined;
+  ConfirmBio: {communities: any[]};
   LoginOptions: undefined;
   LoginForm: undefined;
   Main: undefined;

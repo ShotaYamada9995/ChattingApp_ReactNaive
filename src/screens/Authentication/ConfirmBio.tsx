@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {View, ScrollView, StyleSheet} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, ScrollView, StyleSheet, TouchableOpacity} from 'react-native';
 import {Text, Input, Button, Icon} from '@rneui/themed';
 import {Formik} from 'formik';
 import * as yup from 'yup';
@@ -10,6 +10,9 @@ import AuthHeader from '../../components/headers/AuthHeader';
 import {WINDOW_WIDTH} from '../../utils';
 import AuthHeader1 from '../../components/headers/AuthHeader1';
 
+import DataRepository from '../../repositories/DataRepository';
+import {useRoute} from '@react-navigation/native';
+
 const schema = yup.object().shape({
   firstname: yup.string().required('Please enter your email'),
   lastname: yup.string().required(),
@@ -17,22 +20,38 @@ const schema = yup.object().shape({
     .string()
     .email('Invalid email')
     .required('Please enter your email'),
+  community: yup.string().required(),
 });
 
 type Values = {
   firstname: string;
   lastname: string;
-  expertise: string;
-  category: string;
-  subCategory: string;
+  email: string;
+  community: string;
+  expertise: never[];
 };
 
 export default () => {
   const auth = useSelector((state: any) => state.auth);
 
+  const route = useRoute();
+
+  const [communities, setCommunities] = useState([]);
+  const [expertiseList, setExpertiseList] = useState([]);
+
   const handleSubmit = (values: Values) => {
     console.log(values);
   };
+
+  const getExpertsCategoryList = async () => {
+    const communities = await DataRepository.getExpertsCategoryList();
+
+    setCommunities(communities);
+  };
+
+  useEffect(() => {
+    getExpertsCategoryList();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -45,12 +64,11 @@ export default () => {
             firstname: auth.firstname,
             lastname: auth.lastname,
             email: auth.email,
+            community: auth.community,
             expertise: auth.expertise,
-            category: auth.category,
-            subCategory: auth.subCategory,
           }}
           onSubmit={handleSubmit}>
-          {({handleChange, handleSubmit, values, errors, isSubmitting}) => (
+          {({handleChange, handleSubmit, setFieldValue, values, errors}) => (
             <>
               <Input
                 label="First name"
@@ -90,28 +108,21 @@ export default () => {
                 }}
                 placeholder="WhatIDo@gmail.com"
                 style={styles.inputField}
-                rightIcon={
-                  values.email && !errors.email ? (
-                    <Icon name="checkmark-circle" type="ionicon" />
-                  ) : undefined
-                }
                 rightIconContainerStyle={{
                   backgroundColor: '#F1F1F1',
                 }}
                 value={values.email}
-                onChangeText={handleChange('email')}
-                errorMessage={errors.email}
+                disabled
               />
 
-              <Text style={styles.dropdownLabel}>Area of Expertise</Text>
+              <Text style={styles.dropdownLabel}>Community</Text>
               <SelectDropdown
-                data={['Data 1', 'Data 2']}
-                defaultValue={values.expertise}
+                data={route.params.communities.map(community => community.name)}
+                defaultValue={values.community}
                 buttonStyle={styles.dropdownContainer}
                 buttonTextStyle={styles.dropdown}
                 dropdownStyle={styles.dropdownStyle}
                 rowTextStyle={styles.dropdownRowTextStyle}
-                rowStyle={styles.dropdownRowStyle}
                 buttonTextAfterSelection={(selectedItem, index) => selectedItem}
                 rowTextForSelection={(item, index) => item}
                 renderDropdownIcon={() => (
@@ -122,20 +133,59 @@ export default () => {
                     color="grey"
                   />
                 )}
-                onSelect={(selectedItem, index) => console.log(selectedItem)}
+                onSelect={(selectedItem, index) => {
+                  if (values.community !== selectedItem) {
+                    setFieldValue('community', selectedItem);
+                    setFieldValue('expertise', []);
+                    const community = communities.find(
+                      community => community.name === selectedItem,
+                    );
+
+                    if (community) {
+                      setExpertiseList(community.subcategories);
+                    } else {
+                      setExpertiseList([]);
+                    }
+                  }
+                }}
               />
 
-              <Text style={styles.dropdownLabel}>Category</Text>
+              <Text style={styles.dropdownLabel}>Expertise</Text>
+
+              <View style={styles.expertiseContainer}>
+                {values.expertise.map(item => (
+                  <View key={item.name} style={styles.expertise}>
+                    <Text>{item.name}</Text>
+
+                    <TouchableOpacity
+                      onPress={() =>
+                        setFieldValue(
+                          'expertise',
+                          values.expertise.filter(
+                            _item => _item.name !== item.name,
+                          ),
+                        )
+                      }>
+                      <Icon
+                        name="close-outline"
+                        type="ionicon"
+                        size={WINDOW_WIDTH * 0.05}
+                        iconStyle={{marginLeft: 5}}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
               <SelectDropdown
-                data={['Data 1', 'Data 2']}
-                defaultValue={values.category}
+                data={expertiseList}
                 buttonStyle={styles.dropdownContainer}
                 buttonTextStyle={styles.dropdown}
                 dropdownStyle={styles.dropdownStyle}
                 rowTextStyle={styles.dropdownRowTextStyle}
-                rowStyle={styles.dropdownRowStyle}
-                buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-                rowTextForSelection={(item, index) => item}
+                buttonTextAfterSelection={(selectedItem, index) =>
+                  selectedItem.name
+                }
+                rowTextForSelection={(item, index) => item.name}
                 renderDropdownIcon={() => (
                   <Icon
                     name="chevron-down"
@@ -144,29 +194,18 @@ export default () => {
                     color="grey"
                   />
                 )}
-                onSelect={(selectedItem, index) => console.log(selectedItem)}
-              />
-
-              <Text style={styles.dropdownLabel}>Sub-category</Text>
-              <SelectDropdown
-                data={['Data 1', 'Data 2']}
-                defaultValue={values.subCategory}
-                buttonStyle={styles.dropdownContainer}
-                buttonTextStyle={styles.dropdown}
-                dropdownStyle={styles.dropdownStyle}
-                rowTextStyle={styles.dropdownRowTextStyle}
-                rowStyle={styles.dropdownRowStyle}
-                buttonTextAfterSelection={(selectedItem, index) => selectedItem}
-                rowTextForSelection={(item, index) => item}
-                renderDropdownIcon={() => (
-                  <Icon
-                    name="chevron-down"
-                    type="ionicon"
-                    size={20}
-                    color="grey"
-                  />
-                )}
-                onSelect={(selectedItem, index) => console.log(selectedItem)}
+                onSelect={(selectedItem: string, index: number) => {
+                  if (
+                    !values.expertise.some(
+                      item => item.name === selectedItem.name,
+                    )
+                  ) {
+                    setFieldValue('expertise', [
+                      ...values.expertise,
+                      selectedItem,
+                    ]);
+                  }
+                }}
               />
 
               <Button
@@ -175,8 +214,6 @@ export default () => {
                 buttonStyle={{paddingVertical: 10}}
                 color="#001433"
                 onPress={handleSubmit}
-                loading={isSubmitting}
-                disabled={isSubmitting}
               />
             </>
           )}
@@ -224,16 +261,26 @@ const styles = StyleSheet.create({
     width: '95%',
     height: 40,
     marginVertical: 10,
-    // backgroundColor: COLORS.primary,
     alignSelf: 'center',
   },
   dropdown: {
     fontSize: 15,
-    // color: COLORS.secondary,
   },
-  dropdownStyle: {/* backgroundColor: COLORS.primary, */ borderRadius: 10},
+  dropdownStyle: {borderRadius: 10},
   dropdownRowTextStyle: {color: 'black', fontSize: 15},
-  dropdownRowStyle: {
-    /* borderBottomColor: COLORS.faintWhite */
+  expertiseContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    marginTop: 10,
+    marginLeft: 5,
+  },
+  expertise: {
+    padding: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 0.5,
+    borderColor: 'grey',
+    marginLeft: 5,
   },
 });

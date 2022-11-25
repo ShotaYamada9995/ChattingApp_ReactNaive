@@ -6,9 +6,8 @@ const initialState = {
   password: '',
   firstname: '',
   lastname: '',
-  expertise: '',
-  category: '',
-  subCategory: '',
+  community: '',
+  expertise: [],
 };
 
 export const userSlice = createSlice({
