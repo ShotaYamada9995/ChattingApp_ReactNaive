@@ -97,8 +97,7 @@ const Home = () => {
           });
         }
       } catch (error) {
-        console.log('Error loading more videos: ');
-        console.error(error);
+        return;
       } finally {
         setisLoadingMoreVideos(false);
       }

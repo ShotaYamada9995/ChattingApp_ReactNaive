@@ -17,8 +17,11 @@ import VideoPicker from 'react-native-image-crop-picker';
 
 import {update} from '../../store/reducers/Video';
 import {useIsForeground} from '../../hooks/useIsForeground';
+import {useToast} from 'react-native-toast-notifications';
+import {WINDOW_WIDTH} from '../../utils';
 
 export default () => {
+  const toast = useToast();
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [isCameraPermitted, setIsCameraPermitted] = useState(false);
@@ -128,9 +131,16 @@ export default () => {
       cameraPermission === 'not-determined' ||
       cameraPermission === 'denied'
     ) {
-      const newCameraPermission = await Camera.requestCameraPermission();
+      try {
+        const newCameraPermission = await Camera.requestCameraPermission();
 
-      setIsCameraPermitted(newCameraPermission === 'authorized');
+        setIsCameraPermitted(newCameraPermission === 'authorized');
+      } catch (error) {
+        toast.show('Go to your device settings to Enable Camera', {
+          type: 'normal',
+          duration: 5000,
+        });
+      }
     } else {
       setIsCameraPermitted(true);
     }
@@ -146,10 +156,17 @@ export default () => {
       microphonePermission === 'not-determined' ||
       microphonePermission === 'denied'
     ) {
-      const newMicrophonePermission =
-        await Camera.requestMicrophonePermission();
+      try {
+        const newMicrophonePermission =
+          await Camera.requestMicrophonePermission();
 
-      setIsMicrophonePermitted(newMicrophonePermission === 'authorized');
+        setIsMicrophonePermitted(newMicrophonePermission === 'authorized');
+      } catch (error) {
+        toast.show('Go to your device settings to Enable Microphone', {
+          type: 'normal',
+          duration: 5000,
+        });
+      }
     } else {
       setIsMicrophonePermitted(true);
     }
@@ -218,14 +235,15 @@ export default () => {
       <View style={styles.bottomBarContainer}>
         <View style={{flex: 1}}>
           {video.isRecording && video.isPaused && (
-            <Icon
-              name="close-circle"
-              type="ionicon"
-              color="white"
-              size={40}
-              style={{marginLeft: 20}}
-              onPress={cancelRecording}
-            />
+            <TouchableOpacity onPress={cancelRecording}>
+              <Icon
+                name="close-circle"
+                type="ionicon"
+                color="white"
+                size={40}
+                style={{marginLeft: 20}}
+              />
+            </TouchableOpacity>
           )}
         </View>
 
@@ -261,17 +279,25 @@ export default () => {
 
         <View style={{flex: 1}}>
           {video.isRecording ? (
-            <Icon
-              name="checkmark-circle"
-              type="ionicon"
-              color="#ff4040"
-              size={40}
-              style={{marginRight: 20}}
-              onPress={stopRecording}
-            />
+            <TouchableOpacity onPress={stopRecording}>
+              <Icon
+                name="checkmark-circle"
+                type="ionicon"
+                color="#ff4040"
+                size={40}
+                style={{marginRight: 20}}
+              />
+            </TouchableOpacity>
           ) : (
-            <TouchableOpacity onPress={selectVideoFromLib}>
-              <View style={styles.galleryBtn} />
+            <TouchableOpacity
+              onPress={selectVideoFromLib}
+              style={styles.uploadBtn}>
+              <Icon
+                name="image-outline"
+                type="ionicon"
+                color="white"
+                size={WINDOW_WIDTH * 0.1}
+              />
               <Text style={styles.uploadText}>Upload</Text>
             </TouchableOpacity>
           )}
@@ -312,13 +338,8 @@ const styles = StyleSheet.create({
     height: 100,
     width: 100,
   },
-  galleryBtn: {
-    borderWidth: 2,
-    borderColor: 'white',
-    borderRadius: 10,
-    overflow: 'hidden',
-    width: 40,
-    height: 40,
+  uploadBtn: {
+    alignItems: 'center',
   },
   uploadText: {
     color: 'white',

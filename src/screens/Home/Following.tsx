@@ -114,8 +114,6 @@ const Home = () => {
 
       setLoadingStatus('success');
     } catch (error) {
-      console.log('Error getting following videos');
-      console.error(error);
       setLoadingStatus('error');
     }
   };
