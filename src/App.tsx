@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {StatusBar, SafeAreaView} from 'react-native';
+import {StatusBar, SafeAreaView, StyleSheet} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
@@ -23,6 +23,7 @@ import PostMedia from './screens/CreateMedia/Post';
 import MiniProfile from './screens/Profiles/MiniProfile';
 import SelectThumbnail from './screens/CreateMedia/Post/SelectThumbnail';
 import Comments from './screens/Home/modules/Comments';
+import {WINDOW_HEIGHT} from './utils';
 
 type AppStackParamsList = {
   RegisterOptions: undefined;
@@ -47,22 +48,6 @@ type AppStackParamsList = {
 
 const AppStack = createNativeStackNavigator<AppStackParamsList>();
 
-// const AuthScreenStack = () => {
-//   return (
-//     <AppStack.Navigator
-//       screenOptions={{headerShown: false, animation: 'slide_from_right'}}>
-//       <AppStack.Screen name="RegisterOptions" component={RegisterOptions} />
-//       <AppStack.Screen name="RegisterEmail" component={RegisterEmail} />
-//       <AppStack.Screen name="RegisterPassword" component={RegisterPassword} />
-//       <AppStack.Screen name="VerifyEmail" component={VerifyEmail} />
-//       <AppStack.Screen name="RegisterBio" component={RegisterBio} />
-//       <AppStack.Screen name="ConfirmBio" component={ConfirmBio} />
-//       <AppStack.Screen name="LoginOptions" component={LoginOptions} />
-//       <AppStack.Screen name="LoginForm" component={LoginForm} />
-//     </AppStack.Navigator>
-//   );
-// };
-
 export default () => {
   const user = useSelector(state => state.user);
 
@@ -74,7 +59,7 @@ export default () => {
     <ToastProvider>
       <MenuProvider>
         <SafeAreaProvider>
-          <SafeAreaView style={{flex: 1}}>
+          <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="white" />
             <NavigationContainer>
               <AppStack.Navigator
@@ -143,3 +128,9 @@ export default () => {
     </ToastProvider>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

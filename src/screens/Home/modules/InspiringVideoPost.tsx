@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useMemo, memo, useCallback} from 'react';
+import React, {useState, useEffect, useMemo, memo} from 'react';
 import {Image, Pressable, StyleSheet, Text, View, Platform} from 'react-native';
 import Video from 'react-native-video';
 import {Icon} from '@rneui/themed';
@@ -41,9 +41,8 @@ interface VideoPostProps {
 
 export const VIDEO_POST_HEIGHT =
   Platform.OS === 'ios'
-    ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
+    ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.07
     : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104;
-// (WINDOW_WIDTH * 0.15) / 2;
 
 const VideoPost = ({
   id,
@@ -497,11 +496,11 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   commentBtn: {
-    transform: [{scale: WINDOW_WIDTH * 0.002}],
+    transform: [{scale: WINDOW_WIDTH * 0.0018}],
     marginBottom: 20,
   },
   shareBtn: {
-    transform: [{scale: WINDOW_WIDTH * 0.003}],
+    transform: [{scale: WINDOW_WIDTH * 0.0025}],
     marginBottom: 20,
   },
 });

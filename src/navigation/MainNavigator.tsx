@@ -20,6 +20,7 @@ const Main = () => {
         tabBarStyle: {
           backgroundColor: '#001433',
           borderTopWidth: 0,
+          paddingBottom: 0,
           height: WINDOW_HEIGHT * 0.07,
         },
         headerShown: false,
@@ -115,6 +116,6 @@ const styles = StyleSheet.create({
     width: WINDOW_WIDTH * 0.15,
     aspectRatio: 1,
     borderRadius: 100,
-    marginTop: -50,
+    marginTop: -(WINDOW_WIDTH * 0.15),
   },
 });

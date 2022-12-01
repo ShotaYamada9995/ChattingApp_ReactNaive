@@ -41,9 +41,8 @@ interface VideoPostProps {
 
 export const VIDEO_POST_HEIGHT =
   Platform.OS === 'ios'
-    ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
+    ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.07
     : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104;
-// (WINDOW_WIDTH * 0.15) / 2;
 
 const VideoPost = ({
   id,
@@ -285,7 +284,7 @@ const VideoPost = ({
 
   return (
     <View style={styles.container}>
-      {/* {VideoPlayer} */}
+      {VideoPlayer}
 
       <View style={styles.bottomSection}>
         <View style={styles.bottomLeftSection}>
@@ -497,11 +496,11 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   commentBtn: {
-    transform: [{scale: WINDOW_WIDTH * 0.002}],
+    transform: [{scale: WINDOW_WIDTH * 0.0019}],
     marginBottom: 20,
   },
   shareBtn: {
-    transform: [{scale: WINDOW_WIDTH * 0.003}],
+    transform: [{scale: WINDOW_WIDTH * 0.0027}],
     marginBottom: 20,
   },
 });

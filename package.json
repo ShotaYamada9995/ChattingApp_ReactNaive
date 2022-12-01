@@ -5,6 +5,7 @@
   "scripts": {
     "android": "npx react-native run-android",
     "ios": "npx react-native run-ios",
+    "ios:release": "npx react-native run-ios --configuration Release",
     "start": "npx react-native start",
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
@@ -42,6 +43,7 @@
     "react-native-screens": "^3.18.2",
     "react-native-select-dropdown": "^3.0.1",
     "react-native-share": "^8.0.0",
+    "react-native-static-safe-area-insets": "^2.2.0",
     "react-native-svg": "^13.5.0",
     "react-native-tab-view": "^3.3.0",
     "react-native-toast-notifications": "^3.3.1",
