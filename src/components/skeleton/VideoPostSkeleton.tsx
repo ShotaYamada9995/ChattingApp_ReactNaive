@@ -86,8 +86,6 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: SKELETON_COLOR_PRIMARY,
     width: '100%',
-    borderBottomWidth: 1,
-    borderBottomColor: 'white',
   },
   bottomSection: {
     position: 'absolute',

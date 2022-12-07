@@ -54,7 +54,7 @@ const Home = () => {
       isLiked={
         user.isLoggedIn && item.inspired && item.inspired.includes(user?.slug)
       }
-      isPlaying={activeVideoIndex === index}
+      isActive={activeVideoIndex === index}
     />
   );
 

@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useMemo, memo, useCallback} from 'react';
 import {Image, Pressable, StyleSheet, Text, View, Platform} from 'react-native';
-import Video from 'react-native-video';
 import {Icon} from '@rneui/themed';
 import Share from 'react-native-share';
 import {
@@ -11,6 +10,7 @@ import {
 } from 'react-native-popup-menu';
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
+import Video from 'react-native-video';
 
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
 
@@ -36,7 +36,7 @@ interface VideoPostProps {
   userFirstname: string;
   userLastname: string;
   isLiked: boolean;
-  isPlaying: boolean;
+  isActive: boolean;
 }
 
 export const VIDEO_POST_HEIGHT =
@@ -55,7 +55,7 @@ const VideoPost = ({
   userFirstname,
   userLastname,
   isLiked,
-  isPlaying,
+  isActive,
 }: VideoPostProps) => {
   const {user, bookmarks} = useSelector((state: any) => ({
     user: state.user,
@@ -269,18 +269,15 @@ const VideoPost = ({
           playInBackground={false}
           rate={video.speed}
           repeat
+          onTouchStart={togglePause}
         />
       ),
     [video.speed, isVideoPaused, isFocused, videoUrl, thumbnailSource],
   );
 
   useEffect(() => {
-    if (isPlaying) {
-      setVideo(video => ({...video, isPaused: false}));
-    } else {
-      setVideo(video => ({...video, isPaused: true}));
-    }
-  }, [isPlaying]);
+    setVideo(video => ({...video, isPaused: !isActive}));
+  }, [isActive]);
 
   return (
     <View style={styles.container}>
@@ -404,7 +401,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     paddingHorizontal: 8,
-    paddingBottom: 16,
+    paddingBottom: 20,
     alignItems: 'flex-end',
   },
   bottomLeftSection: {
