@@ -51,8 +51,8 @@ const Home = () => {
       inspiredCount={item.inspired_count}
       userSlug={item.userSlug}
       userImage={item.user[0]?.imageUrl?.cdnUrl}
-      userFirstname={item.user[0].profile.firstName}
-      userLastname={item.user[0].profile.lastName}
+      userFirstname={item.user[0]?.profile?.firstName}
+      userLastname={item.user[0]?.profile?.lastName}
       isLiked={
         user.isLoggedIn && item.inspired && item.inspired.includes(user?.slug)
       }

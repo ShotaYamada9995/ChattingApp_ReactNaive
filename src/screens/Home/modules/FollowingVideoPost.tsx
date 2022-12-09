@@ -1,5 +1,13 @@
 import React, {useState, useEffect, useMemo, memo, useCallback} from 'react';
-import {Image, Pressable, StyleSheet, Text, View, Platform} from 'react-native';
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+  PermissionsAndroid,
+} from 'react-native';
 import {Icon} from '@rneui/themed';
 import Share from 'react-native-share';
 import {
@@ -11,6 +19,8 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
+import RNFetchBlob from 'rn-fetch-blob';
+import {useToast} from 'react-native-toast-notifications';
 
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
 
@@ -63,6 +73,7 @@ const VideoPost = ({
   }));
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const toast = useToast();
 
   const [video, setVideo] = useState({
     isPaused: true,
@@ -75,9 +86,7 @@ const VideoPost = ({
   const canPlayVideo = isForeGround && isFocused;
   const isVideoPaused = video.isPaused || !canPlayVideo;
 
-  const videoUrl = encodeURIComponent(videoSource)
-    .replace(/%3A/g, ':')
-    .replace(/%2F/g, '/');
+  const videoUrl = videoSource.replace(/\s/g, '%20');
 
   const togglePause = () => {
     setVideo(video => ({...video, isPaused: !video.isPaused}));
@@ -163,6 +172,75 @@ const VideoPost = ({
     } catch (error) {
       return;
     }
+  };
+
+  const handleStoragePermission = async () => {
+    if (Platform.OS === 'ios') {
+      downloadVideo();
+    } else {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Storage Permission Required',
+            message:
+              'Whatido needs permission to access your storage to download videos',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          downloadVideo();
+        } else {
+          toast.show('Storage permission not granted', {
+            type: 'warning',
+            duration: 3000,
+          });
+        }
+      } catch (error) {
+        console.log('Permission error');
+        console.error(error);
+      }
+    }
+  };
+
+  const downloadVideo = () => {
+    const ext = `.${videoUrl.split('.').pop()}`;
+
+    const {config, fs} = RNFetchBlob;
+    const DownloadDir = fs.dirs.DownloadDir;
+    const options = {
+      fileCache: true,
+      addAndroidDownloads: {
+        useDownloadManager: true,
+        notification: true,
+        path: DownloadDir + '/whatido_video_' + Date.now() + ext,
+        description: 'video',
+      },
+    };
+
+    config(options)
+      .fetch('GET', videoUrl)
+      .progress((received, total) => {
+        console.log('Download progress: ', (received / total) * 100);
+      })
+      .then(res => {
+        console.log('Downloaded video: ', res.path());
+        toast.show('Download complete', {
+          type: 'success',
+          duration: 3000,
+        });
+      })
+      .catch(error => {
+        toast.show(
+          'Download failed. Please check your network connection and try again',
+          {
+            type: 'danger',
+            duration: 3000,
+          },
+        );
+      });
   };
 
   const BookmarkIcon = useMemo(
@@ -257,20 +335,21 @@ const VideoPost = ({
   const VideoPlayer = useMemo(
     () =>
       isFocused && (
-        <Video
-          poster={thumbnailSource}
-          posterResizeMode="cover"
-          source={{
-            uri: videoUrl,
-          }}
-          style={styles.video}
-          resizeMode="cover"
-          paused={isVideoPaused}
-          playInBackground={false}
-          rate={video.speed}
-          repeat
-          onTouchStart={togglePause}
-        />
+        <Pressable onPress={togglePause} style={styles.videoContainer}>
+          <Video
+            poster={thumbnailSource}
+            posterResizeMode="cover"
+            source={{
+              uri: videoUrl,
+            }}
+            style={styles.video}
+            resizeMode="cover"
+            paused={isVideoPaused}
+            playInBackground={false}
+            rate={video.speed}
+            repeat
+          />
+        </Pressable>
       ),
     [video.speed, isVideoPaused, isFocused, videoUrl, thumbnailSource],
   );
@@ -360,9 +439,9 @@ const VideoPost = ({
               />
             </MenuTrigger>
             <MenuOptions>
-              {/* <MenuOption>
+              <MenuOption onSelect={handleStoragePermission}>
                 <Text style={styles.menuOption}>Download</Text>
-              </MenuOption> */}
+              </MenuOption>
               <MenuOption onSelect={() => setShowPlaybackSpeedModal(true)}>
                 <Text style={styles.menuOption}>Playback speed</Text>
               </MenuOption>
@@ -389,8 +468,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  video: {
+  videoContainer: {
     position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(60,60,60,0.5)',
+  },
+  video: {
     width: '100%',
     height: '100%',
     backgroundColor: 'rgba(60,60,60,0.5)',
