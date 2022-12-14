@@ -55,8 +55,6 @@ const Home = () => {
         user.isLoggedIn && item.inspired && item.inspired.includes(user?.slug)
       }
       isActive={activeVideoIndex === index}
-      isPrevActive={activeVideoIndex - 1 === index}
-      isNextActive={activeVideoIndex + 1 === index}
     />
   );
 

@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef, useMemo} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, FlatList} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {FlashList} from '@shopify/flash-list';
 import {Button} from '@rneui/themed';
@@ -57,8 +57,6 @@ const Home = () => {
         user.isLoggedIn && item.inspired && item.inspired.includes(user?.slug)
       }
       isActive={activeVideoIndex === index}
-      isPrevActive={activeVideoIndex - 1 === index}
-      isNextActive={activeVideoIndex + 1 === index}
     />
   );
 

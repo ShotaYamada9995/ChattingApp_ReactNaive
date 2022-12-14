@@ -22,7 +22,6 @@ import {useNavigation, useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
 import RNFetchBlob from 'rn-fetch-blob';
 import {useToast} from 'react-native-toast-notifications';
-import SInfo from 'react-native-sensitive-info';
 // import Animated, {
 //   useSharedValue,
 //   useAnimatedStyle,
@@ -56,8 +55,6 @@ interface VideoPostProps {
   userLastname: string;
   isLiked: boolean;
   isActive: boolean;
-  isPrevActive: boolean;
-  isNextActive: boolean;
 }
 
 export const VIDEO_POST_HEIGHT =
@@ -77,8 +74,6 @@ const VideoPost = ({
   userLastname,
   isLiked,
   isActive,
-  isPrevActive,
-  isNextActive,
 }: VideoPostProps) => {
   const {user, bookmarks} = useSelector((state: any) => ({
     user: state.user,
@@ -368,20 +363,13 @@ const VideoPost = ({
     [showPlaybackSpeedModal, video.speed],
   );
 
-  const VideoThumbnail = useMemo(
-    () =>
-      !video.isLoaded && (
-        <Image source={{uri: thumbnailSource}} style={styles.thumbnail} />
-      ),
-    [thumbnailSource, video.isLoaded],
-  );
-
   const VideoPlayer = useMemo(
     () =>
-      isFocused &&
-      (isActive || isPrevActive || isNextActive) && (
+      isFocused && (
         <Pressable onPress={togglePause} style={styles.videoContainer}>
           <Video
+            poster={thumbnailSource}
+            posterResizeMode="cover"
             source={{
               uri: videoUrl,
             }}
@@ -391,13 +379,15 @@ const VideoPost = ({
             playInBackground={false}
             rate={video.speed}
             repeat
-            onLoad={data =>
+            onLoad={data => {
               setVideo(video => ({
                 ...video,
                 duration: data.duration * 1000,
                 isLoaded: true,
-              }))
-            }
+              }));
+
+              console.log('Video loaded: ', id);
+            }}
             // onBuffer={data =>
             //   setVideo(video => ({...video, isBuffering: data.isBuffering}))
             // }
@@ -409,26 +399,14 @@ const VideoPost = ({
           />
         </Pressable>
       ),
-    [
-      video.speed,
-      video.isLoaded,
-      isVideoPaused,
-      isFocused,
-      isActive,
-      isPrevActive,
-      isNextActive,
-      videoUrl,
-      thumbnailSource,
-    ],
+    [video.speed, isVideoPaused, isFocused, videoUrl, thumbnailSource],
   );
 
   useEffect(() => {
     setVideo(video => ({...video, isPaused: !isActive}));
 
-    if (!isActive && !isPrevActive && !isNextActive) {
-      setVideo(video => ({...video, isLoaded: false}));
-    }
-  }, [isActive, isPrevActive, isNextActive]);
+    console.log('Rendered: ', id);
+  }, [isActive]);
 
   // useEffect(() => {
   //   if (
@@ -453,9 +431,9 @@ const VideoPost = ({
 
   return (
     <View style={styles.container}>
-      {/* {VideoPlayer} */}
+      {VideoPlayer}
 
-      {VideoThumbnail}
+      {/* {VideoThumbnail} */}
 
       {/* <Animated.View style={[animatedProgressBarStyle, styles.progressBar]} /> */}
 
