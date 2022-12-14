@@ -8,8 +8,17 @@ class FeedsRepository {
 
     const response = await axios.get(endpoint);
 
+    const badVideos = [
+      '62f6d6aa4429741ade622701',
+      '629f0e88e082c803e7ab3116',
+      '63323e037db8560af4cdd839',
+    ];
+
     const videos = response.data.filter(
-      (video: any) => video.file.length !== 0 && video.thumbnail.length !== 0,
+      (video: any) =>
+        video.file.length !== 0 &&
+        video.thumbnail.length !== 0 &&
+        !badVideos.includes(video._id),
     );
 
     return videos;

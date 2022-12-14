@@ -1,5 +1,6 @@
 import axios from 'axios';
 import * as mime from 'react-native-mime-types';
+import SInfo from 'react-native-sensitive-info';
 
 import {DOMAIN} from './repository';
 
@@ -9,7 +10,6 @@ interface LikeUnlikePayload {
 }
 
 interface UploadMediaProps {
-  token: string;
   file: string;
   thumbnail: string;
   community: string;
@@ -37,8 +37,13 @@ class MediaRepository {
     return response;
   }
 
-  async likeVideo(token: string, payload: LikeUnlikePayload) {
+  async likeVideo(payload: LikeUnlikePayload) {
     const endpoint = `${DOMAIN}/media/likeVideo`;
+
+    const token = await SInfo.getItem('userToken', {
+      sharedPreferencesName: 'mySharedPrefs',
+      keychainService: 'myKeychain',
+    });
 
     await axios.post(endpoint, payload, {
       headers: {
@@ -47,8 +52,13 @@ class MediaRepository {
     });
   }
 
-  async unlikeVideo(token: string, payload: LikeUnlikePayload) {
+  async unlikeVideo(payload: LikeUnlikePayload) {
     const endpoint = `${DOMAIN}/media/unlikeVideo`;
+
+    const token = await SInfo.getItem('userToken', {
+      sharedPreferencesName: 'mySharedPrefs',
+      keychainService: 'myKeychain',
+    });
 
     await axios.post(endpoint, payload, {
       headers: {
@@ -58,7 +68,7 @@ class MediaRepository {
   }
 
   async uploadMedia(payload: UploadMediaProps, setUploadProgress: any) {
-    const {token, file, thumbnail, community, tags, text, userSlug} = payload;
+    const {file, thumbnail, community, tags, text, userSlug} = payload;
 
     const endpoint = `${DOMAIN}/media/create`;
 
@@ -79,6 +89,11 @@ class MediaRepository {
     mediaData.append('text', text);
     mediaData.append('userSlug', userSlug);
 
+    const token = await SInfo.getItem('userToken', {
+      sharedPreferencesName: 'mySharedPrefs',
+      keychainService: 'myKeychain',
+    });
+
     await axios.post(endpoint, mediaData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -89,7 +104,7 @@ class MediaRepository {
           (progressEvent.loaded * 100) / progressEvent.total,
         );
 
-        setUploadProgress(progress);
+        setUploadProgress(progress / 2);
       },
     });
   }
@@ -102,8 +117,13 @@ class MediaRepository {
     return response;
   }
 
-  async addComment(token: string, payload: AddCommentProps) {
+  async addComment(payload: AddCommentProps) {
     const endpoint = `${DOMAIN}/media/comment/create`;
+
+    const token = await SInfo.getItem('userToken', {
+      sharedPreferencesName: 'mySharedPrefs',
+      keychainService: 'myKeychain',
+    });
 
     const response = await axios.post(endpoint, payload, {
       headers: {

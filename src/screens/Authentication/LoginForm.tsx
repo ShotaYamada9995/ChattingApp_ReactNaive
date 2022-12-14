@@ -4,6 +4,7 @@ import {Text, Input, CheckBox, Button, Icon} from '@rneui/themed';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 import {useToast} from 'react-native-toast-notifications';
+import SInfo from 'react-native-sensitive-info';
 
 import AuthHeader from '../../components/headers/AuthHeader';
 import AuthFooter from '../../components/footers/AuthFooter';
@@ -51,9 +52,13 @@ const LoginForm = () => {
 
       dispatch(addFollowers(following));
 
+      await SInfo.setItem('userToken', user.token, {
+        sharedPreferencesName: 'mySharedPrefs',
+        keychainService: 'myKeychain',
+      });
+
       dispatch(
         login({
-          token: user.token,
           ...user.user,
           loginExpiryDate: remember ? loginExpiryDate : 0,
         }),

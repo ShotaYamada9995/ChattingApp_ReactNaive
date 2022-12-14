@@ -1,4 +1,11 @@
-import React, {useState, useEffect, useMemo, memo, useCallback} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  memo,
+  useCallback,
+  useRef,
+} from 'react';
 import {
   Image,
   Pressable,
@@ -21,6 +28,13 @@ import {useNavigation, useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
 import RNFetchBlob from 'rn-fetch-blob';
 import {useToast} from 'react-native-toast-notifications';
+// import Animated, {
+//   useSharedValue,
+//   useAnimatedStyle,
+//   withTiming,
+//   cancelAnimation,
+//   Easing,
+// } from 'react-native-reanimated';
 
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
 
@@ -47,6 +61,8 @@ interface VideoPostProps {
   userLastname: string;
   isLiked: boolean;
   isActive: boolean;
+  isPrevActive: boolean;
+  isNextActive: boolean;
 }
 
 export const VIDEO_POST_HEIGHT =
@@ -66,6 +82,8 @@ const VideoPost = ({
   userLastname,
   isLiked,
   isActive,
+  isPrevActive,
+  isNextActive,
 }: VideoPostProps) => {
   const {user, bookmarks} = useSelector((state: any) => ({
     user: state.user,
@@ -77,16 +95,46 @@ const VideoPost = ({
 
   const [video, setVideo] = useState({
     isPaused: true,
+    isBuffering: true,
+    isLoaded: false,
+    duration: 0,
     speed: 1,
   });
   const [showPlaybackSpeedModal, setShowPlaybackSpeedModal] = useState(false);
+  // const [repeatCount, setRepeatCount] = useState(0);
 
   const isForeGround = useIsForeground();
   const isFocused = useIsFocused();
   const canPlayVideo = isForeGround && isFocused;
   const isVideoPaused = video.isPaused || !canPlayVideo;
 
+  // const progressBarOffset = useSharedValue(-WINDOW_WIDTH);
+
+  // const remainingDuration = useRef(0);
+
   const videoUrl = videoSource.replace(/\s/g, '%20');
+
+  // const animatedProgressBarStyle = useAnimatedStyle(() => {
+  //   return {
+  //     transform: [{translateX: progressBarOffset.value}],
+  //   };
+  // });
+
+  // const animateProgressBar = () => {
+  //   progressBarOffset.value = withTiming(0, {
+  //     duration:
+  //       progressBarOffset.value === -WINDOW_WIDTH
+  //         ? video.duration
+  //         : remainingDuration.current,
+  //     easing: Easing.linear,
+  //   });
+  // };
+
+  // const repeatProgressBarAnimation = () => {
+  //   cancelAnimation(progressBarOffset);
+  //   progressBarOffset.value = -WINDOW_WIDTH;
+  //   setRepeatCount(repeatCount => repeatCount + 1);
+  // };
 
   const togglePause = () => {
     setVideo(video => ({...video, isPaused: !video.isPaused}));
@@ -97,7 +145,7 @@ const VideoPost = ({
       dispatch(likeVideo({id, username: user.slug}));
 
       try {
-        await MediaRepository.likeVideo(user.token, {
+        await MediaRepository.likeVideo({
           id,
           userSlug: user.slug,
         });
@@ -114,7 +162,7 @@ const VideoPost = ({
       dispatch(unlikeVideo({id, username: user.slug}));
 
       try {
-        await MediaRepository.unlikeVideo(user.token, {
+        await MediaRepository.unlikeVideo({
           id,
           userSlug: user.slug,
         });
@@ -149,7 +197,6 @@ const VideoPost = ({
 
     try {
       await UsersRepository.followUser({
-        token: user.token,
         slug: userSlug,
         userSlug: user.slug,
         type: 'expert',
@@ -164,7 +211,6 @@ const VideoPost = ({
 
     try {
       await UsersRepository.unfollowUser({
-        token: user.token,
         slug: userSlug,
         userSlug: user.slug,
         type: 'expert',
@@ -222,11 +268,7 @@ const VideoPost = ({
 
     config(options)
       .fetch('GET', videoUrl)
-      .progress((received, total) => {
-        console.log('Download progress: ', (received / total) * 100);
-      })
       .then(res => {
-        console.log('Downloaded video: ', res.path());
         toast.show('Download complete', {
           type: 'success',
           duration: 3000,
@@ -332,13 +374,20 @@ const VideoPost = ({
     [showPlaybackSpeedModal, video.speed],
   );
 
+  const VideoThumbnail = useMemo(
+    () =>
+      !video.isLoaded && (
+        <Image source={{uri: thumbnailSource}} style={styles.thumbnail} />
+      ),
+    [thumbnailSource, video.isLoaded],
+  );
+
   const VideoPlayer = useMemo(
     () =>
-      isFocused && (
+      isFocused &&
+      (isActive || isPrevActive || isNextActive) && (
         <Pressable onPress={togglePause} style={styles.videoContainer}>
           <Video
-            poster={thumbnailSource}
-            posterResizeMode="cover"
             source={{
               uri: videoUrl,
             }}
@@ -348,19 +397,72 @@ const VideoPost = ({
             playInBackground={false}
             rate={video.speed}
             repeat
+            onLoad={data =>
+              setVideo(video => ({
+                ...video,
+                duration: data.duration * 1000,
+                isLoaded: true,
+              }))
+            }
+            // onBuffer={data =>
+            //   setVideo(video => ({...video, isBuffering: data.isBuffering}))
+            // }
+            // onProgress={data => {
+            //   remainingDuration.current =
+            //     (data.seekableDuration - data.currentTime) * 1000;
+            // }}
+            // onEnd={repeatProgressBarAnimation}
           />
         </Pressable>
       ),
-    [video.speed, isVideoPaused, isFocused, videoUrl, thumbnailSource],
+    [
+      video.speed,
+      isVideoPaused,
+      isFocused,
+      isActive,
+      isPrevActive,
+      isNextActive,
+      videoUrl,
+      thumbnailSource,
+    ],
   );
 
   useEffect(() => {
     setVideo(video => ({...video, isPaused: !isActive}));
-  }, [isActive]);
+
+    if (!isActive && !isPrevActive && !isNextActive) {
+      setVideo(video => ({...video, isLoaded: false}));
+    }
+  }, [isActive, isPrevActive, isNextActive]);
+
+  // useEffect(() => {
+  //   if (
+  //     isActive &&
+  //     video.duration > 0 &&
+  //     !video.isPaused &&
+  //     !video.isBuffering
+  //   ) {
+  //     animateProgressBar();
+  //   }
+
+  //   if (video.isBuffering || video.isPaused || !isActive) {
+  //     cancelAnimation(progressBarOffset);
+  //   }
+  // }, [
+  //   isActive,
+  //   video.duration,
+  //   video.isPaused,
+  //   video.isBuffering,
+  //   repeatCount,
+  // ]);
 
   return (
     <View style={styles.container}>
       {VideoPlayer}
+
+      {VideoThumbnail}
+
+      {/* <Animated.View style={[animatedProgressBarStyle, styles.progressBar]} /> */}
 
       <View style={styles.bottomSection}>
         <View style={styles.bottomLeftSection}>
@@ -478,6 +580,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     backgroundColor: 'rgba(60,60,60,0.5)',
+  },
+  progressBar: {
+    position: 'absolute',
+    bottom: 0,
+    height: 10,
+    width: '100%',
+    backgroundColor: 'white',
   },
   bottomSection: {
     position: 'absolute',

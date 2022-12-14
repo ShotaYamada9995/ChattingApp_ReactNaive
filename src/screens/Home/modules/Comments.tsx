@@ -64,7 +64,7 @@ export default () => {
         userSlug: accountUser.slug,
         mediaCommentId: 'uuid()',
       };
-      await MediaRepository.addComment(accountUser.token, payload);
+      await MediaRepository.addComment(payload);
 
       const {data: comments} = await MediaRepository.getComments({
         id: videoId,

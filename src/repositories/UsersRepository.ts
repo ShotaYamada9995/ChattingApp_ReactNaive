@@ -1,4 +1,5 @@
 import axios from 'axios';
+import SInfo from 'react-native-sensitive-info';
 
 import {DOMAIN} from './repository';
 class FeedsRepository {
@@ -29,12 +30,17 @@ class FeedsRepository {
   async followUser(payload: any) {
     const endpoint = `${DOMAIN}/follow/${payload.slug}`;
 
-    const response = await axios.post(
+    const token = await SInfo.getItem('userToken', {
+      sharedPreferencesName: 'mySharedPrefs',
+      keychainService: 'myKeychain',
+    });
+
+    await axios.post(
       endpoint,
       {type: payload.type, userSlug: payload.userSlug},
       {
         headers: {
-          Authorization: `${payload.token}`,
+          Authorization: token,
         },
       },
     );
@@ -43,12 +49,17 @@ class FeedsRepository {
   async unfollowUser(payload: any) {
     const endpoint = `${DOMAIN}/unfollow/${payload.slug}`;
 
+    const token = await SInfo.getItem('userToken', {
+      sharedPreferencesName: 'mySharedPrefs',
+      keychainService: 'myKeychain',
+    });
+
     await axios.post(
       endpoint,
       {type: payload.type, userSlug: payload.userSlug},
       {
         headers: {
-          Authorization: `${payload.token}`,
+          Authorization: token,
         },
       },
     );

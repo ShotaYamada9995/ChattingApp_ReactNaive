@@ -42,19 +42,21 @@ const Home = () => {
 
   const VideoPostComp = ({item, index}: any) => (
     <VideoPost
-      id={item._id}
-      videoSource={item.file[0].cdnUrl}
-      thumbnailSource={item.thumbnail[0].cdnUrl}
-      caption={item.text}
-      inspiredCount={item.inspired_count}
-      userSlug={item.userSlug}
-      userImage={item.user[0]?.imageUrl?.cdnUrl}
-      userFirstname={item.user[0]?.profile?.firstName}
-      userLastname={item.user[0]?.profile?.lastName}
+      id={item?._id}
+      videoSource={item?.file[0]?.cdnUrl}
+      thumbnailSource={item?.thumbnail[0]?.cdnUrl}
+      caption={item?.text}
+      inspiredCount={item?.inspired_count}
+      userSlug={item?.userSlug}
+      userImage={item?.user[0]?.imageUrl?.cdnUrl}
+      userFirstname={item?.user[0]?.profile?.firstName}
+      userLastname={item?.user[0]?.profile?.lastName}
       isLiked={
         user.isLoggedIn && item.inspired && item.inspired.includes(user?.slug)
       }
       isActive={activeVideoIndex === index}
+      isPrevActive={activeVideoIndex - 1 === index}
+      isNextActive={activeVideoIndex + 1 === index}
     />
   );
 

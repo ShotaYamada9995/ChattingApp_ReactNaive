@@ -13,6 +13,10 @@ import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {MentionInput} from 'react-native-controlled-mentions';
 import CircularProgress from 'react-native-circular-progress-indicator';
+import {
+  Image as ImageCompressor,
+  Video as VideoCompressor,
+} from 'react-native-compressor';
 
 import MediaRepository from '../../../repositories/MediaRepository';
 
@@ -37,7 +41,6 @@ const PostMedia = () => {
   }));
 
   const [isUploading, setIsUploading] = useState(false);
-
   const [uploadProgress, setUploadProgress] = useState(0);
   const [caption, setCaption] = useState('');
 
@@ -64,11 +67,35 @@ const PostMedia = () => {
           .filter(word => word[0] === '#')
           .map(tag => tag.substring(1, tag.length));
 
+        const compressedThumbnail = await ImageCompressor.compress(
+          video.thumbnail,
+          {
+            maxWidth: 1000,
+            quality: 0.8,
+          },
+        );
+
+        const videoPath = await VideoCompressor.compress(
+          video.path,
+          {
+            compressionMethod: 'auto',
+            minimumFileSizeForCompress: 10,
+          },
+          progress => {
+            setUploadProgress(Math.round(progress * 100) / 2);
+          },
+        );
+        setUploadProgress(50);
+
+        const compressedVideo =
+          videoPath.startsWith('file://') && !videoPath.startsWith('file:///')
+            ? videoPath.replace('file://', 'file:///')
+            : videoPath;
+
         await MediaRepository.uploadMedia(
           {
-            token: user.token,
-            file: video.path,
-            thumbnail: video.thumbnail,
+            file: compressedVideo,
+            thumbnail: compressedThumbnail,
             community: 'music',
             tags,
             text: caption,
@@ -125,7 +152,7 @@ const PostMedia = () => {
         {video.thumbnail ? (
           <Image
             source={{uri: video.thumbnail}}
-            style={{width: '100%', height: '100%'}}
+            style={styles.thumbnail}
             resizeMode="contain"
           />
         ) : (
@@ -274,6 +301,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
     backgroundColor: 'black',
   },
+  thumbnail: {width: '100%', height: '100%'},
   selectCoverBtn: {
     position: 'absolute',
     bottom: 0,
