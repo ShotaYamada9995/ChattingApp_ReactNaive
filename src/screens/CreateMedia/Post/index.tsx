@@ -79,7 +79,7 @@ const PostMedia = () => {
           video.path,
           {
             compressionMethod: 'auto',
-            minimumFileSizeForCompress: 10,
+            minimumFileSizeForCompress: 5,
           },
           progress => {
             setUploadProgress(Math.round(progress * 100) / 2);

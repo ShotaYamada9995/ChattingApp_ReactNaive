@@ -13,13 +13,18 @@ class FeedsRepository {
       '629f0e88e082c803e7ab3116',
       '63323e037db8560af4cdd839',
       '6325070632aa931af005a11a',
+      '637b43f4625568001bff8517',
+      '6379c7f0625568001bff8253',
+      '63733c50f207db001b360bb5',
     ];
 
     const videos = response.data.filter(
       (video: any) =>
         video.file.length !== 0 &&
         video.thumbnail.length !== 0 &&
-        !badVideos.includes(video._id),
+        !badVideos.includes(video._id) &&
+        video.userSlug !==
+          'Ugochukwu-Orga-dd601307-0e0e-4593-a724-18c76912af45',
     );
 
     return videos;

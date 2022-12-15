@@ -170,6 +170,16 @@ const VideoPost = ({
     }
   };
 
+  const goToComments = () =>
+    navigation.navigate('Comments', {
+      videoId: id,
+      user: {
+        image: userImage,
+        firstName: userFirstname,
+        lastName: userLastname,
+      },
+    });
+
   const share = async () => {
     const options = {
       message: caption,
@@ -479,17 +489,7 @@ const VideoPost = ({
 
           {LikeIcon()}
 
-          <Pressable
-            onPress={() =>
-              navigation.navigate('Comments', {
-                videoId: id,
-                user: {
-                  image: userImage,
-                  firstName: userFirstname,
-                  lastName: userLastname,
-                },
-              })
-            }>
+          <Pressable onPress={goToComments}>
             <Image
               style={styles.commentBtn}
               source={require('../../../assets/icons/comment.png')}

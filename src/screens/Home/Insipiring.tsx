@@ -151,9 +151,30 @@ const Home = () => {
   return (
     <View style={styles.container}>
       {loadingStatus === 'success' || inspiringVideos.length > 0 ? (
+        // <FlatList
+        //   data={inspiringVideos}
+        //   keyExtractor={keyExtractor}
+        //   renderItem={VideoPostComp}
+        //   pagingEnabled
+        //   snapToOffsets={[...Array(inspiringVideos.length)].map(
+        //     (x, i) => i * VIDEO_POST_HEIGHT,
+        //   )}
+        //   snapToAlignment="start"
+        //   decelerationRate="fast"
+        //   onScroll={handleOnVideoListScroll}
+        //   showsVerticalScrollIndicator={false}
+        //   windowSize={5}
+        //   maxToRenderPerBatch={5}
+        //   // getItemLayout={getItemLayout}
+        //   style={styles.videoContainer}
+        //   onEndReached={loadMoreVideos}
+        //   onEndReachedThreshold={0.2}
+        //   ListFooterComponent={LoadMoreVideosIndicator}
+        // />
         <FlashList
           keyExtractor={keyExtractor}
           data={inspiringVideos}
+          renderItem={VideoPostComp}
           extraData={activeVideoIndex}
           estimatedItemSize={VIDEO_POST_HEIGHT}
           pagingEnabled
@@ -162,12 +183,12 @@ const Home = () => {
           )}
           snapToAlignment="start"
           decelerationRate="fast"
-          renderItem={VideoPostComp}
+          drawDistance={VIDEO_POST_HEIGHT * 6}
           onScroll={handleOnVideoListScroll}
           showsVerticalScrollIndicator={false}
           onEndReached={loadMoreVideos}
           onEndReachedThreshold={0.2}
-          ListFooterComponent={LoadMoreVideosIndicator}
+          // ListFooterComponent={LoadMoreVideosIndicator}
         />
       ) : loadingStatus === 'loading' ? (
         <VideoPostSkeleton size={6} />
