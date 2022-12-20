@@ -17,13 +17,13 @@ import ConfirmBio from './screens/Authentication/ConfirmBio';
 import LoginOptions from './screens/Authentication/LoginOptions';
 import LoginForm from './screens/Authentication/LoginForm';
 import Main from './navigation/MainNavigator';
+import CreateMedia from './screens/CreateMedia/VideoPicker';
 import VideoEditor from './screens/CreateMedia/Editor';
 import Trim from './screens/CreateMedia/Editor/Trim';
 import PostMedia from './screens/CreateMedia/Post';
 import MiniProfile from './screens/Profiles/MiniProfile';
 import SelectThumbnail from './screens/CreateMedia/Post/SelectThumbnail';
 import Comments from './screens/Home/modules/Comments';
-import {WINDOW_HEIGHT} from './utils';
 
 type AppStackParamsList = {
   RegisterOptions: undefined;
@@ -35,6 +35,7 @@ type AppStackParamsList = {
   LoginOptions: undefined;
   LoginForm: undefined;
   Main: undefined;
+  CreateMedia: undefined;
   VideoEditor: undefined;
   Trim: undefined;
   PostMedia: undefined;
@@ -68,6 +69,11 @@ export default () => {
                   animation: 'slide_from_right',
                 }}>
                 <AppStack.Screen name="Main" component={Main} />
+                <AppStack.Screen
+                  name="CreateMedia"
+                  component={CreateMedia}
+                  options={{animation: 'slide_from_bottom'}}
+                />
                 <AppStack.Screen
                   name="VideoEditor"
                   component={VideoEditor}

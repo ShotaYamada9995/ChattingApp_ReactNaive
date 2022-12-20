@@ -325,6 +325,7 @@ const styles = StyleSheet.create({
     bottom: 40,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-around',
   },
   recordBtnContainer: {
     flex: 1,

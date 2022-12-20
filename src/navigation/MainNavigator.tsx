@@ -1,5 +1,5 @@
-import React from 'react';
-import {StyleSheet} from 'react-native';
+import React, {useEffect} from 'react';
+import {Pressable, StyleSheet, View} from 'react-native';
 import {Icon} from '@rneui/themed';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
@@ -10,10 +10,16 @@ import AudioRoomScreen from '../screens/AudioRoomScreen';
 import ChatScreen from '../screens/Chats';
 import VideoPicker from '../screens/CreateMedia/VideoPicker';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../utils';
+import {useNavigation} from '@react-navigation/native';
 
 const MainTab = createBottomTabNavigator();
 
+const VideoPickerScreen = () => {
+  return <View />;
+};
+
 const Main = () => {
+  const navigation = useNavigation();
   return (
     <MainTab.Navigator
       screenOptions={{
@@ -55,17 +61,19 @@ const Main = () => {
         }}
       />
       <MainTab.Screen
-        name="VideoPicker"
-        component={VideoPicker}
+        name="VideoPickerScreen"
+        component={VideoPickerScreen}
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({focused}) => (
-            <LinearGradient
-              colors={['#FDD819', '#E80505']}
-              start={{x: 0.5, y: 0}}
-              style={styles.postIcon}>
-              <Icon name="add" color="white" size={25} />
-            </LinearGradient>
+            <Pressable onPress={() => navigation.navigate('CreateMedia')}>
+              <LinearGradient
+                colors={['#FDD819', '#E80505']}
+                start={{x: 0.5, y: 0}}
+                style={styles.postIcon}>
+                <Icon name="add" color="white" size={25} />
+              </LinearGradient>
+            </Pressable>
           ),
         }}
       />
