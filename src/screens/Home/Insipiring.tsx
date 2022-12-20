@@ -11,24 +11,31 @@ import {FlashList} from '@shopify/flash-list';
 import {Button} from '@rneui/themed';
 import {useToast} from 'react-native-toast-notifications';
 
-import VideoPost, {VIDEO_POST_HEIGHT} from './modules/InspiringVideoPost';
+import VideoPost, {VIDEO_POST_HEIGHT} from './modules/VideoPost';
 import AuthModal from './modules/AuthModal';
 
 import {WINDOW_WIDTH} from '../../utils';
 
 import FeedsRepository from '../../repositories/FeedsRepository';
 import UsersRepository from '../../repositories/UsersRepository';
+import MediaRepository from '../../repositories/MediaRepository';
 
 import VideoPostSkeleton from '../../components/skeleton/VideoPostSkeleton';
 
-import {addVideos} from '../../store/reducers/InspiringVideos';
+import {
+  addVideos,
+  likeVideo,
+  unlikeVideo,
+} from '../../store/reducers/InspiringVideos';
 import {addFollowers} from '../../store/reducers/User';
+import {useNavigation} from '@react-navigation/native';
 
 type LoadingStatusProps = 'loading' | 'success' | 'error';
 
 const Home = () => {
   const dispatch = useDispatch();
   const toast = useToast();
+  const navigation = useNavigation();
 
   const {user, inspiringVideos} = useSelector((state: any) => ({
     user: state.user,
@@ -43,10 +50,39 @@ const Home = () => {
 
   const currentPage = useRef(0);
 
-  const LoadMoreVideosIndicator = useMemo(
-    () => (isLoadingMoreVideos ? <VideoPostSkeleton size={1} /> : null),
-    [isLoadingMoreVideos],
-  );
+  const like = async (id: string) => {
+    if (user.isLoggedIn) {
+      dispatch(likeVideo({id, username: user.slug}));
+
+      try {
+        await MediaRepository.likeVideo({
+          id,
+          userSlug: user.slug,
+        });
+      } catch (error) {
+        return;
+      }
+    } else {
+      navigation.navigate('LoginOptions');
+    }
+  };
+
+  const unlike = async (id: string) => {
+    if (user.isLoggedIn) {
+      dispatch(unlikeVideo({id, username: user.slug}));
+
+      try {
+        await MediaRepository.unlikeVideo({
+          id,
+          userSlug: user.slug,
+        });
+      } catch (error) {
+        return;
+      }
+    } else {
+      navigation.navigate('LoginOptions');
+    }
+  };
 
   const VideoPostComp = ({item, index}: any) => (
     <VideoPost
@@ -63,6 +99,8 @@ const Home = () => {
         user.isLoggedIn && item.inspired && item.inspired.includes(user?.slug)
       }
       isActive={activeVideoIndex === index}
+      onLike={like}
+      onUnlike={unlike}
     />
   );
 

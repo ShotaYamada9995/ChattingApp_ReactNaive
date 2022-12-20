@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet, ScrollView, Platform} from 'react-native';
 import {Icon} from '@rneui/themed';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../utils';
-import {VIDEO_POST_HEIGHT} from '../../screens/Home/modules/InspiringVideoPost';
+import {VIDEO_POST_HEIGHT} from '../../screens/Home/modules/VideoPost';
 
 const SKELETON_COLOR_PRIMARY = 'rgba(60,60,60,0.5)';
 const SKELETON_COLOR_SECONDARY = '#888';

@@ -35,11 +35,9 @@ import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
 
 import {useIsForeground} from '../../../hooks/useIsForeground';
 
-import {likeVideo, unlikeVideo} from '../../../store/reducers/FollowingVideos';
 import {followUser, unfollowUser} from '../../../store/reducers/User';
 import {addBookmark, removeBookmark} from '../../../store/reducers/Bookmarks';
 
-import MediaRepository from '../../../repositories/MediaRepository';
 import UsersRepository from '../../../repositories/UsersRepository';
 
 import PlaybackSpeedModal from './PlaybackSpeedModal';
@@ -56,6 +54,8 @@ interface VideoPostProps {
   userLastname: string;
   isLiked: boolean;
   isActive: boolean;
+  onLike: (id: string) => Promise<void>;
+  onUnlike: (id: string) => Promise<void>;
 }
 
 export const VIDEO_POST_HEIGHT =
@@ -75,6 +75,8 @@ const VideoPost = ({
   userLastname,
   isLiked,
   isActive,
+  onLike,
+  onUnlike,
 }: VideoPostProps) => {
   const {user, bookmarks} = useSelector((state: any) => ({
     user: state.user,
@@ -196,40 +198,6 @@ const VideoPost = ({
 
   const togglePause = () => {
     setVideo(video => ({...video, isPaused: !video.isPaused}));
-  };
-
-  const like = async () => {
-    if (user.isLoggedIn) {
-      dispatch(likeVideo({id, username: user.slug}));
-
-      try {
-        await MediaRepository.likeVideo({
-          id,
-          userSlug: user.slug,
-        });
-      } catch (error) {
-        return;
-      }
-    } else {
-      navigation.navigate('LoginOptions');
-    }
-  };
-
-  const unlike = async () => {
-    if (user.isLoggedIn) {
-      dispatch(unlikeVideo({id, username: user.slug}));
-
-      try {
-        await MediaRepository.unlikeVideo({
-          id,
-          userSlug: user.slug,
-        });
-      } catch (error) {
-        return;
-      }
-    } else {
-      navigation.navigate('LoginOptions');
-    }
   };
 
   const goToComments = () =>
@@ -395,7 +363,7 @@ const VideoPost = ({
 
   const LikeIcon = () =>
     isLiked ? (
-      <Pressable onPress={unlike}>
+      <Pressable onPress={() => onUnlike(id)}>
         <Icon
           name="heart"
           type="ionicon"
@@ -404,7 +372,7 @@ const VideoPost = ({
         />
       </Pressable>
     ) : (
-      <Pressable onPress={like}>
+      <Pressable onPress={() => onLike(id)}>
         <Icon
           name="heart"
           type="ionicon"
