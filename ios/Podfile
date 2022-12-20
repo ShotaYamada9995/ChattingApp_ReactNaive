@@ -8,6 +8,7 @@ target 'WhatIDo' do
   pod 'ffmpeg-kit-react-native', :subspecs => ['full-gpl'], :podspec => '../node_modules/ffmpeg-kit-react-native/ffmpeg-kit-react-native.podspec'
   pod 'react-native-video/VideoCaching', :path => '../node_modules/react-native-video/react-native-video.podspec'
   pod 'rn-fetch-blob', :path => '../node_modules/rn-fetch-blob'
+  pod 'RNFS', :path => '../node_modules/react-native-fs'
   
   config = use_native_modules!
 

@@ -1,5 +1,11 @@
 import React, {useState, useEffect, useRef, useMemo} from 'react';
-import {View, StyleSheet, Text, FlatList} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {FlashList} from '@shopify/flash-list';
 import {Button} from '@rneui/themed';
@@ -45,7 +51,7 @@ const Home = () => {
   const VideoPostComp = ({item, index}: any) => (
     <VideoPost
       id={item?._id}
-      videoSource={item?.file[0]?.cdnUrl}
+      videoSource={item?.file[0]?.cdnUrl.replace(/\s/g, '%20')}
       thumbnailSource={item?.thumbnail[0]?.cdnUrl}
       caption={item?.text}
       inspiredCount={item?.inspired_count}
@@ -151,26 +157,6 @@ const Home = () => {
   return (
     <View style={styles.container}>
       {loadingStatus === 'success' || inspiringVideos.length > 0 ? (
-        // <FlatList
-        //   data={inspiringVideos}
-        //   keyExtractor={keyExtractor}
-        //   renderItem={VideoPostComp}
-        //   pagingEnabled
-        //   snapToOffsets={[...Array(inspiringVideos.length)].map(
-        //     (x, i) => i * VIDEO_POST_HEIGHT,
-        //   )}
-        //   snapToAlignment="start"
-        //   decelerationRate="fast"
-        //   onScroll={handleOnVideoListScroll}
-        //   showsVerticalScrollIndicator={false}
-        //   windowSize={5}
-        //   maxToRenderPerBatch={5}
-        //   // getItemLayout={getItemLayout}
-        //   style={styles.videoContainer}
-        //   onEndReached={loadMoreVideos}
-        //   onEndReachedThreshold={0.2}
-        //   ListFooterComponent={LoadMoreVideosIndicator}
-        // />
         <FlashList
           keyExtractor={keyExtractor}
           data={inspiringVideos}
@@ -188,7 +174,6 @@ const Home = () => {
           showsVerticalScrollIndicator={false}
           onEndReached={loadMoreVideos}
           onEndReachedThreshold={0.2}
-          // ListFooterComponent={LoadMoreVideosIndicator}
         />
       ) : loadingStatus === 'loading' ? (
         <VideoPostSkeleton size={6} />
@@ -206,6 +191,10 @@ const Home = () => {
             onPress={getVideos}
           />
         </View>
+      )}
+
+      {isLoadingMoreVideos && (
+        <ActivityIndicator size="small" style={styles.loadingIndicator} />
       )}
 
       {AuthModalComp}
@@ -241,6 +230,28 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignSelf: 'center',
   },
+  loadingIndicator: {position: 'absolute', bottom: 10, right: 10},
 });
 
 export default Home;
+
+// <FlatList
+//   data={inspiringVideos}
+//   keyExtractor={keyExtractor}
+//   renderItem={VideoPostComp}
+//   pagingEnabled
+//   snapToOffsets={[...Array(inspiringVideos.length)].map(
+//     (x, i) => i * VIDEO_POST_HEIGHT,
+//   )}
+//   snapToAlignment="start"
+//   decelerationRate="fast"
+//   onScroll={handleOnVideoListScroll}
+//   showsVerticalScrollIndicator={false}
+//   windowSize={5}
+//   maxToRenderPerBatch={5}
+//   // getItemLayout={getItemLayout}
+//   style={styles.videoContainer}
+//   onEndReached={loadMoreVideos}
+//   onEndReachedThreshold={0.2}
+//   ListFooterComponent={LoadMoreVideosIndicator}
+// />

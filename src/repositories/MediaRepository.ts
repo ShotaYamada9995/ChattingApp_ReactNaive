@@ -104,7 +104,7 @@ class MediaRepository {
           (progressEvent.loaded * 100) / progressEvent.total,
         );
 
-        setUploadProgress(progress / 2);
+        setUploadProgress(50 + progress / 2);
       },
     });
   }

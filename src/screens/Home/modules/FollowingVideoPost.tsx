@@ -1,11 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  memo,
-  useCallback,
-  useRef,
-} from 'react';
+import React, {useState, useEffect, useRef, useMemo, memo} from 'react';
 import {
   Image,
   Pressable,
@@ -13,6 +6,7 @@ import {
   Text,
   View,
   Platform,
+  Alert,
   PermissionsAndroid,
 } from 'react-native';
 import {Icon} from '@rneui/themed';
@@ -27,6 +21,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
 import RNFetchBlob from 'rn-fetch-blob';
+import RNFS from 'react-native-fs';
 import {useToast} from 'react-native-toast-notifications';
 // import Animated, {
 //   useSharedValue,
@@ -90,9 +85,10 @@ const VideoPost = ({
   const toast = useToast();
 
   const [video, setVideo] = useState({
-    isPaused: true,
-    isBuffering: true,
+    url: '',
+    isPaused: Platform.OS === 'android',
     isLoaded: false,
+    showThumbnail: true,
     duration: 0,
     speed: 1,
   });
@@ -107,8 +103,6 @@ const VideoPost = ({
   // const progressBarOffset = useSharedValue(-WINDOW_WIDTH);
 
   // const remainingDuration = useRef(0);
-
-  const videoUrl = videoSource.replace(/\s/g, '%20');
 
   // const animatedProgressBarStyle = useAnimatedStyle(() => {
   //   return {
@@ -131,6 +125,74 @@ const VideoPost = ({
   //   progressBarOffset.value = -WINDOW_WIDTH;
   //   setRepeatCount(repeatCount => repeatCount + 1);
   // };
+
+  const getVideoUrl = (url: string, filename: string) => {
+    RNFS.readDir(RNFS.DocumentDirectoryPath)
+      .then(result => {
+        result.forEach(element => {
+          if (element.name == filename.replace(/%20/g, '_')) {
+            setVideo(video => ({
+              ...video,
+              url: element.path,
+            }));
+            setVideo(video => ({
+              ...video,
+              showThumbnail: false,
+            }));
+          }
+        });
+      })
+      .catch(err => {
+        setVideo(video => ({
+          ...video,
+          url: url,
+        }));
+        setVideo(video => ({
+          ...video,
+          showThumbnail: false,
+        }));
+      });
+  };
+
+  const cacheVideo = () => {
+    const filename: string = videoSource.substring(
+      videoSource.lastIndexOf('/') + 1,
+      videoSource.length,
+    );
+    const path_name = RNFS.DocumentDirectoryPath + '/' + filename;
+
+    // download video
+    RNFS.exists(path_name).then(exists => {
+      if (exists) {
+        if (isActive) {
+          getVideoUrl(videoSource, filename);
+        }
+      } else {
+        RNFS.downloadFile({
+          fromUrl: videoSource,
+          toFile: path_name.replace(/%20/g, '_'),
+          background: true,
+        })
+          .promise.then(res => {
+            if (isActive) {
+              getVideoUrl(videoSource, filename);
+            }
+          })
+          .catch(err => {
+            if (isActive) {
+              setVideo(video => ({
+                ...video,
+                url: videoSource,
+              }));
+              setVideo(video => ({
+                ...video,
+                showThumbnail: false,
+              }));
+            }
+          });
+      }
+    });
+  };
 
   const togglePause = () => {
     setVideo(video => ({...video, isPaused: !video.isPaused}));
@@ -183,7 +245,7 @@ const VideoPost = ({
   const share = async () => {
     const options = {
       message: caption,
-      url: videoUrl,
+      url: videoSource,
     };
 
     togglePause();
@@ -245,10 +307,7 @@ const VideoPost = ({
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           downloadVideo();
         } else {
-          toast.show('Storage permission not granted', {
-            type: 'warning',
-            duration: 3000,
-          });
+          Alert.alert('Storage permission not granted');
         }
       } catch (error) {
         console.log('Permission error');
@@ -258,7 +317,7 @@ const VideoPost = ({
   };
 
   const downloadVideo = () => {
-    const ext = `.${videoUrl.split('.').pop()}`;
+    const ext = `.${videoSource.split('.').pop()}`;
 
     const {config, fs} = RNFetchBlob;
     const DownloadDir = fs.dirs.DownloadDir;
@@ -272,8 +331,13 @@ const VideoPost = ({
       },
     };
 
+    toast.show('Downloading video...', {
+      type: 'normal',
+      duration: 3000,
+    });
+
     config(options)
-      .fetch('GET', videoUrl)
+      .fetch('GET', videoSource)
       .then(res => {
         toast.show('Download complete', {
           type: 'success',
@@ -281,13 +345,10 @@ const VideoPost = ({
         });
       })
       .catch(error => {
-        toast.show(
-          'Download failed. Please check your network connection and try again',
-          {
-            type: 'danger',
-            duration: 3000,
-          },
-        );
+        toast.show('Failed to download video', {
+          type: 'danger',
+          duration: 3000,
+        });
       });
   };
 
@@ -380,32 +441,48 @@ const VideoPost = ({
     [showPlaybackSpeedModal, video.speed],
   );
 
-  const VideoPlayer = useMemo(
+  const VideoThumbnail = useMemo(() => {
+    return (
+      !video.isLoaded && (
+        <Image source={{uri: thumbnailSource}} style={styles.thumbnail} />
+      )
+    );
+  }, [thumbnailSource, video.isLoaded]);
+
+  const IOSVideoPlayer = useMemo(
     () =>
       isFocused && (
-        <Pressable onPress={togglePause} style={styles.videoContainer}>
+        <Pressable onPress={togglePause} style={styles.video}>
           <Video
             poster={thumbnailSource}
             posterResizeMode="cover"
             source={{
-              uri: videoUrl,
+              uri: videoSource,
+            }}
+            bufferConfig={{
+              minBufferMs: 100,
+              maxBufferMs: 200,
+              bufferForPlaybackMs: 100,
+              bufferForPlaybackAfterRebufferMs: 100,
             }}
             style={styles.video}
             resizeMode="cover"
             paused={isVideoPaused}
+            playWhenInactive={false}
             playInBackground={false}
             rate={video.speed}
             repeat
-            onLoad={data =>
-              setVideo(video => ({
-                ...video,
-                duration: data.duration * 1000,
-                isLoaded: true,
-              }))
-            }
+            // onError={error => {
+            //   console.log(`Error(${id}) : ${videoSource}`);
+            //   console.log(error);
+            // }}
             // onBuffer={data =>
             //   setVideo(video => ({...video, isBuffering: data.isBuffering}))
             // }
+            // onError={error => {
+            //   console.log(`Error(${id}): `);
+            //   console.log(error);
+            // }}
             // onProgress={data => {
             //   remainingDuration.current =
             //     (data.seekableDuration - data.currentTime) * 1000;
@@ -414,11 +491,84 @@ const VideoPost = ({
           />
         </Pressable>
       ),
-    [video.speed, isVideoPaused, isFocused, videoUrl, thumbnailSource],
+    [video.speed, isVideoPaused, isFocused, videoSource, thumbnailSource],
+  );
+
+  const AndroidVideoPlayer = useMemo(
+    () =>
+      isFocused &&
+      isActive &&
+      !video.showThumbnail &&
+      video.url && (
+        <Pressable onPress={togglePause} style={styles.video}>
+          <Video
+            source={{
+              uri: video.url,
+            }}
+            bufferConfig={{
+              minBufferMs: 100,
+              maxBufferMs: 200,
+              bufferForPlaybackMs: 100,
+              bufferForPlaybackAfterRebufferMs: 100,
+            }}
+            style={styles.video}
+            resizeMode="cover"
+            paused={isVideoPaused}
+            playWhenInactive={false}
+            playInBackground={false}
+            rate={video.speed}
+            repeat
+            onLoad={data => {
+              setVideo(video => ({
+                ...video,
+                isLoaded: true,
+                isPaused: false,
+              }));
+            }}
+            // onError={error => {
+            //   console.log(`Error(${id})`);
+            //   console.log(error);
+            // }}
+            // onBuffer={data =>
+            //   setVideo(video => ({...video, isBuffering: data.isBuffering}))
+            // }
+            // onError={error => {
+            //   console.log(`Error(${id}): `);
+            //   console.log(error);
+            // }}
+            // onProgress={data => {
+            //   remainingDuration.current =
+            //     (data.seekableDuration - data.currentTime) * 1000;
+            // }}
+            // onEnd={repeatProgressBarAnimation}
+          />
+        </Pressable>
+      ),
+    [
+      video.speed,
+      video.showThumbnail,
+      video.url,
+      isVideoPaused,
+      isFocused,
+      isActive,
+      videoSource,
+    ],
   );
 
   useEffect(() => {
-    setVideo(video => ({...video, isPaused: !isActive}));
+    if (Platform.OS === 'android') {
+      cacheVideo();
+      if (!isActive) {
+        setVideo(video => ({
+          ...video,
+          showThumbnail: true,
+          isLoaded: false,
+          isPaused: true,
+        }));
+      }
+    } else {
+      setVideo(video => ({...video, isPaused: !isActive}));
+    }
   }, [isActive]);
 
   // useEffect(() => {
@@ -444,7 +594,9 @@ const VideoPost = ({
 
   return (
     <View style={styles.container}>
-      {/* {VideoPlayer} */}
+      {Platform.OS === 'android' ? AndroidVideoPlayer : IOSVideoPlayer}
+
+      {Platform.OS === 'android' && VideoThumbnail}
 
       {/* <Animated.View style={[animatedProgressBarStyle, styles.progressBar]} /> */}
 
@@ -543,12 +695,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-  },
-  videoContainer: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(60,60,60,0.5)',
   },
   video: {
     width: '100%',
@@ -660,11 +806,11 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   commentBtn: {
-    transform: [{scale: WINDOW_WIDTH * 0.0019}],
+    transform: [{scale: WINDOW_WIDTH * 0.0018}],
     marginBottom: 20,
   },
   shareBtn: {
-    transform: [{scale: WINDOW_WIDTH * 0.0027}],
+    transform: [{scale: WINDOW_WIDTH * 0.0025}],
     marginBottom: 20,
   },
 });

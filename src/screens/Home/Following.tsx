@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef, useMemo} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, ActivityIndicator} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {FlashList} from '@shopify/flash-list';
 import {Button} from '@rneui/themed';
@@ -43,7 +43,7 @@ const Home = () => {
   const VideoPostComp = ({item, index}: any) => (
     <VideoPost
       id={item?._id}
-      videoSource={item?.file[0]?.cdnUrl}
+      videoSource={item?.file[0]?.cdnUrl.replace(/\s/g, '%20')}
       thumbnailSource={item?.thumbnail[0]?.cdnUrl}
       caption={item?.text}
       inspiredCount={item?.inspired_count}
@@ -152,7 +152,7 @@ const Home = () => {
           showsVerticalScrollIndicator={false}
           onEndReached={loadMoreVideos}
           onEndReachedThreshold={0.2}
-          ListFooterComponent={LoadMoreVideosIndicator}
+          // ListFooterComponent={LoadMoreVideosIndicator}
         />
       ) : loadingStatus === 'loading' ? (
         <VideoPostSkeleton size={6} />
@@ -170,6 +170,10 @@ const Home = () => {
             onPress={getVideos}
           />
         </View>
+      )}
+
+      {isLoadingMoreVideos && (
+        <ActivityIndicator size="small" style={styles.loadingIndicator} />
       )}
     </View>
   );
@@ -203,6 +207,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignSelf: 'center',
   },
+  loadingIndicator: {position: 'absolute', bottom: 10, right: 10},
 });
 
 export default Home;
