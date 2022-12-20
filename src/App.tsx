@@ -38,7 +38,7 @@ type AppStackParamsList = {
   CreateMedia: undefined;
   VideoEditor: undefined;
   Trim: undefined;
-  PostMedia: undefined;
+  PostMedia: {action?: string};
   MiniProfile: undefined;
   SelectThumbnail: undefined;
   Comments: {
@@ -67,8 +67,7 @@ export default () => {
                 screenOptions={{
                   headerShown: false,
                   animation: 'slide_from_right',
-                }}
-                initialRouteName="CreateMedia">
+                }}>
                 <AppStack.Screen name="Main" component={Main} />
                 <AppStack.Screen
                   name="CreateMedia"

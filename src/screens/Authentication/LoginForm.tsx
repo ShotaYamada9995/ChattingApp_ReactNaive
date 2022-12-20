@@ -12,7 +12,7 @@ import AuthFooter from '../../components/footers/AuthFooter';
 import globalStyles from '../../styles/globalStyles';
 
 import AuthRepository from '../../repositories/AuthRepository';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 
 import {addFollowers, login} from '../../store/reducers/User';
@@ -29,6 +29,7 @@ const schema = yup.object().shape({
 const LoginForm = () => {
   const toast = useToast();
   const dispatch = useDispatch();
+  const loginData = useSelector(state => state.login);
   const navigation = useNavigation();
   const [remember, setRemember] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -64,7 +65,7 @@ const LoginForm = () => {
         }),
       );
 
-      navigation.navigate('Main');
+      navigation.navigate(loginData.resumeScreen, {action: 'POST MEDIA'});
 
       toast.show('Login Successful', {
         type: 'success',

@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from 'react-native';
 import {Icon, Button, BottomSheet} from '@rneui/themed';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {MentionInput} from 'react-native-controlled-mentions';
 import CircularProgress from 'react-native-circular-progress-indicator';
@@ -24,16 +24,18 @@ import globalStyles from '../../../styles/globalStyles';
 
 import {genFrameAt} from '../../../utils/videoProcessor';
 
-import {addThumbnail} from '../../../store/reducers/Video';
+import {addCaption, addThumbnail} from '../../../store/reducers/Video';
 
 import {useToast} from 'react-native-toast-notifications';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../../../utils';
+import {update} from '../../../store/reducers/Login';
 
 type Viewer = 'Everyone' | 'Friends' | 'Only me';
 
 const PostMedia = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const route = useRoute();
   const toast = useToast();
   const {user, video} = useSelector((state: any) => ({
     user: state.user,
@@ -121,11 +123,14 @@ const PostMedia = () => {
         setUploadProgress(0);
       }
     } else {
+      dispatch(addCaption(caption));
+      dispatch(update('PostMedia'));
       navigation.navigate('LoginOptions');
     }
   };
 
   useEffect(() => {
+    setCaption(video.caption);
     if (!video.thumbnail) {
       (async () => {
         const frame: string = await genFrameAt(
@@ -136,7 +141,11 @@ const PostMedia = () => {
         dispatch(addThumbnail(frame));
       })();
     }
-  }, []);
+
+    if (route.params?.action === 'POST MEDIA') {
+      postMedia();
+    }
+  }, [route.params]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
