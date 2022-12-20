@@ -67,7 +67,8 @@ export default () => {
                 screenOptions={{
                   headerShown: false,
                   animation: 'slide_from_right',
-                }}>
+                }}
+                initialRouteName="CreateMedia">
                 <AppStack.Screen name="Main" component={Main} />
                 <AppStack.Screen
                   name="CreateMedia"

@@ -233,75 +233,67 @@ export default () => {
       )}
 
       <View style={styles.bottomBarContainer}>
-        <View style={{flex: 1}}>
-          {video.isRecording && video.isPaused && (
-            <TouchableOpacity onPress={cancelRecording}>
-              <Icon
-                name="close-circle"
-                type="ionicon"
-                color="white"
-                size={40}
-                style={{marginLeft: 20}}
-              />
-            </TouchableOpacity>
-          )}
-        </View>
+        {video.isRecording && video.isPaused ? (
+          <TouchableOpacity onPress={cancelRecording}>
+            <Icon name="close-circle" type="ionicon" color="white" size={40} />
+          </TouchableOpacity>
+        ) : (
+          <Icon
+            name="close-circle"
+            type="ionicon"
+            color="white"
+            size={40}
+            style={{opacity: 0}}
+          />
+        )}
 
-        <View style={styles.recordBtnContainer}>
-          {video.isRecording ? (
-            <TouchableOpacity onPress={togglePause}>
-              <CountdownCircleTimer
-                isPlaying={!video.isPaused}
-                duration={120}
-                colors="#d9d9d9"
-                trailColor="#ff4040"
-                strokeWidth={5}
-                size={100}
-                onComplete={stopRecording}>
-                {({remainingTime}) => (
-                  <Icon
-                    name="stop"
-                    type="ionicon"
-                    color="#ff4040"
-                    size={50}
-                    style={{marginLeft: 3}}
-                  />
-                )}
-              </CountdownCircleTimer>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.recordBtn}
-              onPress={startRecording}
+        {video.isRecording ? (
+          <TouchableOpacity onPress={togglePause}>
+            <CountdownCircleTimer
+              isPlaying={!video.isPaused}
+              duration={120}
+              colors="#d9d9d9"
+              trailColor="#ff4040"
+              strokeWidth={5}
+              size={100}
+              onComplete={stopRecording}>
+              {({remainingTime}) => (
+                <Icon
+                  name="stop"
+                  type="ionicon"
+                  color="#ff4040"
+                  size={50}
+                  style={{marginLeft: 3}}
+                />
+              )}
+            </CountdownCircleTimer>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.recordBtn} onPress={startRecording} />
+        )}
+
+        {video.isRecording ? (
+          <TouchableOpacity onPress={stopRecording}>
+            <Icon
+              name="checkmark-circle"
+              type="ionicon"
+              color="#ff4040"
+              size={40}
             />
-          )}
-        </View>
-
-        <View style={{flex: 1}}>
-          {video.isRecording ? (
-            <TouchableOpacity onPress={stopRecording}>
-              <Icon
-                name="checkmark-circle"
-                type="ionicon"
-                color="#ff4040"
-                size={40}
-                style={{marginRight: 20}}
-              />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              onPress={selectVideoFromLib}
-              style={styles.uploadBtn}>
-              <Icon
-                name="image-outline"
-                type="ionicon"
-                color="white"
-                size={WINDOW_WIDTH * 0.1}
-              />
-              <Text style={styles.uploadText}>Upload</Text>
-            </TouchableOpacity>
-          )}
-        </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={selectVideoFromLib}
+            style={styles.uploadBtn}>
+            <Icon
+              name="image-outline"
+              type="ionicon"
+              color="white"
+              size={WINDOW_WIDTH * 0.1}
+            />
+            <Text style={styles.uploadText}>Upload</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -323,13 +315,10 @@ const styles = StyleSheet.create({
   bottomBarContainer: {
     position: 'absolute',
     bottom: 40,
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
-  },
-  recordBtnContainer: {
-    flex: 1,
-    marginHorizontal: 30,
   },
   recordBtn: {
     borderWidth: 8,
