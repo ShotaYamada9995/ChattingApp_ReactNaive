@@ -29,6 +29,7 @@ import {
 } from '../../store/reducers/InspiringVideos';
 import {addFollowers} from '../../store/reducers/User';
 import {useNavigation} from '@react-navigation/native';
+import {update} from '../../store/reducers/Login';
 
 type LoadingStatusProps = 'loading' | 'success' | 'error';
 
@@ -63,6 +64,7 @@ const Home = () => {
         return;
       }
     } else {
+      dispatch(update('Main'));
       navigation.navigate('LoginOptions');
     }
   };
@@ -80,6 +82,7 @@ const Home = () => {
         return;
       }
     } else {
+      dispatch(update('Main'));
       navigation.navigate('LoginOptions');
     }
   };
@@ -199,7 +202,7 @@ const Home = () => {
           keyExtractor={keyExtractor}
           data={inspiringVideos}
           renderItem={VideoPostComp}
-          extraData={activeVideoIndex}
+          extraData={{activeVideoIndex, userIsLoggedIn: user.isLoggedIn}}
           estimatedItemSize={VIDEO_POST_HEIGHT}
           pagingEnabled
           snapToOffsets={[...Array(inspiringVideos.length)].map(

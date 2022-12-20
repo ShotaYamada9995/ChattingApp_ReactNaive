@@ -4,6 +4,8 @@ import {Button, Text, Icon, BottomSheet} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
 
 import {WINDOW_WIDTH} from '../../../utils';
+import {useDispatch} from 'react-redux';
+import {update} from '../../../store/reducers/Login';
 
 interface AuthModalProps {
   isVisible: boolean;
@@ -12,6 +14,13 @@ interface AuthModalProps {
 
 export default ({isVisible, onClose}: AuthModalProps) => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const handleOnPress = () => {
+    dispatch(update('Main'));
+    navigation.navigate('LoginOptions');
+    onClose();
+  };
   return (
     <BottomSheet
       onBackdropPress={onClose}
@@ -34,10 +43,7 @@ export default ({isVisible, onClose}: AuthModalProps) => {
           containerStyle={styles.btn}
           buttonStyle={{paddingVertical: 15}}
           color="#001433"
-          onPress={() => {
-            navigation.navigate('LoginOptions');
-            onClose();
-          }}
+          onPress={handleOnPress}
         />
 
         <TouchableOpacity style={styles.closeModalIcon} onPress={onClose}>

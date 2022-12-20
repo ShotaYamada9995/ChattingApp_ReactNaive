@@ -177,7 +177,7 @@ const Home = () => {
         <FlashList
           keyExtractor={keyExtractor}
           data={followingVideos}
-          extraData={activeVideoIndex}
+          extraData={{activeVideoIndex, userIsLoggedIn: user.isLoggedIn}}
           estimatedItemSize={VIDEO_POST_HEIGHT}
           pagingEnabled
           snapToOffsets={[...Array(followingVideos.length)].map(

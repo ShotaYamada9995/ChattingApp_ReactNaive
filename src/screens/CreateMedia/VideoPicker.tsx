@@ -98,7 +98,7 @@ export default () => {
     stopRecording();
   };
 
-  const selectVideoFromLib = () => {
+  const selectVideoFromLib = async () => {
     VideoPicker.openPicker({
       mediaType: 'video',
     })
