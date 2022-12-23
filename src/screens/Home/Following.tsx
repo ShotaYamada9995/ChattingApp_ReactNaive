@@ -91,6 +91,8 @@ const Home = () => {
         user.isLoggedIn && item.inspired && item.inspired.includes(user?.slug)
       }
       isActive={activeVideoIndex === index}
+      isPrevActive={activeVideoIndex === index - 1}
+      isNextActive={activeVideoIndex === index + 1}
       onLike={like}
       onUnlike={unlike}
     />
@@ -190,7 +192,6 @@ const Home = () => {
           showsVerticalScrollIndicator={false}
           onEndReached={loadMoreVideos}
           onEndReachedThreshold={0.2}
-          // ListFooterComponent={LoadMoreVideosIndicator}
         />
       ) : loadingStatus === 'loading' ? (
         <VideoPostSkeleton size={6} />

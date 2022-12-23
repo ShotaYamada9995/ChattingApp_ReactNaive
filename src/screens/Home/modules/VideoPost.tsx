@@ -54,6 +54,8 @@ interface VideoPostProps {
   userLastname: string;
   isLiked: boolean;
   isActive: boolean;
+  isPrevActive: boolean;
+  isNextActive: boolean;
   onLike: (id: string) => Promise<void>;
   onUnlike: (id: string) => Promise<void>;
 }
@@ -75,6 +77,8 @@ const VideoPost = ({
   userLastname,
   isLiked,
   isActive,
+  isPrevActive,
+  isNextActive,
   onLike,
   onUnlike,
 }: VideoPostProps) => {
@@ -87,10 +91,8 @@ const VideoPost = ({
   const toast = useToast();
 
   const [video, setVideo] = useState({
-    url: '',
-    isPaused: Platform.OS === 'android',
+    isPaused: true,
     isLoaded: false,
-    showThumbnail: true,
     duration: 0,
     speed: 1,
   });
@@ -127,74 +129,6 @@ const VideoPost = ({
   //   progressBarOffset.value = -WINDOW_WIDTH;
   //   setRepeatCount(repeatCount => repeatCount + 1);
   // };
-
-  const getVideoUrl = (url: string, filename: string) => {
-    RNFS.readDir(RNFS.DocumentDirectoryPath)
-      .then(result => {
-        result.forEach(element => {
-          if (element.name == filename.replace(/%20/g, '_')) {
-            setVideo(video => ({
-              ...video,
-              url: element.path,
-            }));
-            setVideo(video => ({
-              ...video,
-              showThumbnail: false,
-            }));
-          }
-        });
-      })
-      .catch(err => {
-        setVideo(video => ({
-          ...video,
-          url: url,
-        }));
-        setVideo(video => ({
-          ...video,
-          showThumbnail: false,
-        }));
-      });
-  };
-
-  const cacheVideo = () => {
-    const filename: string = videoSource.substring(
-      videoSource.lastIndexOf('/') + 1,
-      videoSource.length,
-    );
-    const path_name = RNFS.DocumentDirectoryPath + '/' + filename;
-
-    // download video
-    RNFS.exists(path_name).then(exists => {
-      if (exists) {
-        if (isActive) {
-          getVideoUrl(videoSource, filename);
-        }
-      } else {
-        RNFS.downloadFile({
-          fromUrl: videoSource,
-          toFile: path_name.replace(/%20/g, '_'),
-          background: true,
-        })
-          .promise.then(res => {
-            if (isActive) {
-              getVideoUrl(videoSource, filename);
-            }
-          })
-          .catch(err => {
-            if (isActive) {
-              setVideo(video => ({
-                ...video,
-                url: videoSource,
-              }));
-              setVideo(video => ({
-                ...video,
-                showThumbnail: false,
-              }));
-            }
-          });
-      }
-    });
-  };
 
   const togglePause = () => {
     setVideo(video => ({...video, isPaused: !video.isPaused}));
@@ -417,13 +351,12 @@ const VideoPost = ({
     );
   }, [thumbnailSource, video.isLoaded]);
 
-  const IOSVideoPlayer = useMemo(
+  const VideoPlayer = useMemo(
     () =>
-      isFocused && (
+      isFocused &&
+      (isActive || isPrevActive || isNextActive) && (
         <Pressable onPress={togglePause} style={styles.video}>
           <Video
-            poster={thumbnailSource}
-            posterResizeMode="cover"
             source={{
               uri: videoSource,
             }}
@@ -436,74 +369,16 @@ const VideoPost = ({
             style={styles.video}
             resizeMode="cover"
             paused={isVideoPaused}
-            playWhenInactive={false}
             playInBackground={false}
             rate={video.speed}
             repeat
-            // onError={error => {
-            //   console.log(`Error(${id}) : ${videoSource}`);
-            //   console.log(error);
-            // }}
-            // onBuffer={data =>
-            //   setVideo(video => ({...video, isBuffering: data.isBuffering}))
-            // }
-            // onError={error => {
-            //   console.log(`Error(${id}): `);
-            //   console.log(error);
-            // }}
-            // onProgress={data => {
-            //   remainingDuration.current =
-            //     (data.seekableDuration - data.currentTime) * 1000;
-            // }}
-            // onEnd={repeatProgressBarAnimation}
-          />
-        </Pressable>
-      ),
-    [video.speed, isVideoPaused, isFocused, videoSource, thumbnailSource],
-  );
-
-  const AndroidVideoPlayer = useMemo(
-    () =>
-      isFocused &&
-      isActive &&
-      !video.showThumbnail &&
-      video.url && (
-        <Pressable onPress={togglePause} style={styles.video}>
-          <Video
-            source={{
-              uri: video.url,
-            }}
-            bufferConfig={{
-              minBufferMs: 100,
-              maxBufferMs: 200,
-              bufferForPlaybackMs: 100,
-              bufferForPlaybackAfterRebufferMs: 100,
-            }}
-            style={styles.video}
-            resizeMode="cover"
-            paused={isVideoPaused}
-            playWhenInactive={false}
-            playInBackground={false}
-            rate={video.speed}
-            repeat
-            onLoad={data => {
+            onLoad={data =>
               setVideo(video => ({
                 ...video,
                 isLoaded: true,
-                isPaused: false,
-              }));
-            }}
-            // onError={error => {
-            //   console.log(`Error(${id})`);
-            //   console.log(error);
-            // }}
-            // onBuffer={data =>
-            //   setVideo(video => ({...video, isBuffering: data.isBuffering}))
-            // }
-            // onError={error => {
-            //   console.log(`Error(${id}): `);
-            //   console.log(error);
-            // }}
+                isPaused: !isActive,
+              }))
+            }
             // onProgress={data => {
             //   remainingDuration.current =
             //     (data.seekableDuration - data.currentTime) * 1000;
@@ -514,30 +389,22 @@ const VideoPost = ({
       ),
     [
       video.speed,
-      video.showThumbnail,
-      video.url,
       isVideoPaused,
       isFocused,
-      isActive,
       videoSource,
+      isActive,
+      isPrevActive,
+      isNextActive,
     ],
   );
 
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      cacheVideo();
-      if (!isActive) {
-        setVideo(video => ({
-          ...video,
-          showThumbnail: true,
-          isLoaded: false,
-          isPaused: true,
-        }));
-      }
-    } else {
-      setVideo(video => ({...video, isPaused: !isActive}));
+    setVideo(video => ({...video, isPaused: !isActive}));
+
+    if (!isActive && !isPrevActive && !isNextActive) {
+      setVideo(video => ({...video, isLoaded: false}));
     }
-  }, [isActive]);
+  }, [isActive, isPrevActive, isNextActive]);
 
   // useEffect(() => {
   //   if (
@@ -562,9 +429,9 @@ const VideoPost = ({
 
   return (
     <View style={styles.container}>
-      {Platform.OS === 'android' ? AndroidVideoPlayer : IOSVideoPlayer}
+      {VideoPlayer}
 
-      {Platform.OS === 'android' && VideoThumbnail}
+      {VideoThumbnail}
 
       {/* <Animated.View style={[animatedProgressBarStyle, styles.progressBar]} /> */}
 
