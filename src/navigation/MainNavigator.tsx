@@ -8,7 +8,6 @@ import Home from '../screens/Home';
 import ExploreScreen from '../screens/ExploreScreen';
 import AudioRoomScreen from '../screens/AudioRoomScreen';
 import ChatScreen from '../screens/Chats';
-import VideoPicker from '../screens/CreateMedia/VideoPicker';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../utils';
 import {useNavigation} from '@react-navigation/native';
 
@@ -66,15 +65,20 @@ const Main = () => {
         options={{
           tabBarLabel: () => null,
           tabBarIcon: ({focused}) => (
-            <Pressable onPress={() => navigation.navigate('CreateMedia')}>
-              <LinearGradient
-                colors={['#FDD819', '#E80505']}
-                start={{x: 0.5, y: 0}}
-                style={styles.postIcon}>
+            <LinearGradient
+              colors={['#FDD819', '#E80505']}
+              start={{x: 0.5, y: 0}}
+              style={styles.postIcon}>
+              <Pressable onPress={() => navigation.navigate('CreateMedia')}>
                 <Icon name="add" color="white" size={25} />
-              </LinearGradient>
-            </Pressable>
+              </Pressable>
+            </LinearGradient>
           ),
+        }}
+        listeners={{
+          tabPress: e => {
+            e.preventDefault();
+          },
         }}
       />
       <MainTab.Screen
