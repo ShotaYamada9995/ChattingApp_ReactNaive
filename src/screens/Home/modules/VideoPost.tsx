@@ -90,6 +90,8 @@ const VideoPost = ({
   const dispatch = useDispatch();
   const toast = useToast();
 
+  const videoRef = useRef(null);
+
   const [video, setVideo] = useState({
     isPaused: true,
     isLoaded: false,
@@ -357,21 +359,23 @@ const VideoPost = ({
       (isActive || isPrevActive || isNextActive) && (
         <Pressable onPress={togglePause} style={styles.video}>
           <Video
+            ref={videoRef}
             source={{
               uri: videoSource,
             }}
+            automaticallyWaitsToMinimizeStalling={false}
             bufferConfig={{
-              minBufferMs: 100,
-              maxBufferMs: 200,
-              bufferForPlaybackMs: 100,
-              bufferForPlaybackAfterRebufferMs: 100,
+              minBufferMs: 1000,
+              maxBufferMs: 2000,
+              bufferForPlaybackMs: 1000,
+              bufferForPlaybackAfterRebufferMs: 1000,
             }}
             style={styles.video}
             resizeMode="cover"
             paused={isVideoPaused}
             playInBackground={false}
             rate={video.speed}
-            repeat
+            repeat={true}
             onLoad={data =>
               setVideo(video => ({
                 ...video,
@@ -400,6 +404,10 @@ const VideoPost = ({
 
   useEffect(() => {
     setVideo(video => ({...video, isPaused: !isActive}));
+
+    if (isActive) {
+      videoRef.current?.seek(0);
+    }
 
     if (!isActive && !isPrevActive && !isNextActive) {
       setVideo(video => ({...video, isLoaded: false}));

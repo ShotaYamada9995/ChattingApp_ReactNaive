@@ -10,37 +10,40 @@ import Following from './Following';
 const HomeTab = createMaterialTopTabNavigator();
 
 const HomeTabNavigator = () => {
+  const screenOptions = {
+    tabBarStyle: {
+      backgroundColor: 'transparent',
+      borderTopWidth: 0,
+      position: 'absolute',
+      left: 75,
+      right: 75,
+      top: 0,
+      height: 50,
+      width: 'auto',
+      elevation: 0,
+    },
+    tabBarContentContainerStyle: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    tabBarIndicatorStyle: {
+      backgroundColor: 'white',
+      width: 40,
+      marginLeft: 35,
+    },
+    tabBarLabelStyle: {
+      textTransform: 'none',
+      fontSize: WINDOW_WIDTH * 0.04,
+    },
+    tabBarActiveTintColor: '#FFFFFF',
+    tabBarInactiveTintColor: '#C7C6C7',
+  };
+
   return (
     <View style={{flex: 1}}>
       <HomeTab.Navigator
-        screenOptions={{
-          tabBarStyle: {
-            backgroundColor: 'transparent',
-            borderTopWidth: 0,
-            position: 'absolute',
-            left: 75,
-            right: 75,
-            top: 0,
-            height: 50,
-            width: 'auto',
-            elevation: 0,
-          },
-          tabBarContentContainerStyle: {
-            alignItems: 'center',
-            justifyContent: 'center',
-          },
-          tabBarIndicatorStyle: {
-            backgroundColor: 'white',
-            width: 40,
-            marginLeft: 35,
-          },
-          tabBarLabelStyle: {
-            textTransform: 'none',
-            fontSize: WINDOW_WIDTH * 0.04,
-          },
-          tabBarActiveTintColor: '#FFFFFF',
-          tabBarInactiveTintColor: '#C7C6C7',
-        }}>
+        screenOptions={screenOptions}
+        initialRouteName="For You">
         <HomeTab.Screen name="Inspiring" component={Inspiring} />
         <HomeTab.Screen name="For You" component={Following} />
       </HomeTab.Navigator>

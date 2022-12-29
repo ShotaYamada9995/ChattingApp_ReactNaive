@@ -26,6 +26,7 @@ const badVideos = [
   '636f8cf2f207db001b3607ac',
   '636f7344f207db001b36063e',
   '636f7306f207db001b36062d',
+  '63a589ee9afe6a001bd461cf',
 ];
 class FeedsRepository {
   async getInspiringVideos(page: number) {

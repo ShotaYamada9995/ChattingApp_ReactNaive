@@ -4,7 +4,6 @@ PODS:
     - React-Core
   - CocoaAsyncSocket (7.6.5)
   - DoubleConversion (1.1.6)
-  - DVAssetLoaderDelegate (0.3.3)
   - FBLazyVector (0.70.4)
   - FBReactNativeSpec (0.70.4):
     - RCT-Folly (= 2021.07.22.00)
@@ -323,13 +322,11 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-sensitive-info (5.5.8):
     - React
+  - react-native-video (5.2.1):
+    - React-Core
+    - react-native-video/Video (= 5.2.1)
   - react-native-video/Video (5.2.1):
     - React-Core
-  - react-native-video/VideoCaching (5.2.1):
-    - DVAssetLoaderDelegate (~> 0.3.1)
-    - React-Core
-    - react-native-video/Video
-    - SPTPersistentCache (~> 1.1.0)
   - React-perflogger (0.70.4)
   - React-RCTActionSheet (0.70.4):
     - React-Core/RCTActionSheetHeaders (= 0.70.4)
@@ -454,7 +451,6 @@ PODS:
   - RNSVG (13.5.0):
     - React-Core
   - SocketRocket (0.6.0)
-  - SPTPersistentCache (1.1.0)
   - TOCropViewController (2.6.1)
   - VisionCamera (2.15.2):
     - React
@@ -517,7 +513,7 @@ DEPENDENCIES:
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-sensitive-info (from `../node_modules/react-native-sensitive-info`)
-  - react-native-video/VideoCaching (from `../node_modules/react-native-video/react-native-video.podspec`)
+  - react-native-video (from `../node_modules/react-native-video/react-native-video.podspec`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -548,7 +544,6 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - CocoaAsyncSocket
-    - DVAssetLoaderDelegate
     - ffmpeg-kit-ios-full-gpl
     - Flipper
     - Flipper-Boost-iOSX
@@ -564,7 +559,6 @@ SPEC REPOS:
     - NextLevelSessionExporter
     - OpenSSL-Universal
     - SocketRocket
-    - SPTPersistentCache
     - TOCropViewController
     - YogaKit
 
@@ -683,7 +677,6 @@ SPEC CHECKSUMS:
   BVLinearGradient: 34a999fda29036898a09c6a6b728b0b4189e1a44
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  DVAssetLoaderDelegate: 0caec20e4e08b8560b691131539e9180024d4bce
   FBLazyVector: 8a28262f61fbe40c04ce8677b8d835d97c18f1b3
   FBReactNativeSpec: b475991eb2d8da6a4ec32d09a8df31b0247fa87d
   ffmpeg-kit-ios-full-gpl: 2682965e5b3e7f13a05836d46d302eafe6c5039e
@@ -748,12 +741,11 @@ SPEC CHECKSUMS:
   RNStaticSafeAreaInsets: 055ddbf5e476321720457cdaeec0ff2ba40ec1b8
   RNSVG: 38ca962c970dbce1ca38991a5aebf26d163f9efb
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
-  SPTPersistentCache: df36ea46762d7cf026502bbb86a8b79d0080dff4
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863
   VisionCamera: 4cfd685b1e671fea4aa0400905ab397f0e972210
   Yoga: 1f02ef4ce4469aefc36167138441b27d988282b1
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: ec8f0ae6a2bd3449e8630f5389af3ad4be47a7a7
+PODFILE CHECKSUM: 620f7b33acd5f15889f22083402ed32ea17dcfee
 
 COCOAPODS: 1.11.3
