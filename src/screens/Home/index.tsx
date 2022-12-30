@@ -5,7 +5,7 @@ import {Icon, Badge} from '@rneui/themed';
 import {WINDOW_WIDTH} from '../../utils';
 
 import Inspiring from './Insipiring';
-import Following from './Following';
+import ForYou from './ForYou';
 
 const HomeTab = createMaterialTopTabNavigator();
 
@@ -45,7 +45,7 @@ const HomeTabNavigator = () => {
         screenOptions={screenOptions}
         initialRouteName="For You">
         <HomeTab.Screen name="Inspiring" component={Inspiring} />
-        <HomeTab.Screen name="For You" component={Following} />
+        <HomeTab.Screen name="For You" component={ForYou} />
       </HomeTab.Navigator>
 
       <View style={{position: 'absolute', top: 20, left: 10}}>

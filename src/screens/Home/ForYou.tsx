@@ -36,6 +36,7 @@ const Home = () => {
   }));
 
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
+  const [currentVideoCacheIndex, setCurrentVideoCacheIndex] = useState(0);
   const [isLoadingMoreVideos, setisLoadingMoreVideos] = useState(false);
   const [loadingStatus, setLoadingStatus] =
     useState<LoadingStatusProps>('loading');
@@ -95,6 +96,8 @@ const Home = () => {
       isNextActive={activeVideoIndex === index + 1}
       onLike={like}
       onUnlike={unlike}
+      isCacheEnabled={index === currentVideoCacheIndex}
+      setCurrentVideoCacheIndex={setCurrentVideoCacheIndex}
     />
   );
 
@@ -179,7 +182,11 @@ const Home = () => {
         <FlashList
           keyExtractor={keyExtractor}
           data={followingVideos}
-          extraData={{activeVideoIndex, userIsLoggedIn: user.isLoggedIn}}
+          extraData={{
+            activeVideoIndex,
+            currentVideoCacheIndex,
+            userIsLoggedIn: user.isLoggedIn,
+          }}
           estimatedItemSize={VIDEO_POST_HEIGHT}
           pagingEnabled
           snapToOffsets={[...Array(followingVideos.length)].map(

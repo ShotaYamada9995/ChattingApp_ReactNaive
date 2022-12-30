@@ -58,6 +58,8 @@ interface VideoPostProps {
   isNextActive: boolean;
   onLike: (id: string) => Promise<void>;
   onUnlike: (id: string) => Promise<void>;
+  isCacheEnabled: boolean;
+  setCurrentVideoCacheIndex: any;
 }
 
 export const VIDEO_POST_HEIGHT =
@@ -81,6 +83,8 @@ const VideoPost = ({
   isNextActive,
   onLike,
   onUnlike,
+  isCacheEnabled,
+  setCurrentVideoCacheIndex,
 }: VideoPostProps) => {
   const {user, bookmarks} = useSelector((state: any) => ({
     user: state.user,
@@ -93,8 +97,10 @@ const VideoPost = ({
   const videoRef = useRef(null);
 
   const [video, setVideo] = useState({
+    url: '',
     isPaused: true,
     isLoaded: false,
+    isThumbnailVisible: true,
     duration: 0,
     speed: 1,
   });
@@ -190,6 +196,75 @@ const VideoPost = ({
     } catch (error) {
       return;
     }
+  };
+
+  const getVideoUrl = (url: string, filename: string) => {
+    RNFS.readDir(RNFS.DocumentDirectoryPath)
+      .then(result => {
+        result.forEach(element => {
+          if (element.name == filename.replace(/%20/g, '_')) {
+            setVideo(video => ({
+              ...video,
+              url: element.path,
+            }));
+            setVideo(video => ({
+              ...video,
+              isThumbnailVisible: false,
+            }));
+          }
+        });
+      })
+      .catch(err => {
+        setVideo(video => ({
+          ...video,
+          url: url,
+        }));
+        setVideo(video => ({
+          ...video,
+          isThumbnailVisible: false,
+        }));
+      });
+  };
+
+  const cacheVideo = () => {
+    const filename: string = videoSource.substring(
+      videoSource.lastIndexOf('/') + 1,
+      videoSource.length,
+    );
+    const path_name = RNFS.DocumentDirectoryPath + '/' + filename;
+
+    // download video
+    RNFS.exists(path_name).then(exists => {
+      if (exists) {
+        if (isActive) {
+          getVideoUrl(videoSource, filename);
+        }
+      } else {
+        RNFS.downloadFile({
+          fromUrl: videoSource,
+          toFile: path_name.replace(/%20/g, '_'),
+          background: true,
+        })
+          .promise.then(res => {
+            if (isActive) {
+              getVideoUrl(videoSource, filename);
+            }
+          })
+          .catch(err => {
+            if (isActive) {
+              setVideo(video => ({
+                ...video,
+                url: videoSource,
+              }));
+              setVideo(video => ({
+                ...video,
+                isThumbnailVisible: false,
+              }));
+            }
+          })
+          .finally(() => setCurrentVideoCacheIndex(current => current + 1));
+      }
+    });
   };
 
   const handleStoragePermission = async () => {
@@ -356,12 +431,13 @@ const VideoPost = ({
   const VideoPlayer = useMemo(
     () =>
       isFocused &&
-      (isActive || isPrevActive || isNextActive) && (
+      (isActive || isPrevActive || isNextActive) &&
+      !video.isThumbnailVisible && (
         <Pressable onPress={togglePause} style={styles.video}>
           <Video
             ref={videoRef}
             source={{
-              uri: videoSource,
+              uri: video.url,
             }}
             automaticallyWaitsToMinimizeStalling={false}
             bufferConfig={{
@@ -393,6 +469,7 @@ const VideoPost = ({
       ),
     [
       video.speed,
+      video.url,
       isVideoPaused,
       isFocused,
       videoSource,
@@ -409,8 +486,16 @@ const VideoPost = ({
       videoRef.current?.seek(0);
     }
 
+    if (isActive || isCacheEnabled) {
+      cacheVideo();
+    }
+
     if (!isActive && !isPrevActive && !isNextActive) {
-      setVideo(video => ({...video, isLoaded: false}));
+      setVideo(video => ({
+        ...video,
+        isLoaded: false,
+        isThumbnailVisible: true,
+      }));
     }
   }, [isActive, isPrevActive, isNextActive]);
 

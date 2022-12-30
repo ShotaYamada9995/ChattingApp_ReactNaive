@@ -44,6 +44,7 @@ const Home = () => {
   }));
 
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
+  const [currentVideoCacheIndex, setCurrentVideoCacheIndex] = useState(0);
   const [isLoadingMoreVideos, setisLoadingMoreVideos] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingStatus, setLoadingStatus] =
@@ -106,6 +107,8 @@ const Home = () => {
       isNextActive={activeVideoIndex === index + 1}
       onLike={like}
       onUnlike={unlike}
+      isCacheEnabled={index === currentVideoCacheIndex}
+      setCurrentVideoCacheIndex={setCurrentVideoCacheIndex}
     />
   );
 
@@ -204,7 +207,11 @@ const Home = () => {
           keyExtractor={keyExtractor}
           data={inspiringVideos}
           renderItem={VideoPostComp}
-          extraData={{activeVideoIndex, userIsLoggedIn: user.isLoggedIn}}
+          extraData={{
+            activeVideoIndex,
+            currentVideoCacheIndex,
+            userIsLoggedIn: user.isLoggedIn,
+          }}
           estimatedItemSize={VIDEO_POST_HEIGHT}
           pagingEnabled
           snapToOffsets={[...Array(inspiringVideos.length)].map(
