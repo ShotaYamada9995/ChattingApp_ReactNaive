@@ -17,7 +17,7 @@ import Login from './reducers/Login';
 import User from './reducers/User';
 import Video from './reducers/Video';
 import InspiringVideos from './reducers/InspiringVideos';
-import FollowingVideos from './reducers/FollowingVideos';
+import FollowingVideos from './reducers/ForYou';
 import Bookmarks from './reducers/Bookmarks';
 
 const persistConfig = {

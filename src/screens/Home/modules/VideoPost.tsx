@@ -21,7 +21,6 @@ import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
 import RNFetchBlob from 'rn-fetch-blob';
-import RNFS from 'react-native-fs';
 import {useToast} from 'react-native-toast-notifications';
 // import Animated, {
 //   useSharedValue,
@@ -48,6 +47,7 @@ interface VideoPostProps {
   thumbnailSource: string;
   caption: string;
   inspiredCount: number;
+  viewsCount: number;
   userSlug: string;
   userImage: string;
   userFirstname: string;
@@ -58,6 +58,7 @@ interface VideoPostProps {
   isNextActive: boolean;
   onLike: (id: string) => Promise<void>;
   onUnlike: (id: string) => Promise<void>;
+  incrementViewsCount: (id: string) => void;
 }
 
 export const VIDEO_POST_HEIGHT =
@@ -71,6 +72,7 @@ const VideoPost = ({
   thumbnailSource,
   caption,
   inspiredCount,
+  viewsCount,
   userSlug,
   userImage,
   userFirstname,
@@ -81,6 +83,7 @@ const VideoPost = ({
   isNextActive,
   onLike,
   onUnlike,
+  incrementViewsCount,
 }: VideoPostProps) => {
   const {user, bookmarks} = useSelector((state: any) => ({
     user: state.user,
@@ -370,12 +373,14 @@ const VideoPost = ({
               bufferForPlaybackMs: 1000,
               bufferForPlaybackAfterRebufferMs: 1000,
             }}
+            maxBitRate={700000}
             style={styles.video}
             resizeMode="cover"
             paused={isVideoPaused}
             playInBackground={false}
             rate={video.speed}
-            repeat={true}
+            repeat
+            hideShutterView
             onLoad={data =>
               setVideo(video => ({
                 ...video,
@@ -407,6 +412,7 @@ const VideoPost = ({
 
     if (isActive) {
       videoRef.current?.seek(0);
+      incrementViewsCount(id);
     }
 
     if (!isActive && !isPrevActive && !isNextActive) {
@@ -475,7 +481,7 @@ const VideoPost = ({
               size={20}
               onPress={togglePause}
             />
-            <Text style={styles.viewsCount}>{inspiredCount}</Text>
+            <Text style={styles.viewsCount}>{viewsCount}</Text>
           </View>
         </View>
 
