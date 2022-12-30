@@ -3,11 +3,13 @@ import {createSlice} from '@reduxjs/toolkit';
 const initialState: any[] = [];
 
 export const userSlice = createSlice({
-  name: 'FOLLOWING_VIDEOS',
+  name: 'FOR_YOU_VIDEOS',
   initialState,
   reducers: {
     addVideos: (state, action) => {
-      return state.concat(action.payload);
+      return state.concat(
+        action.payload.map(video => ({...video, viewsCount: 0})),
+      );
     },
     likeVideo: (state, action) => {
       const newState = state.map(video => {
@@ -40,9 +42,23 @@ export const userSlice = createSlice({
 
       return newState;
     },
+    incrementViewCount: (state, action) => {
+      const newState = state.map(video => {
+        if (video._id === action.payload.id) {
+          return {
+            ...video,
+            viewsCount: video.viewsCount + 1,
+          };
+        } else {
+          return video;
+        }
+      });
+      return newState;
+    },
   },
 });
 
-export const {addVideos, likeVideo, unlikeVideo} = userSlice.actions;
+export const {addVideos, likeVideo, unlikeVideo, incrementViewCount} =
+  userSlice.actions;
 
 export default userSlice.reducer;

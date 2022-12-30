@@ -19,7 +19,8 @@ import {
   addVideos,
   likeVideo,
   unlikeVideo,
-} from '../../store/reducers/FollowingVideos';
+  incrementViewCount,
+} from '../../store/reducers/ForYou';
 import {addFollowers} from '../../store/reducers/User';
 import {useNavigation} from '@react-navigation/native';
 
@@ -77,6 +78,10 @@ const Home = () => {
     }
   };
 
+  const handleIncrementViewsCount = (id: string) => {
+    dispatch(incrementViewCount({id}));
+  };
+
   const VideoPostComp = ({item, index}: any) => (
     <VideoPost
       id={item?._id}
@@ -84,6 +89,7 @@ const Home = () => {
       thumbnailSource={item?.thumbnail[0]?.cdnUrl}
       caption={item?.text}
       inspiredCount={item?.inspired_count}
+      viewsCount={item?.viewsCount}
       userSlug={item?.userSlug}
       userImage={item?.user[0]?.imageUrl?.cdnUrl}
       userFirstname={item?.user[0]?.profile?.firstName}
@@ -96,8 +102,7 @@ const Home = () => {
       isNextActive={activeVideoIndex === index + 1}
       onLike={like}
       onUnlike={unlike}
-      isCacheEnabled={index === currentVideoCacheIndex}
-      setCurrentVideoCacheIndex={setCurrentVideoCacheIndex}
+      incrementViewsCount={handleIncrementViewsCount}
     />
   );
 
