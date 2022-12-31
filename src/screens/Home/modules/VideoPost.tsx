@@ -359,7 +359,9 @@ const VideoPost = ({
   const VideoPlayer = useMemo(
     () =>
       isFocused &&
-      (isActive || isPrevActive || isNextActive) && (
+      (Platform.OS === 'android'
+        ? isActive || isPrevActive || isNextActive
+        : true) && (
         <Pressable onPress={togglePause} style={styles.video}>
           <Video
             ref={videoRef}
@@ -379,15 +381,17 @@ const VideoPost = ({
             paused={isVideoPaused}
             playInBackground={false}
             rate={video.speed}
-            repeat
-            hideShutterView
-            onLoad={data =>
+            repeat={true}
+            hideShutterView={true}
+            disableFocus={true}
+            useTextureView={false}
+            onLoad={data => {
               setVideo(video => ({
                 ...video,
                 isLoaded: true,
                 isPaused: !isActive,
-              }))
-            }
+              }));
+            }}
             // onProgress={data => {
             //   remainingDuration.current =
             //     (data.seekableDuration - data.currentTime) * 1000;
@@ -411,8 +415,9 @@ const VideoPost = ({
     setVideo(video => ({...video, isPaused: !isActive}));
 
     if (isActive) {
-      videoRef.current?.seek(0);
-      incrementViewsCount(id);
+      videoRef.current?.seek(0); // Restart video when focused
+
+      incrementViewsCount(id); // Increment views count when focused
     }
 
     if (!isActive && !isPrevActive && !isNextActive) {

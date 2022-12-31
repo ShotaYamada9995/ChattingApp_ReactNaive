@@ -2,6 +2,10 @@ import axios from 'axios';
 
 import {DOMAIN} from './repository';
 
+/* Issues:
+ * Uncompressed which increases buffer time and data consumption
+ * Bad Url which prevents loading or crashes app
+ */
 const badVideos = [
   '62f6d6aa4429741ade622701',
   '629f0e88e082c803e7ab3116',
@@ -27,6 +31,7 @@ const badVideos = [
   '636f7344f207db001b36063e',
   '636f7306f207db001b36062d',
   '63a589ee9afe6a001bd461cf',
+  '63a44cf8d0b9cd0464b9d0ac',
 ];
 class FeedsRepository {
   async getInspiringVideos(page: number) {

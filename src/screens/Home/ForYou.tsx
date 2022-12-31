@@ -6,6 +6,7 @@ import {Button} from '@rneui/themed';
 import {useToast} from 'react-native-toast-notifications';
 
 import VideoPost, {VIDEO_POST_HEIGHT} from './modules/VideoPost';
+import AuthModal from './modules/AuthModal';
 
 import {WINDOW_WIDTH} from '../../utils';
 
@@ -39,6 +40,7 @@ const Home = () => {
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const [currentVideoCacheIndex, setCurrentVideoCacheIndex] = useState(0);
   const [isLoadingMoreVideos, setisLoadingMoreVideos] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingStatus, setLoadingStatus] =
     useState<LoadingStatusProps>('loading');
 
@@ -106,6 +108,16 @@ const Home = () => {
     />
   );
 
+  const AuthModalComp = useMemo(
+    () => (
+      <AuthModal
+        isVisible={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+      />
+    ),
+    [showAuthModal],
+  );
+
   const loadMoreVideos = async () => {
     // Multicall fix
     if (!isLoadingMoreVideos) {
@@ -158,9 +170,13 @@ const Home = () => {
       }
       dispatch(addVideos(videos));
 
+      setLoadingStatus('success');
+
       currentPage.current++;
 
-      setLoadingStatus('success');
+      if (!user.isLoggedIn) {
+        setShowAuthModal(true);
+      }
     } catch (error) {
       setLoadingStatus('error');
     }
@@ -199,6 +215,7 @@ const Home = () => {
           )}
           snapToAlignment="start"
           decelerationRate="fast"
+          drawDistance={VIDEO_POST_HEIGHT * 3}
           renderItem={VideoPostComp}
           onScroll={handleOnVideoListScroll}
           showsVerticalScrollIndicator={false}
@@ -226,6 +243,8 @@ const Home = () => {
       {isLoadingMoreVideos && (
         <ActivityIndicator size="small" style={styles.loadingIndicator} />
       )}
+
+      {AuthModalComp}
     </View>
   );
 };
