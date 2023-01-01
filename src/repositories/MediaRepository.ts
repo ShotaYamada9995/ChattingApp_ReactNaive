@@ -133,6 +133,20 @@ class MediaRepository {
 
     return response;
   }
+
+  async getPlayCount(id: string) {
+    const endpoint = `${DOMAIN}/media/getPlayCount/${id}`;
+
+    const response = await axios.get(endpoint);
+
+    return response;
+  }
+
+  async updatePlayCount(id: string) {
+    const endpoint = `${DOMAIN}/media/updatePlayCount/${id}`;
+
+    await axios.post(endpoint);
+  }
 }
 
 export default new MediaRepository();

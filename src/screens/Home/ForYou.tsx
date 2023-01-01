@@ -38,7 +38,6 @@ const Home = () => {
   }));
 
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
-  const [currentVideoCacheIndex, setCurrentVideoCacheIndex] = useState(0);
   const [isLoadingMoreVideos, setisLoadingMoreVideos] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingStatus, setLoadingStatus] =
@@ -80,8 +79,14 @@ const Home = () => {
     }
   };
 
-  const handleIncrementViewsCount = (id: string) => {
+  const handleIncrementViewsCount = async (id: string) => {
     dispatch(incrementViewCount({id}));
+
+    try {
+      await MediaRepository.updatePlayCount(id);
+    } catch (error) {
+      return;
+    }
   };
 
   const VideoPostComp = ({item, index}: any) => (
@@ -91,7 +96,7 @@ const Home = () => {
       thumbnailSource={item?.thumbnail[0]?.cdnUrl}
       caption={item?.text}
       inspiredCount={item?.inspired_count}
-      viewsCount={item?.viewsCount}
+      playcounts={item?.playcounts}
       userSlug={item?.userSlug}
       userImage={item?.user[0]?.imageUrl?.cdnUrl}
       userFirstname={item?.user[0]?.profile?.firstName}
@@ -205,7 +210,6 @@ const Home = () => {
           data={followingVideos}
           extraData={{
             activeVideoIndex,
-            currentVideoCacheIndex,
             userIsLoggedIn: user.isLoggedIn,
           }}
           estimatedItemSize={VIDEO_POST_HEIGHT}

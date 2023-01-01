@@ -47,7 +47,7 @@ interface VideoPostProps {
   thumbnailSource: string;
   caption: string;
   inspiredCount: number;
-  viewsCount: number;
+  playcounts: number;
   userSlug: string;
   userImage: string;
   userFirstname: string;
@@ -72,7 +72,7 @@ const VideoPost = ({
   thumbnailSource,
   caption,
   inspiredCount,
-  viewsCount,
+  playcounts,
   userSlug,
   userImage,
   userFirstname,
@@ -489,7 +489,7 @@ const VideoPost = ({
               size={20}
               onPress={togglePause}
             />
-            <Text style={styles.viewsCount}>{viewsCount}</Text>
+            <Text style={styles.playcounts}>{playcounts}</Text>
           </View>
         </View>
 
@@ -621,7 +621,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#001433',
     color: 'white',
   },
-  viewsCount: {color: 'white'},
+  playcounts: {color: 'white'},
   musicDisc: {
     width: 40,
     height: 40,

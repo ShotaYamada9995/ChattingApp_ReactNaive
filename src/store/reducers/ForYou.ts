@@ -7,9 +7,7 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     addVideos: (state, action) => {
-      return state.concat(
-        action.payload.map(video => ({...video, viewsCount: 0})),
-      );
+      return state.concat(action.payload);
     },
     likeVideo: (state, action) => {
       const newState = state.map(video => {
@@ -47,7 +45,7 @@ export const userSlice = createSlice({
         if (video._id === action.payload.id) {
           return {
             ...video,
-            viewsCount: video.viewsCount + 1,
+            playcounts: video.playcounts + 1,
           };
         } else {
           return video;

@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import {DOMAIN} from './repository';
+import MediaRepository from './MediaRepository';
 
 /* Issues:
  * Uncompressed which increases buffer time and data consumption
@@ -47,7 +48,20 @@ class FeedsRepository {
         !badVideos.includes(video._id),
     );
 
-    return videos;
+    let newVideos = [];
+
+    for (let i = 0; i < videos.length; i++) {
+      try {
+        const {data: playcounts} = await MediaRepository.getPlayCount(
+          videos[i]._id,
+        );
+        newVideos.push({...videos[i], playcounts});
+      } catch (error) {
+        continue;
+      }
+    }
+
+    return newVideos;
   }
 
   async getFollowingVideos(page: number) {
@@ -63,7 +77,21 @@ class FeedsRepository {
         !badVideos.includes(video._id),
     );
 
-    return videos;
+    let newVideos = [];
+
+    for (let i = 0; i < videos.length; i++) {
+      try {
+        const {data: playcounts} = await MediaRepository.getPlayCount(
+          videos[i]._id,
+        );
+
+        newVideos.push({...videos[i], playcounts});
+      } catch (error) {
+        continue;
+      }
+    }
+
+    return newVideos;
   }
 }
 
