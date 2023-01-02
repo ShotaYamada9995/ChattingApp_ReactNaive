@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  StatusBar,
 } from 'react-native';
 import {Icon, Button, BottomSheet} from '@rneui/themed';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {MentionInput} from 'react-native-controlled-mentions';
 import CircularProgress from 'react-native-circular-progress-indicator';
@@ -17,6 +18,7 @@ import {
   Image as ImageCompressor,
   Video as VideoCompressor,
 } from 'react-native-compressor';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 import MediaRepository from '../../../repositories/MediaRepository';
 
@@ -35,6 +37,7 @@ type Viewer = 'Everyone' | 'Friends' | 'Only me';
 const PostMedia = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const route = useRoute();
   const toast = useToast();
   const {user, video} = useSelector((state: any) => ({
@@ -131,6 +134,11 @@ const PostMedia = () => {
 
   useEffect(() => {
     setCaption(video.caption);
+
+    if (isFocused) {
+      changeNavigationBarColor('white');
+    }
+
     if (!video.thumbnail) {
       (async () => {
         const frame: string = await genFrameAt(
@@ -149,6 +157,7 @@ const PostMedia = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <View style={[globalStyles.rowLayout, styles.header]}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon name="arrow-back" />
@@ -266,11 +275,12 @@ const styles = StyleSheet.create({
     width: WINDOW_WIDTH,
     height: WINDOW_HEIGHT,
     padding: 10,
+    paddingTop: 30,
     backgroundColor: 'white',
   },
   header: {
     position: 'absolute',
-    top: 0,
+    top: 30,
     width: '100%',
     paddingVertical: 5,
     paddingHorizontal: 10,

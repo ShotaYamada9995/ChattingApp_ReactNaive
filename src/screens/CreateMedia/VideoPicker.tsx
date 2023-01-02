@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   TouchableOpacity,
+  StatusBar,
 } from 'react-native';
 import {Camera, useCameraDevices, VideoFile} from 'react-native-vision-camera';
 import {CountdownCircleTimer} from 'react-native-countdown-circle-timer';
@@ -19,6 +20,7 @@ import {update} from '../../store/reducers/Video';
 import {useIsForeground} from '../../hooks/useIsForeground';
 import {useToast} from 'react-native-toast-notifications';
 import {WINDOW_WIDTH} from '../../utils';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 export default () => {
   const toast = useToast();
@@ -173,19 +175,17 @@ export default () => {
   };
 
   useEffect(() => {
+    if (isFocused) {
+      changeNavigationBarColor('black');
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
     (async () => {
       await requestCameraPermission();
       await requestMicrophonePermission();
     })();
   }, []);
-
-  // if (!isCameraPermitted)
-  //   return (
-  //     <View style={styles.defaultContainer}>
-  //       <Text>Camera permission not yet granted</Text>
-  //       <Button title="Grant permission" />
-  //     </View>
-  //   );
 
   if (device == null)
     return (
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
   },
-  sidebar: {position: 'absolute', top: 20, right: 10},
+  sidebar: {position: 'absolute', top: 50, right: 10},
   sidebarIcon: {marginBottom: 10},
   bottomBarContainer: {
     position: 'absolute',

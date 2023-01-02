@@ -6,7 +6,6 @@ import * as yup from 'yup';
 import SelectDropdown from 'react-native-select-dropdown';
 import {useSelector} from 'react-redux';
 
-import AuthHeader from '../../components/headers/AuthHeader';
 import {WINDOW_WIDTH} from '../../utils';
 import AuthHeader1 from '../../components/headers/AuthHeader1';
 

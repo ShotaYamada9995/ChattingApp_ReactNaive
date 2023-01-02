@@ -1,5 +1,5 @@
-import React, {useEffect, useState, useMemo} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
+import React, {useEffect} from 'react';
+import {View, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import Video from 'react-native-video';
 import {Icon, Button} from '@rneui/themed';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
@@ -7,6 +7,7 @@ import {useSelector} from 'react-redux';
 
 import {useIsForeground} from '../../../hooks/useIsForeground';
 import VideoLoadingIndicator from '../../../components/shared/VideoLoadingIndicator';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 const VideoEditor = () => {
   const navigation = useNavigation();
@@ -24,6 +25,12 @@ const VideoEditor = () => {
       navigation.navigate('PostMedia');
     }
   };
+
+  useEffect(() => {
+    if (isFocused) {
+      changeNavigationBarColor('black');
+    }
+  }, [isFocused]);
 
   return (
     <View style={styles.container}>
@@ -77,7 +84,7 @@ const styles = StyleSheet.create({
   },
   navIcon: {
     position: 'absolute',
-    top: 20,
+    top: 50,
     left: 20,
   },
   video: {
@@ -85,7 +92,7 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: 'black',
   },
-  sideBar: {position: 'absolute', top: 20, right: 10},
+  sideBar: {position: 'absolute', top: 50, right: 10},
   btnContainer: {
     position: 'absolute',
     bottom: 20,

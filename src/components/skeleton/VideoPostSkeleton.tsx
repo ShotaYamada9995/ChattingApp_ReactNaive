@@ -12,7 +12,12 @@ interface Props {
 }
 
 export default ({size}: Props) => (
-  <ScrollView pagingEnabled showsVerticalScrollIndicator={false}>
+  <ScrollView
+    pagingEnabled
+    snapToOffsets={[...Array(size)].map((x, i) => i * VIDEO_POST_HEIGHT)}
+    snapToAlignment="start"
+    decelerationRate="fast"
+    showsVerticalScrollIndicator={false}>
     {Array(size)
       .fill(null)
       .map((_, index) => (

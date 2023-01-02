@@ -22,6 +22,7 @@ import {useNavigation, useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
 import RNFetchBlob from 'rn-fetch-blob';
 import {useToast} from 'react-native-toast-notifications';
+import StaticSafeAreaInsets from 'react-native-static-safe-area-insets';
 // import Animated, {
 //   useSharedValue,
 //   useAnimatedStyle,
@@ -63,7 +64,9 @@ interface VideoPostProps {
 
 export const VIDEO_POST_HEIGHT =
   Platform.OS === 'ios'
-    ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.07
+    ? StaticSafeAreaInsets.safeAreaInsetsBottom !== 0
+      ? WINDOW_HEIGHT - WINDOW_HEIGHT * 0.1
+      : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.07
     : WINDOW_HEIGHT - WINDOW_HEIGHT * 0.104;
 
 const VideoPost = ({
@@ -356,12 +359,58 @@ const VideoPost = ({
     );
   }, [thumbnailSource, video.isLoaded]);
 
-  const VideoPlayer = useMemo(
+  const IOSVideoPlayer = useMemo(
+    () =>
+      isFocused && (
+        <Pressable onPress={togglePause} style={styles.video}>
+          <Video
+            ref={videoRef}
+            poster={thumbnailSource}
+            posterResizeMode="cover"
+            source={{
+              uri: videoSource,
+            }}
+            automaticallyWaitsToMinimizeStalling={false}
+            maxBitRate={700000}
+            style={styles.video}
+            resizeMode="cover"
+            paused={isVideoPaused}
+            playInBackground={false}
+            rate={video.speed}
+            repeat={true}
+            hideShutterView={true}
+            disableFocus={true}
+            useTextureView={false}
+            onLoad={data => {
+              setVideo(video => ({
+                ...video,
+                isPaused: !isActive,
+              }));
+            }}
+            // onProgress={data => {
+            //   remainingDuration.current =
+            //     (data.seekableDuration - data.currentTime) * 1000;
+            // }}
+            // onEnd={repeatProgressBarAnimation}
+          />
+        </Pressable>
+      ),
+    [
+      video.speed,
+      isVideoPaused,
+      isFocused,
+      videoSource,
+      thumbnailSource,
+      isActive,
+      isPrevActive,
+      isNextActive,
+    ],
+  );
+
+  const AndroidVideoPlayer = useMemo(
     () =>
       isFocused &&
-      (Platform.OS === 'android'
-        ? isActive || isPrevActive || isNextActive
-        : true) && (
+      (isActive || isPrevActive || isNextActive) && (
         <Pressable onPress={togglePause} style={styles.video}>
           <Video
             ref={videoRef}
@@ -451,9 +500,9 @@ const VideoPost = ({
 
   return (
     <View style={styles.container}>
-      {VideoPlayer}
+      {Platform.OS === 'ios' ? IOSVideoPlayer : AndroidVideoPlayer}
 
-      {VideoThumbnail}
+      {Platform.OS === 'android' && VideoThumbnail}
 
       {/* <Animated.View style={[animatedProgressBarStyle, styles.progressBar]} /> */}
 

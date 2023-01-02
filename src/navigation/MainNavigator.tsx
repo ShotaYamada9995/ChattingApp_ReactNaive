@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {Platform, Pressable, StyleSheet, View} from 'react-native';
 import {Icon} from '@rneui/themed';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import LinearGradient from 'react-native-linear-gradient';
@@ -10,6 +10,7 @@ import AudioRoomScreen from '../screens/AudioRoomScreen';
 import ChatScreen from '../screens/Chats';
 import {WINDOW_HEIGHT, WINDOW_WIDTH} from '../utils';
 import {useNavigation} from '@react-navigation/native';
+import StaticSafeAreaInsets from 'react-native-static-safe-area-insets';
 
 const MainTab = createBottomTabNavigator();
 
@@ -25,8 +26,15 @@ const Main = () => {
         tabBarStyle: {
           backgroundColor: '#001433',
           borderTopWidth: 0,
-          paddingBottom: 0,
-          height: WINDOW_HEIGHT * 0.07,
+          paddingBottom:
+            Platform.OS === 'ios'
+              ? StaticSafeAreaInsets.safeAreaInsetsBottom
+              : 0,
+          height:
+            Platform.OS === 'ios' &&
+            StaticSafeAreaInsets.safeAreaInsetsBottom !== 0
+              ? WINDOW_HEIGHT * 0.1
+              : WINDOW_HEIGHT * 0.07,
         },
         headerShown: false,
         tabBarActiveTintColor: 'white',

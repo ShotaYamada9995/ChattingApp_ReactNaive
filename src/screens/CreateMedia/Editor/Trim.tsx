@@ -1,19 +1,11 @@
-import React, {
-  useState,
-  useCallback,
-  useRef,
-  useEffect,
-  useMemo,
-  memo,
-} from 'react';
+import React, {useState, useCallback, useRef, useEffect} from 'react';
+
 import {
   View,
   Text,
   TouchableOpacity,
-  Image,
   StyleSheet,
   ActivityIndicator,
-  ScrollView,
   Alert,
   StatusBar,
 } from 'react-native';
@@ -22,6 +14,7 @@ import {Icon} from '@rneui/themed';
 import {useSelector, useDispatch} from 'react-redux';
 import {useNavigation, useIsFocused} from '@react-navigation/native';
 import Slider from 'rn-range-slider';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 import {trim, genFrames} from '../../../utils/videoProcessor';
 import {mmssTimeFormat, hhmmssTimeFormat} from '../../../utils/helpers';
@@ -195,6 +188,12 @@ const Trim = () => {
   };
 
   useEffect(() => {
+    if (isFocused) {
+      changeNavigationBarColor('black');
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
     setTrims([{startTime: 0, endTime: Number(videoData.duration.toFixed(1))}]);
     (async () => {
       const frames = await genFrames(`10/${videoData.duration}`, videoData);
@@ -296,6 +295,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
     padding: 10,
+    paddingTop: 40,
   },
   navBar: {
     flexDirection: 'row',

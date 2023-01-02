@@ -1,7 +1,9 @@
-import React from 'react';
-import {View, StyleSheet, Image} from 'react-native';
+import React, {useEffect} from 'react';
+import {View, StyleSheet, Image, StatusBar} from 'react-native';
 import {Icon, Text} from '@rneui/themed';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
+
 import {WINDOW_WIDTH} from '../../utils';
 
 interface AuthHeaderProps {
@@ -11,8 +13,16 @@ interface AuthHeaderProps {
 
 export default ({title, caption}: AuthHeaderProps) => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      changeNavigationBarColor('white');
+    }
+  }, [isFocused]);
   return (
     <View>
+      <StatusBar barStyle="dark-content" />
       <View style={styles.headerContainer}>
         <Icon
           name="arrow-back"
@@ -40,6 +50,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
+    paddingTop: 30,
   },
   logoIcon: {
     transform: [{scale: WINDOW_WIDTH * 0.003}],

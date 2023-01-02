@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {StatusBar, SafeAreaView, StyleSheet} from 'react-native';
+import {StatusBar, SafeAreaView, StyleSheet, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
@@ -60,8 +60,7 @@ export default () => {
     <ToastProvider>
       <MenuProvider>
         <SafeAreaProvider>
-          <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="white" />
+          <View style={styles.container}>
             <NavigationContainer>
               <AppStack.Navigator
                 screenOptions={{
@@ -128,7 +127,7 @@ export default () => {
                 ) : null}
               </AppStack.Navigator>
             </NavigationContainer>
-          </SafeAreaView>
+          </View>
         </SafeAreaProvider>
       </MenuProvider>
     </ToastProvider>

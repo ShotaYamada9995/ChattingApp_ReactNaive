@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Image,
+  StatusBar,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import Slider from 'rn-range-slider';
@@ -79,6 +79,7 @@ export default () => {
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.navBarText}>Cancel</Text>
@@ -129,6 +130,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 10,
+    paddingTop: 30,
   },
   navBar: {
     flexDirection: 'row',

@@ -1,13 +1,23 @@
-import React from 'react';
-import {View, StyleSheet, Image} from 'react-native';
+import React, {useEffect} from 'react';
+import {View, StyleSheet, Image, StatusBar} from 'react-native';
 import {Icon, Text} from '@rneui/themed';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
+
 import {WINDOW_WIDTH} from '../../utils';
 
 export default () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      changeNavigationBarColor('white');
+    }
+  }, [isFocused]);
   return (
     <View style={styles.headerContainer}>
+      <StatusBar barStyle="dark-content" />
       <Icon
         name="arrow-back"
         type="ionicon"
