@@ -4,6 +4,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {FlashList} from '@shopify/flash-list';
 import {Button} from '@rneui/themed';
 import {useToast} from 'react-native-toast-notifications';
+import RNFS from 'react-native-fs';
 
 import VideoPost, {VIDEO_POST_HEIGHT} from './modules/VideoPost';
 import AuthModal from '../../components/modals/AuthModal';
@@ -122,6 +123,74 @@ const Home = () => {
     ),
     [showAuthModal],
   );
+
+  const getVideoUrl = (url: string, filename: string) => {
+    RNFS.readDir(RNFS.DocumentDirectoryPath)
+      .then(result => {
+        result.forEach(element => {
+          if (element.name == filename.replace(/%20/g, '_')) {
+            // setVideo(video => ({
+            //   ...video,
+            //   url: element.path,
+            // }));
+            // setVideo(video => ({
+            //   ...video,
+            //   isThumbnailVisible: false,
+            // }));
+          }
+        });
+      })
+      .catch(err => {
+        // setVideo(video => ({
+        //   ...video,
+        //   url: url,
+        // }));
+        // setVideo(video => ({
+        //   ...video,
+        //   isThumbnailVisible: false,
+        // }));
+      });
+  };
+
+  const cacheVideo = (url: string) => {
+    const filename: string = url.substring(
+      url.lastIndexOf('/') + 1,
+      url.length,
+    );
+    const path_name = RNFS.DocumentDirectoryPath + '/' + filename;
+
+    // download video
+    RNFS.exists(path_name).then(exists => {
+      if (exists) {
+        if (isActive) {
+          getVideoUrl(url, filename);
+        }
+      } else {
+        RNFS.downloadFile({
+          fromUrl: url,
+          toFile: path_name.replace(/%20/g, '_'),
+          background: true,
+        })
+          .promise.then(res => {
+            if (isActive) {
+              getVideoUrl(url, filename);
+            }
+          })
+          .catch(err => {
+            // if (isActive) {
+            //   setVideo(video => ({
+            //     ...video,
+            //     url: url,
+            //   }));
+            //   setVideo(video => ({
+            //     ...video,
+            //     isThumbnailVisible: false,
+            //   }));
+            // }
+          });
+      }
+    });
+  };
 
   const loadMoreVideos = async () => {
     // Multicall fix

@@ -41,6 +41,7 @@ import {addBookmark, removeBookmark} from '../../../store/reducers/Bookmarks';
 import UsersRepository from '../../../repositories/UsersRepository';
 
 import PlaybackSpeedModal from './PlaybackSpeedModal';
+import {formatNumber} from '../../../utils/helpers';
 
 interface VideoPostProps {
   id: string;
@@ -419,10 +420,10 @@ const VideoPost = ({
             }}
             automaticallyWaitsToMinimizeStalling={false}
             bufferConfig={{
-              minBufferMs: 1000,
+              minBufferMs: 100,
               maxBufferMs: 2000,
-              bufferForPlaybackMs: 1000,
-              bufferForPlaybackAfterRebufferMs: 1000,
+              bufferForPlaybackMs: 100,
+              bufferForPlaybackAfterRebufferMs: 100,
             }}
             maxBitRate={700000}
             style={styles.video}
@@ -538,7 +539,7 @@ const VideoPost = ({
               size={20}
               onPress={togglePause}
             />
-            <Text style={styles.playcounts}>{playcounts}</Text>
+            <Text style={styles.playcounts}>{formatNumber(playcounts)}</Text>
           </View>
         </View>
 

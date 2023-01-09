@@ -49,11 +49,17 @@ type AppStackParamsList = {
 
 const AppStack = createNativeStackNavigator<AppStackParamsList>();
 
+let splashScreenTimeout;
 export default () => {
   const user = useSelector(state => state.user);
 
   useEffect(() => {
-    RNBootSplash.hide();
+    splashScreenTimeout = setTimeout(
+      () => RNBootSplash.hide({fade: true, duration: 500}),
+      3000,
+    );
+
+    return () => clearTimeout(splashScreenTimeout);
   }, []);
 
   return (
