@@ -6,7 +6,7 @@ import {Button} from '@rneui/themed';
 import {useToast} from 'react-native-toast-notifications';
 
 import VideoPost, {VIDEO_POST_HEIGHT} from './modules/VideoPost';
-import AuthModal from './modules/AuthModal';
+import AuthModal from '../../components/modals/AuthModal';
 
 import {WINDOW_WIDTH} from '../../utils';
 

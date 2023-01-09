@@ -12,15 +12,18 @@ import {
   Pressable,
 } from 'react-native';
 import {Icon} from '@rneui/themed';
-import {useNavigation, useRoute} from '@react-navigation/native';
+import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import {WINDOW_WIDTH} from '../../../utils';
 import MediaRepository from '../../../repositories/MediaRepository';
 import {useSelector} from 'react-redux';
 import {MentionInput} from 'react-native-controlled-mentions';
 import {useToast} from 'react-native-toast-notifications';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 
 export default () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+
   const route = useRoute();
   const toast = useToast();
 
@@ -91,6 +94,12 @@ export default () => {
   };
 
   useEffect(() => {
+    if (isFocused) {
+      changeNavigationBarColor('white');
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
     (async () => {
       try {
         const {data: comments} = await MediaRepository.getComments({
@@ -145,7 +154,7 @@ export default () => {
           <View key={comment._id} style={styles.commentContainer}>
             {comment.user[0]?.imageUrl?.cdnUrl ? (
               <Image
-                source={{uri: comment.user[0].imageUrl.cdnUrl}}
+                source={{uri: comment.user[0]?.imageUrl.cdnUrl}}
                 style={styles.userPic}
               />
             ) : (
@@ -157,8 +166,8 @@ export default () => {
 
             <View>
               <Text style={styles.username}>
-                {comment.user[0].profile.firstName}{' '}
-                {comment.user[0].profile.lastName}
+                {comment.user[0]?.profile.firstName}{' '}
+                {comment.user[0]?.profile.lastName}
               </Text>
               {/* <Text style={styles.userExpertise}>
                 expert in Software Engineering
@@ -254,6 +263,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 10,
+    paddingTop: 30,
   },
   header: {
     flexDirection: 'row',

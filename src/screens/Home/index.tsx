@@ -8,7 +8,7 @@ import {WINDOW_WIDTH} from '../../utils';
 
 import Inspiring from './Insipiring';
 import ForYou from './ForYou';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 
 const HomeTab = createMaterialTopTabNavigator();
 

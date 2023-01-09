@@ -3,9 +3,9 @@ import {View, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import {Button, Text, Icon, BottomSheet} from '@rneui/themed';
 import {useNavigation} from '@react-navigation/native';
 
-import {WINDOW_WIDTH} from '../../../utils';
+import {WINDOW_WIDTH} from '../../utils';
 import {useDispatch} from 'react-redux';
-import {update} from '../../../store/reducers/Login';
+import {update} from '../../store/reducers/Login';
 
 interface AuthModalProps {
   isVisible: boolean;
@@ -28,7 +28,7 @@ export default ({isVisible, onClose}: AuthModalProps) => {
       containerStyle={styles.authModalContainer}>
       <View style={styles.container}>
         <Image
-          source={require('../../../assets/images/logo4x.png')}
+          source={require('../../assets/images/logo4x.png')}
           style={styles.logo}
         />
         <Text style={styles.title}>
