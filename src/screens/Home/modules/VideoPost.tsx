@@ -56,8 +56,6 @@ interface VideoPostProps {
   userLastname: string;
   isLiked: boolean;
   isActive: boolean;
-  isPrevActive: boolean;
-  isNextActive: boolean;
   onLike: (id: string) => Promise<void>;
   onUnlike: (id: string) => Promise<void>;
   incrementViewsCount: (id: string) => void;
@@ -83,8 +81,6 @@ const VideoPost = ({
   userLastname,
   isLiked,
   isActive,
-  isPrevActive,
-  isNextActive,
   onLike,
   onUnlike,
   incrementViewsCount,
@@ -403,8 +399,6 @@ const VideoPost = ({
       videoSource,
       thumbnailSource,
       isActive,
-      isPrevActive,
-      isNextActive,
     ],
   );
 
@@ -450,22 +444,14 @@ const VideoPost = ({
           />
         </Pressable>
       ),
-    [
-      video.speed,
-      isVideoPaused,
-      isFocused,
-      videoSource,
-      isActive,
-      isPrevActive,
-      isNextActive,
-    ],
+    [video.speed, isVideoPaused, isFocused, videoSource, isActive],
   );
 
   useEffect(() => {
     setVideo(video => ({...video, isPaused: !isActive}));
 
     if (isActive) {
-      videoRef.current?.seek(0); // Restart video when focused
+      // videoRef.current?.seek(0); // Restart video when focused
 
       incrementViewsCount(id); // Increment views count when focused
     }
@@ -476,7 +462,7 @@ const VideoPost = ({
         isLoaded: false,
       }));
     }
-  }, [isActive, isPrevActive, isNextActive]);
+  }, [isActive]);
 
   // useEffect(() => {
   //   if (
