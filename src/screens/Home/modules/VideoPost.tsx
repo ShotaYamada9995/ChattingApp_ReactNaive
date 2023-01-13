@@ -411,7 +411,7 @@ const VideoPost = ({
   const AndroidVideoPlayer = useMemo(
     () =>
       isFocused &&
-      (isActive || isPrevActive || isNextActive) && (
+      isActive && (
         <Pressable onPress={togglePause} style={styles.video}>
           <Video
             ref={videoRef}
@@ -470,7 +470,7 @@ const VideoPost = ({
       incrementViewsCount(id); // Increment views count when focused
     }
 
-    if (!isActive && !isPrevActive && !isNextActive) {
+    if (!isActive) {
       setVideo(video => ({
         ...video,
         isLoaded: false,

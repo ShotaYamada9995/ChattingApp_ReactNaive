@@ -233,7 +233,7 @@ export default () => {
       )}
 
       <View style={styles.bottomBarContainer}>
-        {video.isRecording && video.isPaused ? (
+        {video.isRecording ? (
           <TouchableOpacity onPress={cancelRecording}>
             <Icon name="close-circle" type="ionicon" color="white" size={40} />
           </TouchableOpacity>
@@ -257,15 +257,25 @@ export default () => {
               strokeWidth={5}
               size={100}
               onComplete={stopRecording}>
-              {({remainingTime}) => (
-                <Icon
-                  name="stop"
-                  type="ionicon"
-                  color="#ff4040"
-                  size={50}
-                  style={{marginLeft: 3}}
-                />
-              )}
+              {({remainingTime}) =>
+                video.isPaused ? (
+                  <Icon
+                    name="play"
+                    type="ionicon"
+                    color="#ff4040"
+                    size={50}
+                    style={{marginLeft: 3}}
+                  />
+                ) : (
+                  <Icon
+                    name="stop"
+                    type="ionicon"
+                    color="#ff4040"
+                    size={50}
+                    style={{marginLeft: 3}}
+                  />
+                )
+              }
             </CountdownCircleTimer>
           </TouchableOpacity>
         ) : (
